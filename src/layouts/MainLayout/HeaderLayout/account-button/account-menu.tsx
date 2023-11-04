@@ -10,8 +10,8 @@ import Tooltip from '@mui/material/Tooltip';
 import PersonAdd from '@mui/icons-material/PersonAdd';
 import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
-import { Link } from '@mui/material';
-
+import NextLink from 'next/link';
+import Link from '@mui/material/Link';
 interface AccountButtonProps {
   simulateLogin: () => void;
 }
@@ -89,18 +89,17 @@ export const AccountMenu: React.FC<AccountButtonProps> = ({ simulateLogin }) => 
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
       >
         <MenuItem
-          LinkComponent={'a'}
+          component={NextLink}
           href="/users"
         >
-          <Avatar /> Profile
-        </MenuItem>
-
-        <MenuItem href="/users">
           <Avatar /> My account
         </MenuItem>
         <Divider />
 
-        <MenuItem href="/write-review">
+        <MenuItem
+          component={NextLink}
+          href="/write-review"
+        >
           <ListItemIcon>
             <PersonAdd fontSize="small" />
           </ListItemIcon>

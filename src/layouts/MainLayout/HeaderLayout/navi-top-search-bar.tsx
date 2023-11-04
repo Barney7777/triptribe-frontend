@@ -1,13 +1,12 @@
 import { FC, useState, useEffect, Fragment } from 'react';
-import {
-  TextField,
-  InputAdornment,
-  Box,
-  Autocomplete,
-  Stack,
-  Link,
-  CircularProgress,
-} from '@mui/material';
+import TextField from '@mui/material/TextField';
+import InputAdornment from '@mui/material/InputAdornment';
+import Box from '@mui/material/Box';
+import Autocomplete from '@mui/material/Autocomplete';
+import Link from '@mui/material/Link';
+import CircularProgress from '@mui/material/CircularProgress';
+import { SxProps } from '@mui/system';
+
 import SearchIcon from '@mui/icons-material/Search';
 import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu';
 import WbSunnyIcon from '@mui/icons-material/WbSunny';
@@ -17,7 +16,10 @@ import { fetchedData } from '@/types/search-result';
 
 const DEBOUNCE_INTERVAL = 500;
 
-export const SearchBar: FC<{ text?: string }> = ({ text }) => {
+export const NaviTopSearchBar: FC<{ sx?: SxProps; text?: string }> = ({
+  sx,
+  text = 'Search...',
+}) => {
   const [inputValue, setInputValue] = useState('');
   const [open, setOpen] = useState(false);
   const [options, setOptions] = useState<fetchedData>([]);
@@ -45,7 +47,7 @@ export const SearchBar: FC<{ text?: string }> = ({ text }) => {
     }
   }, [open]);
   return (
-    <>
+    <Box sx={sx}>
       <Autocomplete
         fullWidth
         forcePopupIcon={false}
@@ -122,6 +124,6 @@ export const SearchBar: FC<{ text?: string }> = ({ text }) => {
           </li>
         )}
       />
-    </>
+    </Box>
   );
 };

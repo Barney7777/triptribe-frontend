@@ -1,7 +1,8 @@
 import React from 'react';
-import { Grid, Paper } from '@mui/material';
+import Grid from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
 
-const HomePage: React.FC = () => {
+export const HomePageContent: React.FC = () => {
   return (
     <Grid
       container
@@ -24,5 +25,3 @@ const HomePage: React.FC = () => {
     </Grid>
   );
 };
-
-export default HomePage;

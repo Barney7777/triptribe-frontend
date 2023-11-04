@@ -1,12 +1,12 @@
-import { Box, Button, Typography } from '@mui/material';
-import Link from 'next/link';
-import { paths } from '@/paths';
+import Box from '@mui/material/Box';
+import NextLink from 'next/link';
+
 import { LogoImage } from '@/icons/logo-image';
 import { LogoText } from '@/icons/logo-text';
 export function LogoButton() {
   return (
     <Box
-      component={Link}
+      component={NextLink}
       href={'/'}
       sx={{
         height: '60px',
