@@ -1,7 +1,7 @@
 //https://github.com/vercel/swr/blob/main/examples/axios-typescript/libs/useRequest.ts
 import useSWR, { SWRConfiguration, SWRResponse } from 'swr';
 import { AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
-import apiClient from '@/utils/request';
+import axiosInstance from '@/utils/request';
 
 export type GetRequest = AxiosRequestConfig | null;
 
@@ -36,7 +36,7 @@ export default function useRequest<Data = unknown, Error = unknown>(
      * function is actually only called by `useSWR` when it isn't.
      */
 
-    () => apiClient.request<Data>(request!),
+    () => axiosInstance.request<Data>(request!),
     {
       ...config,
       fallbackData:
