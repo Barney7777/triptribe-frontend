@@ -14,8 +14,8 @@ const Layout: React.FC<{ children: ReactNode }> = ({ children }) => {
           minHeight: '100vh',
           display: 'flex',
           flexDirection: 'column',
-          padding: '16px',
-          boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
+          // padding: '16px',
+          // boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
         }}
       >
         <Box
@@ -27,8 +27,8 @@ const Layout: React.FC<{ children: ReactNode }> = ({ children }) => {
           <Box
             sx={{
               flex: 3,
-              padding: '16px',
-              boxShadow: '0 0 5px rgba(0, 0, 0, 0.1)',
+              // padding: '16px',
+              // boxShadow: '0 0 5px rgba(0, 0, 0, 0.1)',
             }}
           >
             {children}
