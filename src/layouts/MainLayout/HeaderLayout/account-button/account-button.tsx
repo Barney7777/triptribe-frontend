@@ -1,6 +1,7 @@
 import type { FC } from 'react';
-import { Button, Box } from '@mui/material';
-import { AccountMenu } from '.';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import { AccountMenu } from './account-menu';
 
 interface AccountButtonProps {
   loginStatus: boolean;

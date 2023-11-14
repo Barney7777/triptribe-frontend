@@ -1,6 +1,7 @@
 import { FC } from 'react';
-import Link from 'next/link';
-import { Button, Box, Typography } from '@mui/material';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 
 export const PlacesTab: FC = () => {
   return (

@@ -1,43 +1,34 @@
 import React, { ReactNode } from 'react';
-import Box from '@mui/material/Box';
+import { useTheme } from '@mui/material/styles';
+import Container from '@mui/material/Container';
 
 import Header from './Header';
 import Footer from './Footer';
-import { borderBottom } from '@mui/system';
-const Layout: React.FC<{ children: ReactNode }> = ({ children }) => {
+
+export const Layout: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const theme = useTheme();
+  const sx = {
+    // mx: 'auto',
+    [theme.breakpoints.down('md')]: {
+      maxWidth: 'sm',
+    },
+    [theme.breakpoints.up('md')]: {
+      maxWidth: 'md',
+    },
+    [theme.breakpoints.up('lg')]: {
+      maxWidth: 'lg',
+    },
+  };
   return (
     <>
       <Header />
-      <Box
-        sx={{
-          backgroundColor: '#ffffff',
-          minHeight: '100vh',
-          display: 'flex',
-          flexDirection: 'column',
-          // padding: '16px',
-          // boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
-        }}
+      <Container
+        component="main"
+        sx={sx}
       >
-        <Box
-          sx={{
-            flex: 1,
-            display: 'flex',
-          }}
-        >
-          <Box
-            sx={{
-              flex: 3,
-              // padding: '16px',
-              // boxShadow: '0 0 5px rgba(0, 0, 0, 0.1)',
-            }}
-          >
-            {children}
-          </Box>
-        </Box>
-      </Box>
+        {children}
+      </Container>
       <Footer />
     </>
   );
 };
-
-export { Layout };

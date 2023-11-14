@@ -20,16 +20,16 @@ export const LogoText = (props: SVGProps<SVGSVGElement>) => {
         fill="none"
         y="-37.499999"
         height="449.999989"
-        fillOpacity="1"
+        fillOpacity="0"
       />
-      <rect
+      {/* <rect
         x="-37.5"
         width="450"
         fill="none"
         y="-37.499999"
         height="449.999989"
         fillOpacity="1"
-      />
+      /> */}
       <g
         fill="#000000"
         fillOpacity="1"

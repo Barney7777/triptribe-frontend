@@ -1,8 +1,9 @@
 import type { FC } from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import { SearchBar } from '@/layouts/MainLayout/HeaderLayout/search-bar';
+import { NaviTopSearchBar } from '@/layouts/MainLayout/HeaderLayout/navi-top-search-bar';
 import { AccountButton } from '@/layouts/MainLayout/HeaderLayout/account-button';
 import { PlacesTab } from '@/layouts/MainLayout/HeaderLayout/places-tab';
 import { LogoButton } from '@/layouts/MainLayout/HeaderLayout/logo-button';
@@ -10,40 +11,50 @@ import { LogoButton } from '@/layouts/MainLayout/HeaderLayout/logo-button';
 import { usePathname } from 'next/navigation';
 
 export const TopNav: FC = () => {
-  const autoHideRestAttrPageList = ['/signup', '/signin'];
-  const autoHideSearchBarPageList = ['/signup', '/signin', '/'];
   const pathname = usePathname();
-  const isHomepage = autoHideSearchBarPageList.includes(pathname);
-  const isSearAttrPage = autoHideRestAttrPageList.includes(pathname);
+  const autoHideSearchBarPageList = ['/signup', '/signin', '/'];
+  const isHomepage = autoHideSearchBarPageList.includes(pathname); // hide search bar responsively in homepage
+  const autoHideRestAttrPageList = ['/signup', '/signin'];
+  const isSearAttrPage = autoHideRestAttrPageList.includes(pathname); // hide place permanently tab in signin/signup page
   const [loginStatus, setLoginStatus] = useState(false);
-  const [showSearchBar, setShowSearchBar] = useState(!isHomepage);
+  // show searchbar is false default.
+  // in homepage, it is false default
+  // in other page, it is true
+  const [showSearchBar, setShowSearchBar] = useState<boolean>(!isHomepage);
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
 
+  // return to homepage, rerender header
   useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 150) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
-      setShowSearchBar(false);
-
-      if (!isHomepage || window.scrollY > 320) {
-        setShowSearchBar(true);
-      } else {
-        setShowSearchBar(false);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-
+    setShowSearchBar(!isHomepage);
+    console.log('setHomepage');
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      // if (!isHomepage) {
+      //   setShowSearchBar(isHomepage);
+      //   console.log('set not Homepage');
+      // }
     };
   }, [pathname]);
 
-  console.log(showSearchBar);
-  console.log(pathname);
+  useEffect(() => {
+    const handleScroll = () => {
+      // if (window.scrollY > 320) {
+      //   setIsScrolled(true);
+      // } else {
+      //   setIsScrolled(false);
+      // }
+      if (!isHomepage || (window.scrollY > 320 && showSearchBar === false)) {
+        setShowSearchBar(true);
+      } else if (showSearchBar && window.scrollY < 320) {
+        setShowSearchBar(false);
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [isHomepage, showSearchBar]);
+
+  console.log('被渲染啦', pathname);
   const simulateLogin = () => {
     setLoginStatus(!loginStatus);
   };
@@ -77,7 +88,7 @@ export const TopNav: FC = () => {
         >
           <LogoButton />
         </Grid>
-        {/* 不在homepage或者showSearchBar为true */}
+
         {showSearchBar && (
           <Grid
             item
@@ -85,11 +96,13 @@ export const TopNav: FC = () => {
             xs={4}
             sm={true}
             md={4}
-            sx={{
-              borderRadius: 2,
-            }}
           >
-            <SearchBar text={'Search Everything'} />
+            <NaviTopSearchBar
+              sx={{
+                borderRadius: 2,
+              }}
+              text={'Search Everything'}
+            />
           </Grid>
         )}
 
