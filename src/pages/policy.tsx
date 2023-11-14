@@ -1,8 +1,8 @@
 import React from 'react';
-import Terms from '@/components/Terms';
+import Policy from '@/components/Policy';
 import { Box } from '@mui/material';
 
-export default function terms() {
+export default function policy() {
   return (
     <Box
       sx={{
@@ -11,7 +11,7 @@ export default function terms() {
         maxWidth: '780px',
       }}
     >
-      <Terms />
+      <Policy />
     </Box>
   );
 }
