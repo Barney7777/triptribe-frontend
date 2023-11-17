@@ -5,12 +5,11 @@ import Typography from '@mui/material/Typography';
 
 export const PlacesTab: FC = () => {
   return (
-    <Box sx={{ display: 'flex', justifyContent: 'space-around', width: '100%' }}>
-      {/* <Link href={'/restaurants'}> */}
+    <Box sx={{ display: 'flex', justifyContent: 'space-around', width: 400 }}>
       <Button
         href={'/restaurants'}
         variant="text"
-        color="inherit"
+        color="primary"
       >
         <Typography
           variant="subtitle1"
@@ -19,12 +18,10 @@ export const PlacesTab: FC = () => {
           Restaurants
         </Typography>
       </Button>
-      {/* </Link> */}
-      {/* <Link href={'/attractions'}> */}
       <Button
         href={'/attractions'}
         variant="text"
-        color="inherit"
+        color="primary"
       >
         <Typography
           variant="subtitle1"
@@ -33,7 +30,6 @@ export const PlacesTab: FC = () => {
           Attractions
         </Typography>
       </Button>
-      {/* </Link> */}
     </Box>
   );
 };

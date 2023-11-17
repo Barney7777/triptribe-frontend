@@ -9,6 +9,9 @@ import { PlacesTab } from '@/layouts/MainLayout/HeaderLayout/places-tab';
 import { LogoButton } from '@/layouts/MainLayout/HeaderLayout/logo-button';
 
 import { usePathname } from 'next/navigation';
+import { MobileMenuButton } from './components/mobile-menu-button';
+import { Stack, useTheme } from '@mui/material';
+import { height } from '@mui/system';
 
 export const TopNav: FC = () => {
   const pathname = usePathname();
@@ -17,31 +20,15 @@ export const TopNav: FC = () => {
   const autoHideRestAttrPageList = ['/signup', '/signin'];
   const isSearAttrPage = autoHideRestAttrPageList.includes(pathname); // hide place permanently tab in signin/signup page
   const [loginStatus, setLoginStatus] = useState(false);
-  // show searchbar is false default.
-  // in homepage, it is false default
-  // in other page, it is true
   const [showSearchBar, setShowSearchBar] = useState<boolean>(!isHomepage);
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
 
   // return to homepage, rerender header
   useEffect(() => {
     setShowSearchBar(!isHomepage);
-    console.log('setHomepage');
-    return () => {
-      // if (!isHomepage) {
-      //   setShowSearchBar(isHomepage);
-      //   console.log('set not Homepage');
-      // }
-    };
   }, [pathname]);
-
   useEffect(() => {
     const handleScroll = () => {
-      // if (window.scrollY > 320) {
-      //   setIsScrolled(true);
-      // } else {
-      //   setIsScrolled(false);
-      // }
       if (!isHomepage || (window.scrollY > 320 && showSearchBar === false)) {
         setShowSearchBar(true);
       } else if (showSearchBar && window.scrollY < 320) {
@@ -54,15 +41,24 @@ export const TopNav: FC = () => {
     };
   }, [isHomepage, showSearchBar]);
 
-  console.log('被渲染啦', pathname);
+  // console.log('Rendered', pathname);
   const simulateLogin = () => {
     setLoginStatus(!loginStatus);
+  };
+
+  const theme = useTheme();
+  const responsiveStyle = {
+    [theme.breakpoints.down('md')]: {
+      display: 'none',
+    },
+    [theme.breakpoints.up('md')]: {
+      display: 'block',
+    },
   };
 
   return (
     <Box
       width={'100%'}
-      // borderBottom={'1px solid'}
       pt={2}
       pb={isScrolled ? 1 : 2}
       sx={{
@@ -82,25 +78,32 @@ export const TopNav: FC = () => {
           flexWrap: 'nowrap',
         }}
       >
-        <Grid
-          item
-          px={2}
-        >
+        {/* <Grid> */}
+        <MobileMenuButton />
+        {/* </Grid> */}
+        <Grid px={2}>
           <LogoButton />
         </Grid>
-
+        {!showSearchBar && (
+          <Grid>
+            <MobileMenuButton sx={{ height: 0 }} />
+          </Grid>
+        )}
         {showSearchBar && (
           <Grid
             item
             px={2}
-            xs={4}
-            sm={true}
+            xs={6}
+            // sm={true}
             md={4}
           >
             <NaviTopSearchBar
               sx={{
                 borderRadius: 2,
+                minWidth: 100,
+                maxWidth: 300,
               }}
+              id="naviTopSearchBar"
               text={'Search Everything'}
             />
           </Grid>
@@ -127,8 +130,9 @@ export const TopNav: FC = () => {
         <Grid
           item
           // lg={showSearchBar ? 2 : 2}
-          // px={2}
+          px={2}
           xs={2}
+          sx={responsiveStyle}
         >
           <AccountButton
             loginStatus={loginStatus}

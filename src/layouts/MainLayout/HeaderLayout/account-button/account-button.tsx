@@ -2,6 +2,7 @@ import type { FC } from 'react';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import { AccountMenu } from './account-menu';
+import { SxProps } from '@mui/system';
 
 interface AccountButtonProps {
   loginStatus: boolean;

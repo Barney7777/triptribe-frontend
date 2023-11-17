@@ -3,7 +3,8 @@ import NextLink from 'next/link';
 
 import { LogoImage } from '@/icons/logo-image';
 import { LogoText } from '@/icons/logo-text';
-export function LogoButton() {
+import { SxProps, useTheme } from '@mui/material';
+export const LogoButton = () => {
   return (
     <Box
       component={NextLink}
@@ -27,4 +28,4 @@ export function LogoButton() {
       </Box>
     </Box>
   );
-}
+};

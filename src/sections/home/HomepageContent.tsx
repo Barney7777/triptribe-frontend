@@ -24,8 +24,8 @@ const HomepageContent: React.FC = () => {
       'Welcome to our steakhouse! We offer exceptional steaks crafted from premium beef using unique techniques for rich flavors. From classic ribeye to succulent filet mignon, our diverse menu guarantees a delightful dining experience. Indulge in our flavorful steaks and enjoy attentive service in a cozy setting!',
     rating: 3,
   };
-  const attractionsImageList: ImageData[] = Array(12).fill(exampleImageData1);
-  const restaurantsImageList: ImageData[] = Array(12).fill(exampleImageData2);
+  const attractionsImageList: ImageData[] = Array(8).fill(exampleImageData1);
+  const restaurantsImageList: ImageData[] = Array(8).fill(exampleImageData2);
 
   return (
     <Box sx={{ '& > *': { my: 10 } }}>

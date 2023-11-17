@@ -12,10 +12,10 @@ the any component you added as the children of the popup component
 /**
 add your HTMLElement with an Id and write your style in a new section with same subClassName start with .mapboxgl-
 */
-#bannerMap .alert-hidden {
+#bannerMap .image-hidden {
   opacity: 0 !important;
 }
-#bannerMap .alert-shown {
+#bannerMap .image-shown {
   opacity: 100 !important;
   transition: all 150ms linear 0s;
 }
@@ -26,4 +26,7 @@ add your HTMLElement with an Id and write your style in a new section with same 
   border-radius: 10px;
   overflow: hidden;
   padding: 0;
+}
+#bannerMap .mapboxgl-popup .mapboxgl-popup-content .mapboxgl-popup-close-button {
+  display: none;
 }

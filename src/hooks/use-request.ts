@@ -18,7 +18,8 @@ export interface Config<Data = unknown, Error = unknown>
   extends Omit<SWRConfiguration<AxiosResponse<Data>, AxiosError<Error>>, 'fallbackData'> {
   fallbackData?: Data;
 }
-
+// use axiosInstance.request(config) -> config={method:...,url:...,data:...}
+// https://axios-http.com/docs/req_config
 export default function useRequest<Data = unknown, Error = unknown>(
   request: GetRequest,
   { fallbackData, ...config }: Config<Data, Error> = {}

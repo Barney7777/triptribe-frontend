@@ -1,5 +1,6 @@
 import { useRef } from 'react';
-export const useDebounce = <T extends (...args: any[]) => {}>(fn: T, delay: number) => {
+export const useDebounce = <T extends (...args: any[]) => {} | void>(fn: T, delay: number) => {
+  // console.log('ddddddeBounce');
   const timer = useRef<null | NodeJS.Timeout>(null);
   return (...args: Parameters<T>) => {
     if (timer.current) {
