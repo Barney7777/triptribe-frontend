@@ -8,7 +8,6 @@ import type { EmotionCache } from '@emotion/react';
 import { CacheProvider } from '@emotion/react';
 import { createEmotionCache } from '@/utils/create-emotion-cache';
 
-import { Layout } from '@/layouts/MainLayout';
 const clientSideEmotionCache = createEmotionCache();
 export interface TripTribeAppProps extends AppProps {
   emotionCache?: EmotionCache;
@@ -23,9 +22,7 @@ export default function App({
     <CacheProvider value={emotionCache}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <Layout>
-          <Component {...pageProps} />
-        </Layout>
+        <Component {...pageProps} />
       </ThemeProvider>
     </CacheProvider>
   );
