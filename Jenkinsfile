@@ -1,5 +1,9 @@
 pipeline {
     agent any
+    environment {
+	VERCEL_TOKEN = 'yUum3VoqZQc2489GYwjDl1oD'
+	PROJECT_NAME = 'trip-tribe-frontend' 
+	}
     
     stages {
         stage('Checkout') {
@@ -20,6 +24,13 @@ pipeline {
             steps {
                 // Run your tests
                 sh 'mvn test'
+            }
+        }
+        stage('Deploy to Vercel') {
+            steps {
+                script{
+                        sh "vercel deploy --prod --token=yUum3VoqZQc2489GYwjDl1oD --yes --project trip-tribe-frontend"
+                }
             }
         }
         
