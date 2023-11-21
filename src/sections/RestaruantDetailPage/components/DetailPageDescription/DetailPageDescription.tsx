@@ -2,8 +2,22 @@ import { Box, Grid, useMediaQuery } from '@mui/material';
 import Description from './components/Description';
 import { useTheme } from '@mui/material/styles';
 import Location from './components/Location';
+import RatingDistributionCard from '@/sections/rating-distribution';
 
-const DetailPageDescription = () => {
+type RatingDistribution = {
+  count: number;
+  rating: number;
+};
+type DetailPageDescriptionProps = {
+  data: RatingDistribution[];
+  error: any;
+  isLoading: boolean;
+};
+const DetailPageDescription: React.FC<DetailPageDescriptionProps> = ({
+  data,
+  error,
+  isLoading,
+}) => {
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
   return (
@@ -16,6 +30,7 @@ const DetailPageDescription = () => {
         justifyContent: 'center',
         alignItems: 'center',
       }}
+      data-testid="page-description"
     >
       <Box
         sx={{
@@ -125,7 +140,15 @@ const DetailPageDescription = () => {
                   height: '100%',
                 }}
               >
-                <Box sx={{ padding: '32px' }}>Rating</Box>
+                <Box sx={{ padding: '32px' }}>
+                  {error ? (
+                    <div>{error?.response?.data?.exceptionMessage}</div>
+                  ) : isLoading || data.length <= 0 ? (
+                    <div>Loading...</div>
+                  ) : (
+                    <RatingDistributionCard data={data} />
+                  )}
+                </Box>
               </Box>
             </Grid>
             <Grid
