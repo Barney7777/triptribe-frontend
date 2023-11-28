@@ -1,37 +1,28 @@
-import React, { RefObject } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
-import Link from '@mui/material/Link';
-import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
 import { SxProps } from '@mui/system';
-import { useState, useMemo, useRef, useEffect } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import MapGL, {
   Marker,
-  Popup,
   NavigationControl,
   FullscreenControl,
   ScaleControl,
   GeolocateControl,
   MapRef,
 } from 'react-map-gl';
-// import ControlPanel from './control-panel';
+import { ViewStateChangeEvent } from 'react-map-gl/dist/esm/types';
 import Pin from './pin';
-import CITIES from '@/fakeData.json';
-import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
-import BookmarkIcon from '@mui/icons-material/Bookmark';
-import RateReviewIcon from '@mui/icons-material/RateReview';
-import Rating from '@mui/material/Rating';
-
-import NextLink from 'next/link';
-import Image from 'next/image';
-
-// import fetchedData from xxxxx
-
+import { PlacesData } from '@/types/map';
+import { CityProps } from '@/types/attractions-restaurants';
+import { MapInstance } from 'react-map-gl/dist/esm/types';
+import axiosInstance from '@/utils/request';
+import { useDebounce } from '@/hooks/use-debounce';
+import { pinIconColor, pinIconList } from './pinIconProps';
+import { MapPopUp } from './popup';
+import { Location } from '@/types/address';
 const TOKEN =
   (process.env.NEXT_PUBLIC_MAP_BOX_API_KEY as string) ||
-  'pk.eyJ1IjoiZWxpcGhhbnRvbSIsImEiOiJjbG9xcHQzOHkwaXp6MmluNTE2MDVpbGhnIn0.JyreEm_GonjK6dakmFpFFA';
-
+  'pk.eyJ1IjoidHJpcHRyaWJlIiwiYSI6ImNscDB0bm9sbzBibXgya21qczY4ZDhsZXUifQ.MYlQE4YsEt5Z-tnHxFE9NA';
 interface MapProps {
   mapId: string;
   sx?: SxProps | SxProps<any>;
@@ -40,67 +31,162 @@ interface MapProps {
   maxZoom?: number;
   minZoom?: number;
 }
-
-interface CityProps {
-  city: string;
-  population: string;
-  image: string;
-  state: string;
-  latitude: number;
-  longitude: number;
-}
-
 export const Map: React.FC<MapProps> = ({ sx, mapId }) => {
   const [popupInfo, setPopupInfo] = useState<CityProps | null>(null);
-  const [fadeOff, setFadeOff] = useState(false);
+  const [pinInfo, setPinInfo] = useState<PlacesData>([]);
   const [markerLat, setMarkerLat] = useState(0);
   const [markerLng, setMarkerLng] = useState(0);
+  const defaultLocation: Location = { lat: -37.8136, lng: 144.9631 }; //melbourne
+  const [geoLocationData, setGeoLocationData] = useState<Location>(defaultLocation);
+  const [onImageComplete, setOnImageComplete] = useState(false);
+  const mapRef = useRef<MapRef | null>(null);
+  const fetchData = (e: ViewStateChangeEvent<MapInstance>) => {
+    const center = mapRef.current?.getCenter();
+    // console.log(center);
+    let maxDistance;
+    let topRatingQuantity;
+    /**
+     * zoom:11 distance:30000 = 3000*10
+     * zoom:12 distance:15000 = 1000*15
+     * zoom:13 distance:10000 = 1000*10
+     * zoom:14 distance:4500
+     * zoom:15 distance:2000
+     * zoom:16 distance:1000
+     * zoom:17 distance:700
+     */
+    if (e.viewState.zoom < 14) {
+      // return;
+      maxDistance = 40000000;
+      topRatingQuantity = 999;
+    } else if (e.viewState.zoom < 15) {
+      maxDistance = 20000000;
+      topRatingQuantity = 5;
+    } else {
+      topRatingQuantity = 15;
+      maxDistance = 10000000;
+    }
 
-  const pins = useMemo(
-    () =>
-      CITIES.map((city, index) => (
+    // console.log(e.viewState.zoom);
+    axiosInstance
+      .request<PlacesData>({
+        url: '/search/globalSearch',
+        method: 'post',
+        headers: { 'Content-Type': 'application/json' },
+        data: {
+          keyword: '',
+          limit: topRatingQuantity,
+          maxDistance: maxDistance,
+          location: center,
+        },
+      })
+      .then((res) => {
+        // console.log(res);
+        setPinInfo(res.data);
+      })
+      .catch((e) => {
+        console.log('wrong', e);
+      });
+  };
+  const fetchMapData = useDebounce(fetchData, 1000);
+
+  useEffect(() => {
+    mapRef.current?.setCenter(geoLocationData);
+  }, [geoLocationData]);
+
+  const getLocation = useCallback(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setGeoLocationData({ lat: position.coords.latitude, lng: position.coords.longitude });
+        },
+        () => {
+          setGeoLocationData({ lat: defaultLocation.lat, lng: defaultLocation.lng });
+        },
+        { enableHighAccuracy: true }
+      );
+    } else {
+      console.log('no navigator.geolocation');
+    }
+    // find state from url
+  }, []);
+
+  useEffect(() => {
+    getLocation();
+  }, []);
+
+  const pins = useMemo(() => {
+    if (pinInfo.length == 0) {
+      return;
+    } else {
+      return pinInfo.map((place: CityProps, index) => (
         <Marker
+          color="green"
           key={`marker-${index}`}
-          longitude={city.longitude}
-          latitude={city.latitude}
+          longitude={place.address.location.lng}
+          latitude={place.address.location.lat}
           anchor="bottom"
+          // fade in when click marker
           onClick={(e) => {
+            // fetch image
+            //
             if (e.target.getLngLat().lat !== markerLat && e.target.getLngLat().lng !== markerLng) {
               setMarkerLat(() => e.target.getLngLat().lat);
               setMarkerLng(() => e.target.getLngLat().lng);
-              console.log('我在点击同一个的时候不该运行');
-              setFadeOff(true);
+              setOnImageComplete(false);
             }
-            // // If we let the click event propagates to the map, it will immediately close the popup
-            // // with `closeOnClick: true`
+            // If we let the click event propagates to the map, it will immediately close the popup
+            // with `closeOnClick: true`
             e.originalEvent.stopPropagation();
-            setPopupInfo(city);
+            setPopupInfo(place);
           }}
         >
-          <Pin />
+          <Pin
+            placeType={place.type}
+            placeIcon={pinIconList[place.type]}
+            placeColor={pinIconColor[place.type]}
+          ></Pin>
         </Marker>
-      )),
+      ));
+    }
+  }, [pinInfo]);
 
-    [markerLat, markerLng]
-  );
-  console.log('loadingImage', popupInfo === null);
+  const handleGeolocate = () => {
+    /**
+     * if(distance < xxx){ return }
+     */
+    mapRef.current!.flyTo({ center: geoLocationData, duration: 0 });
+  };
+
+  // console.log(geoLocationData);
+
   return (
     <Box
       sx={{ height: 514, position: 'relative' }}
       id={mapId}
     >
       <MapGL
+        ref={mapRef}
         initialViewState={{
-          latitude: 40,
-          longitude: -100,
-          zoom: 3.5,
+          latitude: geoLocationData ? geoLocationData.lat : 40,
+          longitude: geoLocationData ? geoLocationData.lng : -100,
+          zoom: 11,
           bearing: 0,
           pitch: 0,
         }}
-        mapStyle="mapbox://styles/mapbox/outdoors-v12"
+        pitchWithRotate={false}
+        dragRotate={false}
+        touchZoomRotate={false}
+        minZoom={2.5}
+        onZoomEnd={fetchMapData}
+        onDragEnd={fetchMapData}
+        // onClick={}
+        mapStyle="mapbox://styles/triptribe/clp18ys6w00cb01pq0t4c029g"
         mapboxAccessToken={TOKEN}
       >
-        <GeolocateControl position="top-left" />
+        <GeolocateControl
+          onGeolocate={handleGeolocate}
+          position="top-left"
+        />
         <FullscreenControl position="top-left" />
         <NavigationControl position="top-left" />
         <ScaleControl />
@@ -108,85 +194,14 @@ export const Map: React.FC<MapProps> = ({ sx, mapId }) => {
         {pins}
 
         {popupInfo && (
-          <Popup
-            anchor="bottom"
-            longitude={Number(popupInfo.longitude)}
-            latitude={Number(popupInfo.latitude)}
-            onClose={() => {
-              setPopupInfo(null);
-            }}
-            maxWidth="240px"
-            offset={20}
-          >
-            <Box sx={{}}>
-              <Link href="http://localhost:3000/attractions/B2e4C4Ad-Fd61-1ccd-4FDf-8B91c5B4BDEA">
-                <img
-                  onLoad={() => {
-                    setFadeOff(false);
-                  }}
-                  style={{ objectFit: 'cover' }}
-                  height={148}
-                  width="100%"
-                  src={popupInfo.image}
-                  className={` ${fadeOff ? 'alert-hidden' : 'alert-shown'}`}
-                  alt={popupInfo.city}
-                />
-              </Link>
-
-              <Box sx={{ height: '55%', p: 1 }}>
-                <Grid container>
-                  <Grid
-                    item
-                    xs={8}
-                  >
-                    <Typography variant="subtitle1">
-                      {popupInfo.city}, {popupInfo.state}
-                    </Typography>
-                    <Rating
-                      name="simple-controlled"
-                      value={3}
-                      readOnly
-                    />
-                    <Typography
-                      sx={{
-                        display: 'inline-block',
-                        color: 'open' ? 'green' : 'red',
-                        paddingRight: 1,
-                      }}
-                    >
-                      Open
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      sx={{ display: 'inline-block' }}
-                    >
-                      Closes 12am
-                    </Typography>
-                  </Grid>
-                  <Grid
-                    item
-                    xs={4}
-                    sx={{ display: 'flex', justifyContent: 'space-between', height: 40 }}
-                  >
-                    <IconButton
-                      LinkComponent={NextLink}
-                      href="/write-review"
-                    >
-                      <RateReviewIcon sx={{ pt: 0.25 }} />
-                    </IconButton>
-                    {/* {isFavorite?} */}
-                    <IconButton>
-                      <BookmarkIcon sx={{ color: 'orange' }} />
-                      <BookmarkBorderIcon />
-                    </IconButton>
-                  </Grid>
-                </Grid>
-              </Box>
-            </Box>
-          </Popup>
+          <MapPopUp
+            popupInfo={popupInfo}
+            setPopupInfo={setPopupInfo}
+            onImageComplete={onImageComplete}
+            setOnImageComplete={setOnImageComplete}
+          />
         )}
       </MapGL>
-      {/* <ControlPanel /> */}
     </Box>
   );
 };

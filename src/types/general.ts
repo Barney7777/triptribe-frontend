@@ -2,6 +2,10 @@ export enum MainType {
   Restaurant = 'restaurant',
   Attraction = 'attraction',
 }
+export enum MainTypeCapital {
+  Restaurant = 'Restaurant',
+  Attraction = 'Attraction',
+}
 
 export interface PageDataResponse<T> {
   data: T;

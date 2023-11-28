@@ -10,35 +10,73 @@ import { SxProps } from '@mui/system';
 import SearchIcon from '@mui/icons-material/Search';
 import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu';
 import WbSunnyIcon from '@mui/icons-material/WbSunny';
+import { SearchDataType } from '@/types/search-result';
+import axiosInstance from '@/utils/request';
 import { useDebounce } from '@/hooks/use-debounce';
-import { fakeAPI } from '@/fakeAPI';
-import { fetchedData } from '@/types/search-result';
-
+import { PlacesData } from '@/types/map';
+import { CityProps } from '@/types/attractions-restaurants';
+import { Typography } from '@mui/material';
+import { pinIconList, pinIconColor } from '@/components/map/pinIconProps';
 const DEBOUNCE_INTERVAL = 500;
 
-export const NaviTopSearchBar: FC<{ sx?: SxProps; text?: string }> = ({
-  sx,
-  text = 'Search...',
-}) => {
+interface SearchBarProps {
+  sx?: SxProps;
+  id?: string;
+  text?: string;
+  className?: string;
+}
+
+export const NaviTopSearchBar: FC<SearchBarProps> = (props) => {
   const [inputValue, setInputValue] = useState('');
   const [open, setOpen] = useState(false);
-  const [options, setOptions] = useState<fetchedData>([]);
+  const [options, setOptions] = useState<CityProps[]>([]);
+  const [fetchedData, setFetchedData] = useState<SearchDataType<CityProps>>({
+    Attraction: [],
+    Restaurant: [],
+  });
   const [loading, setLoading] = useState(false);
-  // will be replaced by axios
-  const fakeFetch = async (inputValues: string) => {
+  const { text, ...otherProps } = props;
+  const fakeFetch = async (input: string) => {
     setLoading(true);
-    await fakeAPI.fetchPlaces(inputValues).then((res: fetchedData) => {
-      setOptions(res);
-      setLoading(false);
-    });
+    axiosInstance
+      .request<PlacesData>({
+        url: '/search/globalSearch',
+        method: 'post',
+        headers: { 'Content-Type': 'application/json' },
+        data: {
+          keyword: input,
+          limit: 20,
+        },
+      })
+      .then((res) => {
+        console.log(res);
+        let data: SearchDataType<CityProps> = { Attraction: [], Restaurant: [] };
+        res.data.forEach((item) => {
+          if (item.type === 'Attraction') {
+            data.Attraction.push(item);
+          } else {
+            data.Restaurant.push(item);
+          }
+        });
+        setFetchedData(data);
+      })
+      .catch((e) => {
+        console.log('fetch data error', e);
+      })
+      .finally(() => setLoading(false));
   };
   const fetchDataDebounce = useDebounce(fakeFetch, DEBOUNCE_INTERVAL);
+
+  useEffect(() => {
+    setOptions(() => [...fetchedData.Attraction, ...fetchedData.Restaurant]);
+  }, [fetchedData]);
+
   const onChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     setLoading(true);
     const newValue: string = event.target.value;
-    // after get new value
+    // after getting the new value
     setInputValue(newValue);
-    fetchDataDebounce(inputValue);
+    fetchDataDebounce(newValue); // Pass the new value to fetchDataDebounce
   };
 
   useEffect(() => {
@@ -47,7 +85,7 @@ export const NaviTopSearchBar: FC<{ sx?: SxProps; text?: string }> = ({
     }
   }, [open]);
   return (
-    <Box sx={sx}>
+    <Box {...otherProps}>
       <Autocomplete
         fullWidth
         forcePopupIcon={false}
@@ -55,7 +93,7 @@ export const NaviTopSearchBar: FC<{ sx?: SxProps; text?: string }> = ({
         noOptionsText={inputValue ? 'No Result' : 'Search'}
         // render the dropdown element in hierarchy
         disablePortal={true}
-        // fetch the result to from
+        // fetch the result
         // options will be load after fetched data
         options={inputValue ? options : []}
         // render the inputValue to the display window
@@ -67,11 +105,12 @@ export const NaviTopSearchBar: FC<{ sx?: SxProps; text?: string }> = ({
         }}
         onClose={() => {
           setOpen(false);
+          setOptions([]);
         }}
-        isOptionEqualToValue={(option, value) => option.label === value.label}
+        isOptionEqualToValue={(option, value) => option.name === value.name}
         // use to override the  equalization method from OPTIONS to INPUT VALUE
         // here, the option.type leads to the input value should be place or restaurant
-        getOptionLabel={(option) => option.label}
+        getOptionLabel={(option) => option.name}
         loading={loading}
         renderInput={(params) => {
           return (
@@ -82,6 +121,7 @@ export const NaviTopSearchBar: FC<{ sx?: SxProps; text?: string }> = ({
               // input base
               InputProps={{
                 ...params.InputProps,
+
                 startAdornment: (
                   <InputAdornment position="start">
                     <SearchIcon sx={{ marginLeft: 1 }} />
@@ -102,27 +142,40 @@ export const NaviTopSearchBar: FC<{ sx?: SxProps; text?: string }> = ({
             />
           );
         }}
-        renderOption={(props, option) => (
-          <li {...props}>
-            <Box
-              component={Link}
-              underline="none"
-              sx={{ display: 'flex', alignItems: 'center' }}
-              color="inherit"
-              onClick={() => {
-                console.log(option.label);
-              }}
+        renderOption={(props, option) => {
+          return (
+            <li
+              {...props}
+              key={option._id}
             >
               <Box
-                marginRight="5px"
-                sx={{ height: '40px', width: '40px', display: 'flex', alignItems: 'center' }}
+                component={Link}
+                href={`/${option.type}/${option._id}`}
+                underline="none"
+                sx={{ display: 'flex', alignItems: 'center' }}
+                color="inherit"
+                width={1}
+                f-width
+                // onClick={() => {
+                //   console.log(option.name);
+                // }}
               >
-                {option.type === 'restaurant' ? <RestaurantMenuIcon /> : <WbSunnyIcon />}
+                <Box
+                  marginRight="5px"
+                  sx={{ height: '40px', width: '40px', display: 'flex', alignItems: 'center' }}
+                  color={pinIconColor[option.type]}
+                >
+                  {pinIconList[option.type]}
+                  {/* {option.type === 'Restaurant' ? <RestaurantMenuIcon /> : <WbSunnyIcon />} */}
+                </Box>
+                <Box>
+                  <Typography>{option.name}</Typography>
+                  <Typography>{option.address.formattedAddress}</Typography>
+                </Box>
               </Box>
-              {option.label}
-            </Box>
-          </li>
-        )}
+            </li>
+          );
+        }}
       />
     </Box>
   );

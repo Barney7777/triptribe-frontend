@@ -1,3 +1,3 @@
-export const paths = {
-  index: '/',
-};
+// export const paths = {
+//   index: '/',
+// };

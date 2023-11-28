@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from 'axios';
 
 const axiosInstance: AxiosInstance = axios.create({
-  baseURL: process.env.BASIC_URL || 'https://mock.apifox.com/m1/3534088-0-default',
+  baseURL: process.env.NEXT_PUBLIC_BASIC_URL || 'https://mock.apifox.com/m1/3534088-0-default',
 });
 
 axiosInstance.interceptors.request.use(

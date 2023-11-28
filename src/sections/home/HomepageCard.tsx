@@ -5,6 +5,7 @@ import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import Rating from '@mui/material/Rating';
 import FavoriteIcon from '@mui/icons-material/Favorite';
+import { truncateText } from '@/utils/truncate-text';
 
 interface ImageCardProps {
   imageSrc: string;
@@ -47,7 +48,8 @@ const HomepageCard: React.FC<ImageCardProps> = ({
           color="textSecondary"
           sx={{ fontSize: '16px' }}
         >
-          {comment}
+          {truncateText(comment, 90)}
+          {/* {comment} */}
         </Typography>
         <div
           style={{

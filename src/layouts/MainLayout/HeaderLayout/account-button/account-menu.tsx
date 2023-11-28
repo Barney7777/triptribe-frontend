@@ -45,7 +45,7 @@ export const AccountMenu: React.FC<AccountButtonProps> = ({ simulateLogin }) => 
                 alt="123"
                 // the size of avatar is calculated by px, so Mui theme spacing unit does not work here
                 sx={{ width: 40, height: 40 }}
-                src="https://img0.baidu.com/it/u=3321883927,3627098382&fm=253&fmt=auto&app=138&f=JPEG?w=431&h=500"
+                src="https://mui.com/static/images/avatar/1.jpg"
               />
             </Box>
           </IconButton>

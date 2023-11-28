@@ -8,21 +8,22 @@ import Footer from './Footer';
 export const Layout: React.FC<{ children: ReactNode }> = ({ children }) => {
   const theme = useTheme();
   const sx = {
-    // mx: 'auto',
-    [theme.breakpoints.down('md')]: {
-      maxWidth: 'sm',
-    },
-    [theme.breakpoints.up('md')]: {
-      maxWidth: 'md',
-    },
-    [theme.breakpoints.up('lg')]: {
-      maxWidth: 'lg',
-    },
+    // // mx: 'auto',
+    // [theme.breakpoints.down('md')]: {
+    //   maxWidth: 'sm',
+    // },
+    // [theme.breakpoints.up('md')]: {
+    //   maxWidth: 'md',
+    // },
+    // [theme.breakpoints.up('lg')]: {
+    //   maxWidth: 'lg',
+    // },
   };
   return (
     <>
       <Header />
       <Container
+        fixed
         component="main"
         sx={sx}
       >
