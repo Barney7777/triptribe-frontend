@@ -13,9 +13,9 @@ import FilterMapButton from './button/filter-map-button';
 import useRequest from '@/hooks/use-request';
 import ListingList from './listing-list';
 
-interface MainPageProps {
+type MainPageProps = {
   type: MainType;
-}
+};
 
 const MainPage: FC<MainPageProps> = ({ type }) => {
   const [queryParams, setQueryParams] = useState<QueryParamsType>({

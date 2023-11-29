@@ -4,10 +4,10 @@ import Box from '@mui/material/Box';
 import { AccountMenu } from './account-menu';
 import { SxProps } from '@mui/system';
 
-interface AccountButtonProps {
+type AccountButtonProps = {
   loginStatus: boolean;
   simulateLogin: () => void;
-}
+};
 
 export const AccountButton: FC<AccountButtonProps> = ({ loginStatus, simulateLogin }) => {
   // set state for search bar for show and disappear

@@ -16,15 +16,15 @@ import { useDebounce } from '@/hooks/use-debounce';
 import { PlacesData } from '@/types/map';
 import { CityProps } from '@/types/attractions-restaurants';
 import { Typography } from '@mui/material';
-import { pinIconList, pinIconColor } from '@/components/map/pinIconProps';
+import { pinIconList, pinIconColor } from '@/components/map/components/pinIconProps';
 const DEBOUNCE_INTERVAL = 500;
 
-interface SearchBarProps {
+type SearchBarProps = {
   sx?: SxProps;
   id?: string;
   text?: string;
   className?: string;
-}
+};
 
 export const NaviTopSearchBar: FC<SearchBarProps> = (props) => {
   const [inputValue, setInputValue] = useState('');

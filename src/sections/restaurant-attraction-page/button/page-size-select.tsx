@@ -2,10 +2,10 @@ import { FC } from 'react';
 import { Box, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent } from '@mui/material';
 import { QueryParamsType } from '@/types/general';
 
-interface PageSizeSelectProps {
+type PageSizeSelectProps = {
   handleQueryParamsChange: (param: keyof QueryParamsType, value: number) => void;
   pageSize: number;
-}
+};
 const PageSizeSelect: FC<PageSizeSelectProps> = ({ handleQueryParamsChange, pageSize }) => {
   const handleChange = (event: SelectChangeEvent) => {
     handleQueryParamsChange('pageSize', Number(event.target.value as string));

@@ -3,10 +3,10 @@ import ViewListIcon from '@mui/icons-material/ViewList';
 import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import { ToggleButton, ToggleButtonGroup } from '@mui/material';
 
-interface ViewToggleProps {
+type ViewToggleProps = {
   handleViewToggle: () => void;
   view: boolean;
-}
+};
 
 const ViewToggleButton: FC<ViewToggleProps> = ({ handleViewToggle, view }) => {
   return (

@@ -2,10 +2,10 @@ import React from 'react';
 import { Box, Typography, SvgIconProps } from '@mui/material';
 
 // Define the prop types for the component
-interface IconTextProps {
+type IconTextProps = {
   icon: React.ReactElement<SvgIconProps>;
   text: string;
-}
+};
 
 const IconText: React.FC<IconTextProps> = ({ icon, text }) => {
   return (

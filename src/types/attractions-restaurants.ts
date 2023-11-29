@@ -2,13 +2,13 @@ import { BusinessTime } from './businessTime';
 import { Address } from './address';
 import { Photo } from './photo';
 import { MainTypeCapital } from './general';
-// export interface SearchResultItem {
+// export type SearchResultItem ={
 //   type?: string;
 //   name?: string;
 //   _id?: string;
 // }
 
-export interface CityProps {
+export type CityProps = {
   _id: string;
   name: string;
   description: string;
@@ -29,4 +29,8 @@ export interface CityProps {
   photos: Photo[];
   createdUserId: string;
   type: MainTypeCapital;
-}
+  createdAt?: string;
+  updatedAt?: string;
+  __v?: number;
+  distance?: number;
+};

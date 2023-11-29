@@ -2,10 +2,10 @@ import React from 'react';
 import { Container, Paper } from '@mui/material';
 import BackLink from './BackLink';
 
-interface AuthPageContainerProps {
+type AuthPageContainerProps = {
   maxWidth: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   children: React.ReactNode;
-}
+};
 
 const AuthPageContainer = ({ maxWidth, children }: AuthPageContainerProps) => {
   const containerStyle = {

@@ -1,17 +1,17 @@
 import 'mapbox-gl/dist/mapbox-gl.css';
 import React, { useEffect, useState } from 'react';
 import { HeroBanner } from './components';
-import { useRouter } from 'next/router';
 import { BannerMap } from './components/banner-map';
 import useRouterQuery from '@/hooks/use-router-query';
+import { Button } from '@mui/material';
 
-interface BannerMapToggleProps {
+type BannerMapToggleProps = {
   mapQueryShown: boolean;
-}
+};
 
 export const BannerMapToggle: React.FC<BannerMapToggleProps> = ({ mapQueryShown }) => {
   const [showMap, setShowMap] = useState<boolean>(mapQueryShown);
-  const { urlQuery, setUrlQuery } = useRouterQuery();
+  const { urlQuery } = useRouterQuery();
   useEffect(() => {
     if (urlQuery['map'] === 'shown') {
       setShowMap(true);
@@ -19,11 +19,5 @@ export const BannerMapToggle: React.FC<BannerMapToggleProps> = ({ mapQueryShown 
       setShowMap(false);
     }
   }, [urlQuery]);
-  return (
-    <>
-      {/* <Button onClick={getCurrentTime}>time</Button>
-      <Button onClick={() => getCurrentWeekday()}>weekday</Button> */}
-      {showMap ? <BannerMap /> : <HeroBanner mapToggleHandler={setUrlQuery} />}
-    </>
-  );
+  return <>{showMap ? <BannerMap /> : <HeroBanner />}</>;
 };

@@ -1,26 +1,23 @@
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
+import { Weekday } from '@/types/businessTime';
 dayjs.extend(customParseFormat);
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-import { Location } from '@/types/address';
-type Weekday = 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday';
+type Date = Dayjs | number | undefined;
 
 // get local time
-export const getLocalTime = (location: Location) => {
-  const { lat, lng } = location;
-  // const timeZone = find(lat, lng);
-  const localTime = dayjs();
-  // .tz(timeZone[0]).format('H:mm');
-  //
-  return localTime;
-  //   return { status: '' };
+export const getLocalTime = (timeZone: string, date: Date = undefined) => {
+  return dayjs(date).tz(timeZone);
 };
 
-export const getCurrentWeekday = (plusDay: number = 0) => {
-  const currentWeekday = dayjs().add(plusDay, 'day').format('dddd');
-  return currentWeekday as Weekday;
+export const getCurrentWeekday = (
+  timeZone: string,
+  plusDay: number = 0,
+  date: Date = undefined
+) => {
+  return dayjs(date).tz(timeZone).add(plusDay, 'day').format('dddd') as Weekday;
 };

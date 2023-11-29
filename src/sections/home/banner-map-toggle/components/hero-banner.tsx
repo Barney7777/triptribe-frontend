@@ -2,16 +2,20 @@ import { NaviTopSearchBar } from '@/layouts/MainLayout/HeaderLayout/navi-top-sea
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import CircularProgress from '@mui/material/CircularProgress';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import NextLink from 'next/link';
-import { Box } from '@mui/material';
+import { Box, Hidden } from '@mui/material';
+import useRouterQuery from '@/hooks/use-router-query';
 
-interface HeroBannerProps {
-  mapToggleHandler: (queryObj: Record<string, any>) => void;
-}
+// type HeroBannerProps ={
+//   mapToggleHandler: (queryObj: Record<string, any>) => void;
+// }
 
-export const HeroBanner: React.FC<HeroBannerProps> = ({ mapToggleHandler }) => {
+export const HeroBanner: React.FC = () => {
+  const { setUrlQuery } = useRouterQuery();
+
   const [mapLoading, setMapLoading] = useState(false);
+  const [shown, setShown] = useState(false);
   const toggleMapLoadingHandler = () => {
     setMapLoading(true);
   };
@@ -29,13 +33,25 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ mapToggleHandler }) => {
         display={'flex'}
         justifyContent={'center'}
         alignItems={'center'}
-        sx={{
-          backgroundImage:
-            'url("https://drive.google.com/uc?export=view&id=13fBD9P9zs4ZO13Jm5kiusEfkYx8eezry")',
-          backgroundPosition: 'center',
-          backgroundSize: 'cover',
-        }}
+        position={'relative'}
       >
+        <Box
+          position={'absolute'}
+          width={1}
+          height={1}
+          left={0}
+          top={0}
+          sx={{ opacity: shown ? 1 : 0, transition: '1s', overflow: 'hidden' }}
+        >
+          <img
+            aria-label="Banner Image"
+            src="https://drive.google.com/uc?export=view&id=13fBD9P9zs4ZO13Jm5kiusEfkYx8eezry"
+            alt="Sydney Opera"
+            object-fit="cover"
+            onLoad={() => setShown(true)}
+          />
+        </Box>
+
         <NaviTopSearchBar
           id="heroBannerSearchBar"
           sx={{
@@ -64,7 +80,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ mapToggleHandler }) => {
             LinkComponent={NextLink}
             // href="?map=shown"
             onClick={() => {
-              mapToggleHandler({ map: 'shown' });
+              setUrlQuery({ map: 'shown' });
               toggleMapLoadingHandler();
             }}
             disabled={mapLoading}

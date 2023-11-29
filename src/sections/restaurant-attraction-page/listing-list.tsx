@@ -4,10 +4,10 @@ import Grid from '@mui/material/Unstable_Grid2';
 import { RouterLink } from '@/components/router-link';
 import type { ListingInfoBasic, MainType } from '@/types/general';
 
-interface ListingInfoProps {
+type ListingInfoProps = {
   listingInfo: ListingInfoBasic;
   type: MainType;
-}
+};
 const ListingList: FC<ListingInfoProps> = ({ listingInfo, type }) => {
   const { id, image, rating, name, description } = listingInfo;
   const path = `/${type}s/${id}`;

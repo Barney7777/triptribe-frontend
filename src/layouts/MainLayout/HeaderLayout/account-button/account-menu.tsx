@@ -12,9 +12,9 @@ import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
 import NextLink from 'next/link';
 import Link from '@mui/material/Link';
-interface AccountButtonProps {
+type AccountButtonProps = {
   simulateLogin: () => void;
-}
+};
 
 export const AccountMenu: React.FC<AccountButtonProps> = ({ simulateLogin }) => {
   // set state for menu opening
