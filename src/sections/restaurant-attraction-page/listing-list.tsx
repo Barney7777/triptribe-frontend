@@ -1,7 +1,6 @@
 import { FC } from 'react';
 import { Box, Card, CardMedia, Link, Rating, Typography } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
-
 import { RouterLink } from '@/components/router-link';
 import type { ListingInfoBasic, MainType } from '@/types/general';
 
