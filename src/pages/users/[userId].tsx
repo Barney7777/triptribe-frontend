@@ -1,24 +1,40 @@
 import { useRouter } from 'next/router';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
+import { Container, Box, Typography } from '@mui/material';
+import Error from '@/components/Error';
 import TabPanel from '@/sections/users/TabPanel';
-import useRequest from '@/hooks/use-request';
 import { User } from '@/types/user';
 import { Layout } from '@/layouts/MainLayout';
+import axiosInstance from '@/utils/request';
+import useSWR from 'swr';
 
 const UserDetailPage = () => {
   const router = useRouter();
   const { userId } = router.query;
-  const url = `users/${userId}`;
-  const { data: userData = null, isLoading, error } = useRequest<User>({ url });
+
+  const isMe = userId === 'me';
+  const userUrl = isMe ? '/users/me' : `/users/${userId}`;
+
+  const requestOptions = {
+    url: userUrl,
+    method: 'get',
+  };
+
+  const { data, error, isLoading } = useSWR<User>(requestOptions, async () => {
+    const response = await axiosInstance.request<User>(requestOptions);
+    return response.data;
+  });
 
   if (isLoading) {
     return <span>Loading...</span>;
   }
 
   if (error) {
-    return <span>Error: {error.message}</span>;
+    return (
+      <Error
+        errorMessage={error.message}
+        errorStatus={error.response?.status}
+      />
+    );
   }
 
   return (
@@ -38,7 +54,14 @@ const UserDetailPage = () => {
         >
           <Typography variant="h5">User Profile</Typography>
         </Box>
-        {userData && <TabPanel user={userData} />}
+        {data && (
+          <>
+            <TabPanel
+              user={data as User}
+              showPrivacyTabs={isMe}
+            />
+          </>
+        )}
       </Container>
     </Layout>
   );
