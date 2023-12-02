@@ -16,6 +16,11 @@ import {
 import NextLink from 'next/link';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import AuthPageContainer from '@/components/AuthPageContainer';
+import axios from 'axios';
+import { useUserContext } from '@/contexts/UserContext';
+import { useRouter } from 'next/router';
+// import axiosInstance from '@/utils/request';
+import CustomSnackbar from '@/components/CustomSnackbar'; // 导入自定义的 Snackbar 组件
 
 export interface SigninInputs {
   email: string;
@@ -45,14 +50,48 @@ export default function Signin() {
   });
 
   const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
+  const { setUserData } = useUserContext();
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
 
-  const onSubmit = (data: SigninInputs) => {
-    // Handle the form submission
-    console.log(data);
+  const [openSuccessSnackbar, setOpenSuccessSnackbar] = useState(false);
+
+  const onSubmit = async (data: SigninInputs) => {
+    try {
+      const response = await axios.post('http://localhost:8080/api/v1/auth/login', data);
+      //use next in lieu after .env.local setting up and mock data removing
+      // const response = await axiosInstance.post('/v1/auth/login', data);
+
+      if (response.status === 201) {
+        const { accessToken, refreshToken } = response.data;
+
+        localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('refreshToken', refreshToken);
+
+        const userResponse = await axios.get('http://localhost:8080/api/v1/users/me', {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+
+        const userRespData = userResponse.data;
+        const { email, nickname, role } = userRespData;
+
+        setUserData({ email, nickname, role });
+        setOpenSuccessSnackbar(true);
+        setTimeout(() => {
+          setOpenSuccessSnackbar(false);
+          router.push('/');
+        }, 1000);
+      } else {
+        console.error('Login failed:', response.data.error);
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+    }
   };
 
   return (
@@ -187,6 +226,13 @@ export default function Signin() {
           </Grid>
         </Grid>
       </Box>
+      {openSuccessSnackbar && (
+        <CustomSnackbar
+          open={openSuccessSnackbar}
+          message="Sign successful!"
+          onClose={() => {}}
+        />
+      )}
     </AuthPageContainer>
   );
 }

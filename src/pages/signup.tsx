@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Link,
@@ -11,11 +11,15 @@ import {
   FormHelperText,
   CardHeader,
 } from '@mui/material';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, SubmitHandler } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import NextLink from 'next/link';
 import AuthPageContainer from '@/components/AuthPageContainer';
+import axios from 'axios';
+import { useRouter } from 'next/router';
+// import axiosInstance from '@/utils/request';
+import CustomSnackbar from '@/components/CustomSnackbar';
 
 export interface SignupInputs {
   email: string;
@@ -55,9 +59,28 @@ const SignUp = () => {
     },
   });
 
-  const onSubmit = (data: SignupInputs) => {
-    // Handle the form submission
-    console.log(data);
+  const [openSuccessSnackbar, setOpenSuccessSnackbar] = useState(false);
+
+  const router = useRouter();
+  const onSubmit: SubmitHandler<SignupInputs> = async (data) => {
+    try {
+      const response = await axios.post('http://localhost:8080/api/v1/auth/register', data);
+      //use next in lieu after .env.local setting up and mock data removing
+      // const response = await axiosInstance.post('/v1/auth/register', data);
+
+      if (response.status === 201) {
+        // window.alert('Register successfull!');
+        setOpenSuccessSnackbar(true);
+        setTimeout(() => {
+          setOpenSuccessSnackbar(false);
+          router.push('/signin');
+        }, 1000);
+      } else {
+        console.error('Signup failed:', response.data.error);
+      }
+    } catch (error) {
+      console.error('Register failed:', error);
+    }
   };
 
   return (
@@ -218,6 +241,13 @@ const SignUp = () => {
           </Grid>
         </Grid>
       </Box>
+      {openSuccessSnackbar && (
+        <CustomSnackbar
+          open={openSuccessSnackbar}
+          message="Sigup successful!"
+          onClose={() => {}}
+        />
+      )}
     </AuthPageContainer>
   );
 };
