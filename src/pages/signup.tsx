@@ -19,7 +19,7 @@ import AuthPageContainer from '@/components/AuthPageContainer';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 // import axiosInstance from '@/utils/request';
-import CustomSnackbar from '@/components/CustomSnackbar';
+import { useSnackbar } from 'notistack';
 
 export interface SignupInputs {
   email: string;
@@ -59,8 +59,7 @@ const SignUp = () => {
     },
   });
 
-  const [openSuccessSnackbar, setOpenSuccessSnackbar] = useState(false);
-
+  const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
   const onSubmit: SubmitHandler<SignupInputs> = async (data) => {
     try {
@@ -69,12 +68,13 @@ const SignUp = () => {
       // const response = await axiosInstance.post('/v1/auth/register', data);
 
       if (response.status === 201) {
-        // window.alert('Register successfull!');
-        setOpenSuccessSnackbar(true);
-        setTimeout(() => {
-          setOpenSuccessSnackbar(false);
-          router.push('/signin');
-        }, 1000);
+        enqueueSnackbar('Register successfull!', {
+          variant: 'success',
+          autoHideDuration: 2000,
+          anchorOrigin: { vertical: 'top', horizontal: 'right' },
+        });
+
+        router.push('/signin');
       } else {
         console.error('Signup failed:', response.data.error);
       }
@@ -241,13 +241,6 @@ const SignUp = () => {
           </Grid>
         </Grid>
       </Box>
-      {openSuccessSnackbar && (
-        <CustomSnackbar
-          open={openSuccessSnackbar}
-          message="Sigup successful!"
-          onClose={() => {}}
-        />
-      )}
     </AuthPageContainer>
   );
 };
