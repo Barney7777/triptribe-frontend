@@ -9,6 +9,7 @@ import type { EmotionCache } from '@emotion/react';
 import { CacheProvider } from '@emotion/react';
 import { createEmotionCache } from '@/utils/create-emotion-cache';
 import { UserProvider } from '@/contexts/UserContext';
+import { SnackbarProvider } from 'notistack';
 
 const clientSideEmotionCache = createEmotionCache();
 export interface TripTribeAppProps extends AppProps {
@@ -25,7 +26,9 @@ export default function App({
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <UserProvider>
-          <Component {...pageProps} />
+          <SnackbarProvider maxSnack={3}>
+            <Component {...pageProps} />
+          </SnackbarProvider>
         </UserProvider>
       </ThemeProvider>
     </CacheProvider>

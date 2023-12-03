@@ -20,8 +20,7 @@ import axios from 'axios';
 import { useUserContext } from '@/contexts/UserContext';
 import { useRouter } from 'next/router';
 // import axiosInstance from '@/utils/request';
-import CustomSnackbar from '@/components/CustomSnackbar'; // 导入自定义的 Snackbar 组件
-
+import { useSnackbar } from 'notistack';
 export interface SigninInputs {
   email: string;
   password: string;
@@ -57,7 +56,7 @@ export default function Signin() {
     setShowPassword(!showPassword);
   };
 
-  const [openSuccessSnackbar, setOpenSuccessSnackbar] = useState(false);
+  const { enqueueSnackbar } = useSnackbar();
 
   const onSubmit = async (data: SigninInputs) => {
     try {
@@ -81,11 +80,12 @@ export default function Signin() {
         const { email, nickname, role } = userRespData;
 
         setUserData({ email, nickname, role });
-        setOpenSuccessSnackbar(true);
-        setTimeout(() => {
-          setOpenSuccessSnackbar(false);
-          router.push('/');
-        }, 1000);
+        enqueueSnackbar('Login successful!', {
+          variant: 'success',
+          autoHideDuration: 2000,
+          anchorOrigin: { vertical: 'top', horizontal: 'right' },
+        });
+        router.push('/');
       } else {
         console.error('Login failed:', response.data.error);
       }
@@ -226,13 +226,6 @@ export default function Signin() {
           </Grid>
         </Grid>
       </Box>
-      {openSuccessSnackbar && (
-        <CustomSnackbar
-          open={openSuccessSnackbar}
-          message="Sign successful!"
-          onClose={() => {}}
-        />
-      )}
     </AuthPageContainer>
   );
 }
