@@ -68,7 +68,7 @@ export const GeneralCard = (props: GeneralCardProps) => {
                 }}
               >
                 <Avatar
-                  src={user.avatar}
+                  src={user.avatarUrl}
                   sx={{
                     height: 150,
                     m: 2,

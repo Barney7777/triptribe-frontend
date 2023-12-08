@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
 import Menu from '@mui/material/Menu';
@@ -12,23 +12,33 @@ import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
 import NextLink from 'next/link';
 import Link from '@mui/material/Link';
-type AccountButtonProps = {
-  simulateLogin: () => void;
+import { Skeleton } from '@mui/material';
+import { UserAvatar } from './user-avatar';
+import { useUserContext } from '@/contexts/UserContext';
+
+type AccountMenuProps = {
+  isLoading: boolean;
+  signOutHandler: () => void;
 };
 
-export const AccountMenu: React.FC<AccountButtonProps> = ({ simulateLogin }) => {
+export const AccountMenu: React.FC<AccountMenuProps> = ({ isLoading, signOutHandler }) => {
+  const [loading, setLoading] = useState(true);
+  const { userData, setUserData } = useUserContext();
   // set state for menu opening
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   // turn the anchorElement into boolean
   const open = Boolean(anchorEl);
-
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+  useEffect(() => {
+    setLoading(isLoading);
+  }, [isLoading]);
+
   return (
     <>
       <Box>
@@ -40,13 +50,8 @@ export const AccountMenu: React.FC<AccountButtonProps> = ({ simulateLogin }) => 
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
           >
-            <Box sx={{ width: 'auto' }}>
-              <Avatar
-                alt="123"
-                // the size of avatar is calculated by px, so Mui theme spacing unit does not work here
-                sx={{ width: 40, height: 40 }}
-                src="https://mui.com/static/images/avatar/1.jpg"
-              />
+            <Box sx={{ width: 'auto', lineHeight: 40 }}>
+              <UserAvatar />
             </Box>
           </IconButton>
         </Tooltip>
@@ -90,7 +95,7 @@ export const AccountMenu: React.FC<AccountButtonProps> = ({ simulateLogin }) => 
       >
         <MenuItem
           component={NextLink}
-          href="/users"
+          href={'/users/me'}
         >
           <Avatar /> My account
         </MenuItem>
@@ -113,7 +118,7 @@ export const AccountMenu: React.FC<AccountButtonProps> = ({ simulateLogin }) => 
           Settings
         </MenuItem>
 
-        <MenuItem onClick={simulateLogin}>
+        <MenuItem onClick={signOutHandler}>
           <ListItemIcon>
             <Logout fontSize="small" />
           </ListItemIcon>

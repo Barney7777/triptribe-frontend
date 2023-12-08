@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 import DetailPageLayout from './components/Layout';
 import DetailPageDescription from './components/DetailPageDescription';
 import DetailPageHeader from './components/DetailPageHeader';
-
 const RestaurantDetailPage = () => {
   const router = useRouter();
   const { id } = router.query;

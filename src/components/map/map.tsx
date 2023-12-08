@@ -36,12 +36,18 @@ export const Map: React.FC<MapProps> = ({ sx, mapId }) => {
   const [geoLocationData, setGeoLocationData] = useState<Location>(defaultLocation);
   const [imageComplete, setImageComplete] = useState(false);
   const mapRef = useRef<MapRef | null>(null);
-  const imageCompleteHandler = (state: boolean) => {
-    setImageComplete(state);
-  };
-  const popupInfoHandler = (data: CityProps | null) => {
-    setPopupInfo(data);
-  };
+  const imageCompleteHandler = useCallback(
+    (state: boolean) => {
+      setImageComplete(state);
+    },
+    [setImageComplete]
+  );
+  const popupInfoHandler = useCallback(
+    (data: CityProps | null) => {
+      setPopupInfo(data);
+    },
+    [setPopupInfo]
+  );
   const fetchData = (e: ViewStateChangeEvent<MapInstance>) => {
     const center = mapRef.current?.getCenter();
     // console.log(center);
@@ -110,11 +116,11 @@ export const Map: React.FC<MapProps> = ({ sx, mapId }) => {
       console.log('no navigator.geolocation');
     }
     // find state from url
-  }, []);
+  }, [defaultLocation.lat, defaultLocation.lng]);
 
   useEffect(() => {
     getLocation();
-  }, []);
+  }, [getLocation]);
 
   const handleGeolocate = () => {
     /**

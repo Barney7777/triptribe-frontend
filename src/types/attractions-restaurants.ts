@@ -1,12 +1,7 @@
-import { BusinessTime } from './businessTime';
+import { BusinessTime } from './business-time';
 import { Address } from './address';
 import { Photo } from './photo';
 import { MainTypeCapital } from './general';
-// export type SearchResultItem ={
-//   type?: string;
-//   name?: string;
-//   _id?: string;
-// }
 
 export type CityProps = {
   _id: string;

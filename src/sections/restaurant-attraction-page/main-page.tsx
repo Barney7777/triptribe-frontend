@@ -30,8 +30,8 @@ const MainPage: FC<MainPageProps> = ({ type }) => {
     url: `/${resourceType}?pageNumber=${pageNumber}&pageSize=${pageSize}`,
   });
 
-  console.log('data: ', data);
-
+  // console.log('data: ', data);
+  // console.log(isLoading);
   const handleQueryParamsChange = (param: keyof QueryParamsType, value: number) => {
     setQueryParams((prev) => ({
       ...prev,

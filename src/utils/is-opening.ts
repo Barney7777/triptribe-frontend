@@ -3,7 +3,7 @@ import { getLocalTime, getCurrentWeekday } from './get-current-date-time';
 import dayjs from 'dayjs';
 import isBetween from 'dayjs/plugin/isBetween';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
-import { OpeningStatus } from '@/types/businessTime';
+import { OpeningStatus } from '@/types/business-time';
 dayjs.extend(customParseFormat);
 dayjs.extend(isBetween);
 import tzlookup from 'tz-lookup';

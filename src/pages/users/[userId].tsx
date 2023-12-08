@@ -41,7 +41,7 @@ const UserDetailPage = () => {
         </Box>
         {userData && (
           <>
-            <TabPanel user={{ avatar: '/assets/download.jpeg', ...userData } as User} />
+            <TabPanel user={{ avatarUrl: '/assets/download.jpeg', ...userData } as User} />
           </>
         )}
       </Container>

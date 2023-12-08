@@ -1,5 +1,5 @@
 import { CityProps } from '@/types/attractions-restaurants';
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Marker, MarkerEvent } from 'react-map-gl';
 import Pin from '@/components/map/components/individualPin';
 import { pinIconColor, pinIconList } from './pinIconProps';
@@ -17,15 +17,28 @@ export const MapPins: React.FC<MapPinsProps> = ({
 }) => {
   const [markerLat, setMarkerLat] = useState(0);
   const [markerLng, setMarkerLng] = useState(0);
-  const handleMarkerClick = (e: any, place: CityProps) => {
-    if (e.target.getLngLat().lat !== markerLat && e.target.getLngLat().lng !== markerLng) {
-      imageCompleteHandler(false);
-      setMarkerLat(() => e.target.getLngLat().lat);
-      setMarkerLng(() => e.target.getLngLat().lng);
-    }
-    e.originalEvent.stopPropagation();
-    setPopupInfo(place);
-  };
+  const handleMarkerClick = useCallback(
+    (e: any, place: CityProps) => {
+      if (e.target.getLngLat().lat !== markerLat && e.target.getLngLat().lng !== markerLng) {
+        imageCompleteHandler(false);
+        setMarkerLat(() => e.target.getLngLat().lat);
+        setMarkerLng(() => e.target.getLngLat().lng);
+      }
+      e.originalEvent.stopPropagation();
+      setPopupInfo(place);
+    },
+    [imageCompleteHandler, markerLat, markerLng, setPopupInfo]
+  );
+
+  // const handleMarkerClick = (e: any, place: CityProps) => {
+  //   if (e.target.getLngLat().lat !== markerLat && e.target.getLngLat().lng !== markerLng) {
+  //     imageCompleteHandler(false);
+  //     setMarkerLat(() => e.target.getLngLat().lat);
+  //     setMarkerLng(() => e.target.getLngLat().lng);
+  //   }
+  //   e.originalEvent.stopPropagation();
+  //   setPopupInfo(place);
+  // };
   const pins = useMemo(() => {
     if (pinInfo.length == 0) {
       return;
@@ -48,7 +61,7 @@ export const MapPins: React.FC<MapPinsProps> = ({
         </React.Fragment>
       ));
     }
-  }, [pinInfo]);
+  }, [pinInfo, handleMarkerClick]);
 
   return pins;
 };
