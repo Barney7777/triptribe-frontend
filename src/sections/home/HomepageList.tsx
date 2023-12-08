@@ -4,17 +4,17 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 
-interface ImageData {
+type ImageData = {
   imageSrc: string;
   title: string;
   comment: string;
   rating: number;
-}
+};
 
-interface HomepageListProps {
+type HomepageListProps = {
   listTitle: string;
   imageList: ImageData[];
-}
+};
 
 const HomepageList: React.FC<HomepageListProps> = ({ listTitle, imageList }) => {
   return (

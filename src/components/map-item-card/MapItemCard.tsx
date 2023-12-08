@@ -6,24 +6,25 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import RateReviewIcon from '@mui/icons-material/RateReview';
 import { Skeleton } from '@mui/material';
+
 import { isOpening } from '@/utils/is-opening';
 import { getCurrentWeekday } from '@/utils/get-current-date-time';
+import tzlookup from 'tz-lookup';
 
-interface MapItemCard {
-  onImageComplete: boolean;
-  setOnImageComplete: React.Dispatch<React.SetStateAction<boolean>>;
+type MapItemCard = {
+  imageComplete: boolean;
+  imageCompleteHandler: (state: boolean) => void;
   popupInfo: CityProps;
-}
+};
 
 export const MapItemCard: React.FC<MapItemCard> = ({
-  onImageComplete,
-  setOnImageComplete,
+  imageComplete,
+  imageCompleteHandler,
   popupInfo,
 }) => {
   const openingStatus = isOpening(popupInfo);
   // find if the place is liked in the list
   const [likedPlace, setLikedPlace] = useState(false);
-  // const [onImageComplete, setOnImageComplete] = useState(false);
   const addLikedPlace = () => {
     setLikedPlace((prev) => !prev);
   };
@@ -33,8 +34,9 @@ export const MapItemCard: React.FC<MapItemCard> = ({
         position={'relative'}
         href={`http://localhost:3000/attractions/${popupInfo._id}`}
       >
-        {!onImageComplete && (
+        {!imageComplete && (
           <Skeleton
+            aria-label={'Image Skeleton'}
             variant="rectangular"
             width={240}
             height={148}
@@ -43,20 +45,23 @@ export const MapItemCard: React.FC<MapItemCard> = ({
         )}
         <img
           onLoad={() => {
-            setOnImageComplete(true);
+            imageCompleteHandler(true);
           }}
           style={{ objectFit: 'cover' }}
           width={240}
           height={148}
           src={popupInfo.photos[0].imageUrl}
-          className={` ${!onImageComplete ? 'image-hidden' : 'image-shown'}`}
+          className={` ${!imageComplete ? 'image-hidden' : 'image-shown'}`}
           alt={popupInfo.name}
         />
       </Link>
       {/* country info */}
       <Box sx={{ height: '55%', p: 1, pt: 0 }}>
         <Grid container>
-          <Grid xs={8}>
+          <Grid
+            item
+            xs={8}
+          >
             <Typography variant="subtitle1">
               {popupInfo.name}, {popupInfo.address.formattedAddress}
             </Typography>
@@ -86,17 +91,27 @@ export const MapItemCard: React.FC<MapItemCard> = ({
                     return 'Opening';
                   case 'Opening':
                     return `Close at ${
-                      popupInfo.openHours[getCurrentWeekday(1)].period[0].closeTime
+                      popupInfo.openHours[
+                        getCurrentWeekday(
+                          tzlookup(popupInfo.address.location.lat, popupInfo.address.location.lng)
+                        )
+                      ].period[0].closeTime
                     } `;
                   case 'Closed':
                     return `Open at ${
-                      popupInfo.openHours[getCurrentWeekday(1)].period[0].openTime
+                      popupInfo.openHours[
+                        getCurrentWeekday(
+                          tzlookup(popupInfo.address.location.lat, popupInfo.address.location.lng),
+                          1
+                        )
+                      ].period[0].openTime
                     }`;
                 }
               })()}
             </Typography>
           </Grid>
           <Grid
+            item
             xs={4}
             sx={{ display: 'flex', justifyContent: 'space-between', height: 40 }}
           >

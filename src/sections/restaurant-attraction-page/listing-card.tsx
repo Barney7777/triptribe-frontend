@@ -9,10 +9,10 @@ import Typography from '@mui/material/Typography';
 
 import type { ListingInfoBasic, MainType } from '@/types/general';
 
-interface ListingCardProps {
+type ListingCardProps = {
   listingCardInfo: ListingInfoBasic;
   type: MainType;
-}
+};
 const ListingCard: FC<ListingCardProps> = ({ listingCardInfo, type }) => {
   const { id, image, rating, name, description } = listingCardInfo;
   const path = `/${type}s/${id}`;

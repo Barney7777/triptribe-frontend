@@ -1,24 +1,21 @@
-import { SvgIconComponent } from '@mui/icons-material';
-import { SvgIcon } from '@mui/material';
 import { Box } from '@mui/system';
-import * as React from 'react';
+import React from 'react';
 
-interface PinProps {
+type PinProps = {
   size?: number;
   placeColor?: string;
-  children?: React.ReactNode;
   placeType?: string;
   placeIcon?: React.JSX.Element;
-}
+};
 
-function Pin({ size = 40, placeColor, children, placeType, placeIcon }: PinProps) {
+export const Pin: React.FC<PinProps> = ({ size = 40, placeColor, placeType, placeIcon }) => {
   return (
     <Box
+      aria-label="Map Pin"
       display={'flex'}
       position={'relative'}
       width={40}
     >
-      {' '}
       <Box>
         <svg
           width={size}
@@ -46,6 +43,6 @@ function Pin({ size = 40, placeColor, children, placeType, placeIcon }: PinProps
       </Box>
     </Box>
   );
-}
+};
 
 export default React.memo(Pin);

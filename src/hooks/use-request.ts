@@ -51,7 +51,6 @@ export default function useRequest<Data = unknown, Error = unknown>(
         } as AxiosResponse<Data>),
     }
   );
-
   return {
     data: response && response.data,
     response,

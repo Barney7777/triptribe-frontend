@@ -7,12 +7,12 @@ import Rating from '@mui/material/Rating';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import { truncateText } from '@/utils/truncate-text';
 
-interface ImageCardProps {
+type ImageCardProps = {
   imageSrc: string;
   title: string;
   comment: string;
   rating: number;
-}
+};
 
 const HomepageCard: React.FC<ImageCardProps> = ({
   imageSrc = '/assets/operahouse01.png',

@@ -6,7 +6,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import Link from '@mui/material/Link';
 import CircularProgress from '@mui/material/CircularProgress';
 import { SxProps } from '@mui/system';
-
+import NextLink from 'next/link';
 import SearchIcon from '@mui/icons-material/Search';
 import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu';
 import WbSunnyIcon from '@mui/icons-material/WbSunny';
@@ -16,15 +16,15 @@ import { useDebounce } from '@/hooks/use-debounce';
 import { PlacesData } from '@/types/map';
 import { CityProps } from '@/types/attractions-restaurants';
 import { Typography } from '@mui/material';
-import { pinIconList, pinIconColor } from '@/components/map/pinIconProps';
+import { pinIconList, pinIconColor } from '@/components/map/components/pinIconProps';
 const DEBOUNCE_INTERVAL = 500;
 
-interface SearchBarProps {
+type SearchBarProps = {
   sx?: SxProps;
   id?: string;
   text?: string;
   className?: string;
-}
+};
 
 export const NaviTopSearchBar: FC<SearchBarProps> = (props) => {
   const [inputValue, setInputValue] = useState('');
@@ -148,17 +148,14 @@ export const NaviTopSearchBar: FC<SearchBarProps> = (props) => {
               {...props}
               key={option._id}
             >
-              <Box
-                component={Link}
-                href={`/${option.type}/${option._id}`}
+              <Link
+                component={NextLink}
+                href={`/${option.type.toLowerCase()}s/${option._id}`}
                 underline="none"
                 sx={{ display: 'flex', alignItems: 'center' }}
                 color="inherit"
                 width={1}
                 f-width
-                // onClick={() => {
-                //   console.log(option.name);
-                // }}
               >
                 <Box
                   marginRight="5px"
@@ -166,13 +163,12 @@ export const NaviTopSearchBar: FC<SearchBarProps> = (props) => {
                   color={pinIconColor[option.type]}
                 >
                   {pinIconList[option.type]}
-                  {/* {option.type === 'Restaurant' ? <RestaurantMenuIcon /> : <WbSunnyIcon />} */}
                 </Box>
                 <Box>
                   <Typography>{option.name}</Typography>
                   <Typography>{option.address.formattedAddress}</Typography>
                 </Box>
-              </Box>
+              </Link>
             </li>
           );
         }}

@@ -4,12 +4,12 @@ import Box from '@mui/material/Box';
 
 const HomepageContent: React.FC = () => {
   // mock data only, will fetch data from backend in ext stage
-  interface ImageData {
+  type ImageData = {
     imageSrc: string;
     title: string;
     comment: string;
     rating: number;
-  }
+  };
   const exampleImageData1: ImageData = {
     imageSrc: '/assets/operahouse01.png',
     title: 'Opera House',

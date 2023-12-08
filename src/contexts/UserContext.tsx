@@ -8,16 +8,16 @@ import React, {
   SetStateAction,
 } from 'react';
 
-interface UserData {
+export type UserData = {
   email: string;
   nickname: string;
   role: string;
-}
+};
 
-interface UserContextProps {
+type UserContextProps = {
   userData: UserData | null;
   setUserData: Dispatch<SetStateAction<UserData | null>>;
-}
+};
 
 export const UserContext = createContext<UserContextProps>({
   userData: null,

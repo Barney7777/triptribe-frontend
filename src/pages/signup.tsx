@@ -21,12 +21,12 @@ import { useRouter } from 'next/router';
 // import axiosInstance from '@/utils/request';
 import { useSnackbar } from 'notistack';
 
-export interface SignupInputs {
+export type SignupInputs = {
   email: string;
   password: string;
   passwordConfirm: string;
   terms: boolean;
-}
+};
 
 const schema = yup.object().shape({
   email: yup.string().email('Please enter a valid email address').required('Email is required'),

@@ -1,9 +1,9 @@
-export interface Address {
+export type Address = {
   formattedAddress: string;
   location: Location;
-}
+};
 
-export interface Location {
+export type Location = {
   lat: number;
   lng: number;
-}
+};

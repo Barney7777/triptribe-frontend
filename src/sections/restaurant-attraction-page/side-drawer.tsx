@@ -5,11 +5,11 @@ import { MainType } from '@/types/general';
 import RestaurantFilter from './restaurants/restaurant-filter';
 import AttractionFilter from './attractions/attraction-filter';
 
-interface SideDrawerProps {
+type SideDrawerProps = {
   open: boolean;
   onClose: () => void;
   type: MainType;
-}
+};
 
 const SideDrawer: FC<SideDrawerProps> = ({ open, onClose, type }) => {
   return (

@@ -1,19 +1,19 @@
 import { Popup } from 'react-map-gl';
 import React from 'react';
 import { CityProps } from '@/types/attractions-restaurants';
-import { MapItemCard } from '../map-item-card/MapItemCard';
-interface MapPopUpProps {
+import { MapItemCard } from '@/components/map-item-card/MapItemCard';
+type MapPopUpProps = {
   popupInfo: CityProps;
-  setPopupInfo: React.Dispatch<React.SetStateAction<CityProps | null>>;
-  onImageComplete: boolean;
-  setOnImageComplete: React.Dispatch<React.SetStateAction<boolean>>;
-}
+  setPopupInfo: (data: CityProps | null) => void;
+  imageComplete: boolean;
+  imageCompleteHandler: (state: boolean) => void;
+};
 
 export const MapPopUp: React.FC<MapPopUpProps> = ({
   popupInfo,
   setPopupInfo,
-  onImageComplete,
-  setOnImageComplete,
+  imageComplete,
+  imageCompleteHandler,
 }) => {
   return (
     <Popup
@@ -27,8 +27,8 @@ export const MapPopUp: React.FC<MapPopUpProps> = ({
       offset={20}
     >
       <MapItemCard
-        onImageComplete={onImageComplete}
-        setOnImageComplete={setOnImageComplete}
+        imageComplete={imageComplete}
+        imageCompleteHandler={imageCompleteHandler}
         popupInfo={popupInfo}
       />
     </Popup>

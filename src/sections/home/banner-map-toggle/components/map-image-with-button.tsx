@@ -1,6 +1,6 @@
 // import { Box, TextField, InputAdornment, Button } from '@mui/material';
 // import React from 'react';
-// interface MapWithButton {
+// type MapWithButton ={
 //   mapToggleHandler: () => void;
 // }
 // export const MapWithButton: React.FC<MapWithButton> = ({ mapToggleHandler }) => {

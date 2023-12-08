@@ -5,9 +5,9 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import AuthPageContainer from '@/components/AuthPageContainer';
 
-export interface PasswordResetInputs {
+export type PasswordResetInputs = {
   email: string;
-}
+};
 // Define validation schema using yup
 const schema = yup.object().shape({
   email: yup.string().email('Invalid email format').required('Email is required'),

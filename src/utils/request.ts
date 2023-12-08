@@ -6,10 +6,11 @@ const axiosInstance: AxiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('accessToken');
     if (token && !['/auth/signup', '/auth/signin'].includes(config.url as string)) {
-      config.headers.Authorization = token;
+      config.headers.Authorization = 'Bearer ' + token + '';
     }
+    console.log('request config', config);
     return config;
   },
   (error) => Promise.reject(error)
@@ -19,7 +20,7 @@ axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response.status === 401) {
-      localStorage.removeItem('token');
+      localStorage.removeItem('accessToken');
     }
     // TODO: handle other status
     return Promise.reject(error);

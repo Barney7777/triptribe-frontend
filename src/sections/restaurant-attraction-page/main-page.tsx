@@ -13,9 +13,9 @@ import FilterMapButton from './button/filter-map-button';
 import useRequest from '@/hooks/use-request';
 import ListingList from './listing-list';
 
-interface MainPageProps {
+type MainPageProps = {
   type: MainType;
-}
+};
 
 const MainPage: FC<MainPageProps> = ({ type }) => {
   const [queryParams, setQueryParams] = useState<QueryParamsType>({
@@ -30,8 +30,8 @@ const MainPage: FC<MainPageProps> = ({ type }) => {
     url: `/${resourceType}?pageNumber=${pageNumber}&pageSize=${pageSize}`,
   });
 
-  console.log('data: ', data);
-
+  // console.log('data: ', data);
+  // console.log(isLoading);
   const handleQueryParamsChange = (param: keyof QueryParamsType, value: number) => {
     setQueryParams((prev) => ({
       ...prev,

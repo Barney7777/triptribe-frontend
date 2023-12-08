@@ -1,32 +1,27 @@
 import type { FC } from 'react';
-import { useState, useEffect, useRef } from 'react';
-
+import { useState, useEffect } from 'react';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import { NaviTopSearchBar } from '@/layouts/MainLayout/HeaderLayout/navi-top-search-bar';
-import { AccountButton } from '@/layouts/MainLayout/HeaderLayout/account-button';
 import { PlacesTab } from '@/layouts/MainLayout/HeaderLayout/places-tab';
 import { LogoButton } from '@/layouts/MainLayout/HeaderLayout/logo-button';
-
 import { usePathname } from 'next/navigation';
 import { MobileMenuButton } from './components/mobile-menu-button';
-import { Stack, useTheme } from '@mui/material';
-import { height } from '@mui/system';
-
+import { useTheme } from '@mui/material';
+import { UserAccount } from './user-account';
 export const TopNav: FC = () => {
   const pathname = usePathname();
   const autoHideSearchBarPageList = ['/signup', '/signin', '/'];
   const isHomepage = autoHideSearchBarPageList.includes(pathname); // hide search bar responsively in homepage
   const autoHideRestAttrPageList = ['/signup', '/signin'];
   const isSearAttrPage = autoHideRestAttrPageList.includes(pathname); // hide place permanently tab in signin/signup page
-  const [loginStatus, setLoginStatus] = useState(false);
   const [showSearchBar, setShowSearchBar] = useState<boolean>(!isHomepage);
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
 
   // return to homepage, rerender header
   useEffect(() => {
     setShowSearchBar(!isHomepage);
-  }, [pathname]);
+  }, [isHomepage]);
   useEffect(() => {
     const handleScroll = () => {
       if (!isHomepage || (window.scrollY > 320 && showSearchBar === false)) {
@@ -42,9 +37,6 @@ export const TopNav: FC = () => {
   }, [isHomepage, showSearchBar]);
 
   // console.log('Rendered', pathname);
-  const simulateLogin = () => {
-    setLoginStatus(!loginStatus);
-  };
 
   const theme = useTheme();
   const responsiveStyle = {
@@ -134,10 +126,7 @@ export const TopNav: FC = () => {
           xs={2}
           sx={responsiveStyle}
         >
-          <AccountButton
-            loginStatus={loginStatus}
-            simulateLogin={simulateLogin}
-          />
+          <UserAccount />
         </Grid>
       </Grid>
     </Box>

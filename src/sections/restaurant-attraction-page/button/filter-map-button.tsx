@@ -2,9 +2,9 @@ import { Button, ButtonGroup, Typography } from '@mui/material';
 import React, { FC } from 'react';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import MapIcon from '@mui/icons-material/Map';
-interface FilterMapButtonProps {
+type FilterMapButtonProps = {
   handleFiltersToggle: () => void;
-}
+};
 
 const FilterMapButton: FC<FilterMapButtonProps> = ({ handleFiltersToggle }) => {
   return (

@@ -4,14 +4,22 @@ import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 
 import { Map } from '@/components/map';
+import useRouterQuery from '@/hooks/use-router-query';
 export const BannerMap = () => {
+  const { urlQuery, setUrlQuery } = useRouterQuery();
+
   return (
     <Box sx={{}}>
       <Box sx={{ position: 'relative' }}>
         <IconButton
+          aria-label="Close Map"
+          role="button"
           LinkComponent={NextLink}
-          href="/"
-          // onClick={mapToggleHandler}
+          // href="/"
+          onClick={() => {
+            const { map, ...otherQueries } = urlQuery;
+            setUrlQuery(otherQueries);
+          }}
           sx={{
             position: 'absolute',
             width: 40,

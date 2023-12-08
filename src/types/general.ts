@@ -2,27 +2,29 @@ export enum MainType {
   Restaurant = 'restaurant',
   Attraction = 'attraction',
 }
-export enum MainTypeCapital {
-  Restaurant = 'Restaurant',
-  Attraction = 'Attraction',
-}
+// export enum MainTypeCapital {
+//   Restaurant = 'Restaurant',
+//   Attraction = 'Attraction',
+// }
 
-export interface PageDataResponse<T> {
+export type MainTypeCapital = 'Restaurants' | 'Attractions' | 'Restaurant' | 'Attraction';
+
+export type PageDataResponse<T> = {
   data: T;
   pageCount: number;
-}
+};
 
-export interface QueryParamsType {
+export type QueryParamsType = {
   pageNumber: number;
   pageSize: number;
   city?: string;
   cost?: number;
-}
+};
 
-export interface ListingInfoBasic {
+export type ListingInfoBasic = {
   id: string;
   name: string;
   rating: number;
   image: string;
   description: string;
-}
+};
