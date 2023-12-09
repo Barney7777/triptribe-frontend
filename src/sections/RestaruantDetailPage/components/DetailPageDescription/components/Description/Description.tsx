@@ -1,4 +1,4 @@
-import { Box, Icon, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import IconText from '@/components/IconText';
 import RestaurantMenuOutlinedIcon from '@mui/icons-material/RestaurantMenuOutlined';
 

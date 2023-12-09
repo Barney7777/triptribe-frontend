@@ -6,37 +6,35 @@ type PinProps = {
   placeColor?: string;
   placeType?: string;
   placeIcon?: React.JSX.Element;
+  id: string;
 };
 
-export const Pin: React.FC<PinProps> = ({ size = 40, placeColor, placeType, placeIcon }) => {
+export const Pin: React.FC<PinProps> = ({ size = 40, placeColor, placeType, placeIcon, id }) => {
   return (
     <Box
       aria-label="Map Pin"
       display={'flex'}
       position={'relative'}
       width={40}
+      id={id}
     >
       <Box>
         <svg
           width={size}
-          height={size}
-          viewBox="0 0 24 24"
+          height={(size * 5) / 4}
+          viewBox="0 0 68 83"
           fill={placeColor}
           cursor={'pointer'}
           stroke="none"
         >
-          <path
-            d={`M20.2,15.7L20.2,15.7c1.1-1.6,1.8-3.6,1.8-5.7c0-5.6-4.5-10-10-10S2,4.5,2,10c0,2,0.6,3.9,1.6,5.4c0,0.1,0.1,0.2,0.2,0.3
-            c0,0,0.1,0.1,0.1,0.2c0.2,0.3,0.4,0.6,0.7,0.9c2.6,3.1,7.4,7.6,7.4,7.6s4.8-4.5,7.4-7.5c0.2-0.3,0.5-0.6,0.7-0.9
-            C20.1,15.8,20.2,15.8,20.2,15.7z`}
-          />
+          <path d="M67 34C67 59.6667 34 81.6667 34 81.6667C34 81.6667 1 59.6667 1 34C1 25.2479 4.47678 16.8542 10.6655 10.6655C16.8542 4.47678 25.2479 1 34 1C42.7521 1 51.1458 4.47678 57.3345 10.6655C63.5232 16.8542 67 25.2479 67 34Z" />
         </svg>
       </Box>
       <Box
         color={'white'}
         position={'absolute'}
         left={8}
-        top={4}
+        top={9}
         sx={{ cursor: 'pointer' }}
       >
         {placeIcon}

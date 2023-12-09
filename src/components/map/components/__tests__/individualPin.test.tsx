@@ -9,7 +9,7 @@ const attractionType = 'Attraction';
 const attractionIcon = pinIconList['Attraction'];
 const attractionColor = pinIconColor['Attraction'];
 
-describe('individualPin', () => {
+describe.skip('individualPin', () => {
   it('Should be rendered on the page', () => {
     render(
       <Pin

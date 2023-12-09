@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -16,11 +16,9 @@ import {
 import NextLink from 'next/link';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import AuthPageContainer from '@/components/AuthPageContainer';
-import axios from 'axios';
-import { useUserContext } from '@/contexts/UserContext';
 import { useRouter } from 'next/router';
-// import axiosInstance from '@/utils/request';
 import { useSnackbar } from 'notistack';
+import { UserContext } from '@/contexts/user-context/user-context';
 export interface SigninInputs {
   email: string;
   password: string;
@@ -50,47 +48,30 @@ export default function Signin() {
 
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
-  const { setUserData } = useUserContext();
-
+  const { userData, signIn } = useContext(UserContext);
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
-
   const { enqueueSnackbar } = useSnackbar();
 
   const onSubmit = async (data: SigninInputs) => {
     try {
-      const response = await axios.post('http://localhost:8080/api/v1/auth/login', data);
-      //use next in lieu after .env.local setting up and mock data removing
-      // const response = await axiosInstance.post('/v1/auth/login', data);
-
-      if (response.status === 201) {
-        const { accessToken, refreshToken } = response.data;
-
-        localStorage.setItem('accessToken', accessToken);
-        localStorage.setItem('refreshToken', refreshToken);
-
-        const userResponse = await axios.get('http://localhost:8080/api/v1/users/me', {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
-
-        const userRespData = userResponse.data;
-        const { email, nickname, role } = userRespData;
-
-        setUserData({ email, nickname, role });
-        enqueueSnackbar('Login successful!', {
-          variant: 'success',
-          autoHideDuration: 2000,
-          anchorOrigin: { vertical: 'top', horizontal: 'right' },
-        });
-        router.push('/');
-      } else {
-        console.error('Login failed:', response.data.error);
-      }
-    } catch (error) {
-      console.error('Login error:', error);
+      console.log(data);
+      await signIn(data);
+      enqueueSnackbar('Login Successful!', {
+        variant: 'success',
+        autoHideDuration: 1500,
+        disableWindowBlurListener: true,
+        anchorOrigin: { vertical: 'top', horizontal: 'right' },
+      });
+      router.push('/');
+    } catch (err) {
+      enqueueSnackbar('Login Failed!', {
+        variant: 'error',
+        autoHideDuration: 1500,
+        disableWindowBlurListener: true,
+        anchorOrigin: { vertical: 'top', horizontal: 'right' },
+      });
     }
   };
 

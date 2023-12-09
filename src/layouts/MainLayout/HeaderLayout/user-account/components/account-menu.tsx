@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
 import Menu from '@mui/material/Menu';
@@ -11,19 +11,15 @@ import PersonAdd from '@mui/icons-material/PersonAdd';
 import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
 import NextLink from 'next/link';
-import Link from '@mui/material/Link';
-import { Skeleton } from '@mui/material';
 import { UserAvatar } from './user-avatar';
-import { useUserContext } from '@/contexts/UserContext';
+import { UserContext } from '@/contexts/user-context/user-context';
+import { useRouter } from 'next/router';
+import { useSnackbar } from 'notistack';
 
-type AccountMenuProps = {
-  isLoading: boolean;
-  signOutHandler: () => void;
-};
-
-export const AccountMenu: React.FC<AccountMenuProps> = ({ isLoading, signOutHandler }) => {
-  const [loading, setLoading] = useState(true);
-  const { userData, setUserData } = useUserContext();
+export const AccountMenu: React.FC = () => {
+  const { enqueueSnackbar } = useSnackbar();
+  const { signOut } = useContext(UserContext);
+  const router = useRouter();
   // set state for menu opening
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   // turn the anchorElement into boolean
@@ -34,11 +30,26 @@ export const AccountMenu: React.FC<AccountMenuProps> = ({ isLoading, signOutHand
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
-
-  useEffect(() => {
-    setLoading(isLoading);
-  }, [isLoading]);
-
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      router.push('/');
+      enqueueSnackbar('Log Out Successful!', {
+        variant: 'success',
+        autoHideDuration: 1500,
+        disableWindowBlurListener: true,
+        anchorOrigin: { vertical: 'top', horizontal: 'right' },
+      });
+    } catch (err) {
+      enqueueSnackbar('Log Out Failed', {
+        variant: 'error',
+        autoHideDuration: 1500,
+        disableWindowBlurListener: true,
+        anchorOrigin: { vertical: 'top', horizontal: 'right' },
+      });
+      console.error(err);
+    }
+  };
   return (
     <>
       <Box>
@@ -111,14 +122,14 @@ export const AccountMenu: React.FC<AccountMenuProps> = ({ isLoading, signOutHand
           write review
         </MenuItem>
 
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={handleClick}>
           <ListItemIcon>
             <Settings fontSize="small" />
           </ListItemIcon>
           Settings
         </MenuItem>
 
-        <MenuItem onClick={signOutHandler}>
+        <MenuItem onClick={handleSignOut}>
           <ListItemIcon>
             <Logout fontSize="small" />
           </ListItemIcon>

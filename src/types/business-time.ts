@@ -10,7 +10,7 @@ export type BusinessTime = {
   period: Period[];
 };
 
-export type OpeningStatus = 'Closed All Day' | 'Opening All Day' | 'Opening' | 'Closed';
+export type OpeningStatus = 'Closed Temporarily' | 'Opening All Day' | 'Opening' | 'Closed';
 export type Weekday =
   | 'Monday'
   | 'Tuesday'

@@ -1,36 +1,26 @@
 import { Popup } from 'react-map-gl';
 import React from 'react';
-import { CityProps } from '@/types/attractions-restaurants';
-import { MapItemCard } from '@/components/map-item-card/MapItemCard';
-type MapPopUpProps = {
-  popupInfo: CityProps;
-  setPopupInfo: (data: CityProps | null) => void;
-  imageComplete: boolean;
-  imageCompleteHandler: (state: boolean) => void;
-};
+import { MapItemCard } from '@/components/map/components/MapItemCard';
+import { useMapContext } from '@/contexts/map-context';
 
-export const MapPopUp: React.FC<MapPopUpProps> = ({
-  popupInfo,
-  setPopupInfo,
-  imageComplete,
-  imageCompleteHandler,
-}) => {
-  return (
-    <Popup
-      anchor="bottom"
-      longitude={Number(popupInfo.address.location.lng)}
-      latitude={Number(popupInfo.address.location.lat)}
-      onClose={() => {
-        setPopupInfo(null);
-      }}
-      maxWidth="240px"
-      offset={20}
-    >
-      <MapItemCard
-        imageComplete={imageComplete}
-        imageCompleteHandler={imageCompleteHandler}
-        popupInfo={popupInfo}
-      />
-    </Popup>
-  );
+export const MapPopUp: React.FC = () => {
+  const popupInfo = useMapContext((state) => state.popupInfo);
+  const updatePopupInfo = useMapContext((state) => state.updatePopupInfo);
+  const setPopupInfo = () => {
+    updatePopupInfo(null);
+  };
+  if (popupInfo) {
+    return (
+      <Popup
+        anchor="bottom"
+        longitude={Number(popupInfo.address.location.lng)}
+        latitude={Number(popupInfo.address.location.lat)}
+        onClose={setPopupInfo}
+        maxWidth="240px"
+        offset={50}
+      >
+        <MapItemCard popupInfo={popupInfo} />
+      </Popup>
+    );
+  }
 };

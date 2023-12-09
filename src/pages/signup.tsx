@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext } from 'react';
 import {
   Box,
   Link,
@@ -16,10 +16,9 @@ import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import NextLink from 'next/link';
 import AuthPageContainer from '@/components/AuthPageContainer';
-import axios from 'axios';
 import { useRouter } from 'next/router';
-// import axiosInstance from '@/utils/request';
 import { useSnackbar } from 'notistack';
+import { UserContext } from '@/contexts/user-context/user-context';
 
 export type SignupInputs = {
   email: string;
@@ -59,27 +58,26 @@ const SignUp = () => {
     },
   });
 
+  const { signUp } = useContext(UserContext);
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
   const onSubmit: SubmitHandler<SignupInputs> = async (data) => {
     try {
-      const response = await axios.post('http://localhost:8080/api/v1/auth/register', data);
-      //use next in lieu after .env.local setting up and mock data removing
-      // const response = await axiosInstance.post('/v1/auth/register', data);
-
-      if (response.status === 201) {
-        enqueueSnackbar('Register successfull!', {
-          variant: 'success',
-          autoHideDuration: 2000,
-          anchorOrigin: { vertical: 'top', horizontal: 'right' },
-        });
-
-        router.push('/signin');
-      } else {
-        console.error('Signup failed:', response.data.error);
-      }
-    } catch (error) {
-      console.error('Register failed:', error);
+      await signUp(data);
+      router.push('/signin');
+      enqueueSnackbar('Register Successful!', {
+        variant: 'success',
+        autoHideDuration: 1500,
+        disableWindowBlurListener: true,
+        anchorOrigin: { vertical: 'top', horizontal: 'right' },
+      });
+    } catch (err) {
+      enqueueSnackbar('Register Failed', {
+        variant: 'error',
+        autoHideDuration: 1500,
+        disableWindowBlurListener: true,
+        anchorOrigin: { vertical: 'top', horizontal: 'right' },
+      });
     }
   };
 

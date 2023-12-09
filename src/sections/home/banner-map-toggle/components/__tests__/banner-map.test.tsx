@@ -1,4 +1,3 @@
-import { useRouter } from 'next/router';
 // use next-router-mock package
 import mockRouter from 'next-router-mock';
 import { fireEvent, render, screen } from '@testing-library/react';

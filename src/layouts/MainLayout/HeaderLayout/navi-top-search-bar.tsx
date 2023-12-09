@@ -8,8 +8,6 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { SxProps } from '@mui/system';
 import NextLink from 'next/link';
 import SearchIcon from '@mui/icons-material/Search';
-import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu';
-import WbSunnyIcon from '@mui/icons-material/WbSunny';
 import { SearchDataType } from '@/types/search-result';
 import axiosInstance from '@/utils/request';
 import { useDebounce } from '@/hooks/use-debounce';
@@ -71,7 +69,7 @@ export const NaviTopSearchBar: FC<SearchBarProps> = (props) => {
     setOptions(() => [...fetchedData.Attraction, ...fetchedData.Restaurant]);
   }, [fetchedData]);
 
-  const onChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleTextInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     setLoading(true);
     const newValue: string = event.target.value;
     // after getting the new value
@@ -117,7 +115,7 @@ export const NaviTopSearchBar: FC<SearchBarProps> = (props) => {
             <TextField
               {...params}
               placeholder={text}
-              onChange={onChangeHandler}
+              onChange={handleTextInput}
               // input base
               InputProps={{
                 ...params.InputProps,

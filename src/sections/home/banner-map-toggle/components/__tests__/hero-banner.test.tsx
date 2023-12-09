@@ -21,7 +21,6 @@ describe('Hero Banner', () => {
     });
     it('is disabled after click', () => {
       render(<HeroBanner />);
-      // const toggleMapLoadingHandlerMock = jest.fn();
       const mapToggleButton = screen.getByRole('button', { name: 'Map View' });
       fireEvent.click(mapToggleButton);
       expect(mapToggleButton).toBeDisabled();

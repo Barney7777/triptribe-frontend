@@ -16,7 +16,6 @@ export const TopNav: FC = () => {
   const autoHideRestAttrPageList = ['/signup', '/signin'];
   const isSearAttrPage = autoHideRestAttrPageList.includes(pathname); // hide place permanently tab in signin/signup page
   const [showSearchBar, setShowSearchBar] = useState<boolean>(!isHomepage);
-  const [isScrolled, setIsScrolled] = useState<boolean>(false);
 
   // return to homepage, rerender header
   useEffect(() => {
@@ -52,7 +51,7 @@ export const TopNav: FC = () => {
     <Box
       width={'100%'}
       pt={2}
-      pb={isScrolled ? 1 : 2}
+      pb={2}
       sx={{
         transition: '0.2s',
       }}
@@ -85,7 +84,7 @@ export const TopNav: FC = () => {
           <Grid
             item
             px={2}
-            xs={6}
+            xs={5}
             // sm={true}
             md={4}
           >
@@ -123,7 +122,7 @@ export const TopNav: FC = () => {
           item
           // lg={showSearchBar ? 2 : 2}
           px={2}
-          xs={2}
+          xs={3}
           sx={responsiveStyle}
         >
           <UserAccount />
