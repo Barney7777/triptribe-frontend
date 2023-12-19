@@ -1,5 +1,5 @@
 import Document, { Html, Head, Main, NextScript } from 'next/document';
-import { createEmotionCache } from '@/utils/create-emotion-cache';
+import createEmotionCache from '@/utils/create-emotion-cache';
 import type { TripTribeAppProps } from './_app';
 import { ComponentProps, ComponentType, ReactElement } from 'react';
 import type { DocumentContext, DocumentProps } from 'next/document';
@@ -13,8 +13,7 @@ interface CustomDocumentProps extends DocumentProps {
 function TripTribeDocument({ emotionStyleTags }: CustomDocumentProps) {
   return (
     <Html lang="en">
-      {emotionStyleTags}
-      <Head />
+      <Head>{emotionStyleTags}</Head>
       <body>
         <Main />
         <NextScript />

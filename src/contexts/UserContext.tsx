@@ -33,7 +33,7 @@ interface UserProviderProps {
 export const UserProvider: React.FC<UserProviderProps> = ({ children }: UserProviderProps) => {
   const [userData, setUserData] = useState<UserData | null>(null);
   useEffect(() => {
-    console.log('useEffect set userData done!', userData);
+    // console.log('useEffect set userData done!', userData);
   }, [userData]);
 
   return <UserContext.Provider value={{ userData, setUserData }}>{children}</UserContext.Provider>;
