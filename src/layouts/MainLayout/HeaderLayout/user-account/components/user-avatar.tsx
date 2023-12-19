@@ -15,7 +15,7 @@ export const UserAvatar: React.FC = () => {
       <Avatar
         alt="User Avatar"
         sx={{ width: 40, height: 40 }}
-        src={avatarUrl.current![0]}
+        // src={avatarUrl.current![0]}
       />
     );
   } else {

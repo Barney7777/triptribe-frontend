@@ -1,26 +1,61 @@
-import axios, { AxiosInstance } from 'axios';
+import axios, { AxiosInstance, AxiosRequestConfig, CanceledError } from 'axios';
+
+const pendingMap = new Map();
+const getPendingKey = (config: AxiosRequestConfig) => {
+  let { url, method, params, data } = config;
+  if (typeof data === 'string') data = JSON.parse(data);
+  return [url, method, JSON.stringify(params), JSON.stringify(data)].join('&');
+};
+
+const addPending = (config: AxiosRequestConfig) => {
+  const pendingKey = getPendingKey(config);
+  if (!config.controller) {
+    const controller = new AbortController();
+    config.controller = controller;
+  }
+  config.signal = config.controller.signal;
+  pendingMap.set(pendingKey, config.controller);
+};
+
+const removePending = (config: AxiosRequestConfig) => {
+  const pendingKey = getPendingKey(config);
+  if (pendingMap.has(pendingKey)) {
+    const controller = pendingMap.get(pendingKey);
+    controller.abort();
+    pendingMap.delete(pendingKey);
+  }
+};
 
 const axiosInstance: AxiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_BASIC_URL || 'https://mock.apifox.com/m1/3534088-0-default',
+  baseURL: process.env.NEXT_PUBLIC_BASIC_URL,
 });
 
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('accessToken');
-    if (token && !['/auth/signup', '/auth/signin'].includes(config.url as string)) {
-      config.headers.Authorization = 'Bearer ' + token + '';
+    removePending(config);
+    addPending(config);
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = token;
     }
-    console.log('request config', config);
+
     return config;
   },
   (error) => Promise.reject(error)
 );
 
 axiosInstance.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    removePending(response.config);
+
+    return response;
+  },
   (error) => {
-    if (error.response.status === 401) {
+    if (error?.response?.status === 401) {
       localStorage.removeItem('accessToken');
+    }
+    if (!(error instanceof CanceledError)) {
+      removePending(error?.config);
     }
     // TODO: handle other status
     return Promise.reject(error);

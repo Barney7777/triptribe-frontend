@@ -7,9 +7,9 @@ import CssBaseline from '@mui/material/CssBaseline';
 import theme from '@/styles/theme';
 import type { EmotionCache } from '@emotion/react';
 import { CacheProvider } from '@emotion/react';
-import { createEmotionCache } from '@/utils/create-emotion-cache';
 import { UserProvider } from '@/contexts/UserContext';
 import { SnackbarProvider } from 'notistack';
+import createEmotionCache from '@/utils/create-emotion-cache';
 
 const clientSideEmotionCache = createEmotionCache();
 export interface TripTribeAppProps extends AppProps {

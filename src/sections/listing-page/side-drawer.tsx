@@ -1,17 +1,17 @@
 import { Box, Drawer, IconButton } from '@mui/material';
-import { FC } from 'react';
+import { Dispatch, FC, SetStateAction } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
-import { MainType } from '@/types/general';
-import RestaurantFilter from './restaurants/restaurant-filter';
-import AttractionFilter from './attractions/attraction-filter';
+import { MainType, QueryParamsType } from '@/types/general';
+import Filter from './filter';
 
 type SideDrawerProps = {
   open: boolean;
   onClose: () => void;
   type: MainType;
+  setQueryParams: Dispatch<SetStateAction<QueryParamsType>>;
 };
 
-const SideDrawer: FC<SideDrawerProps> = ({ open, onClose, type }) => {
+const SideDrawer: FC<SideDrawerProps> = ({ open, onClose, type, setQueryParams }) => {
   return (
     <Drawer
       anchor="left"
@@ -26,8 +26,12 @@ const SideDrawer: FC<SideDrawerProps> = ({ open, onClose, type }) => {
         >
           <CloseIcon />
         </IconButton>
-        {type === MainType.Restaurant && <RestaurantFilter />}
-        {type === MainType.Attraction && <AttractionFilter />}
+        <Filter
+          type={type}
+          closeDrawer={onClose}
+          setQueryParams={setQueryParams}
+          inDrawer
+        />
       </Box>
     </Drawer>
   );

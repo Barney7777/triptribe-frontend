@@ -8,26 +8,32 @@ type ViewToggleProps = {
   view: boolean;
 };
 
+enum viewMode {
+  card = 'cardView',
+  list = 'listView',
+}
+
 const ViewToggleButton: FC<ViewToggleProps> = ({ handleViewToggle, view }) => {
   return (
     <ToggleButtonGroup
       color="primary"
-      value={view ? 'listView' : 'cardView'}
+      value={view ? viewMode.card : viewMode.list}
       exclusive
       onChange={handleViewToggle}
       sx={{ ml: 2 }}
+      size="small"
     >
       <ToggleButton
-        value="listView"
-        aria-label="list"
-      >
-        <ViewListIcon />
-      </ToggleButton>
-      <ToggleButton
-        value="cardView"
+        value={viewMode.card}
         aria-label="module"
       >
         <ViewModuleIcon />
+      </ToggleButton>
+      <ToggleButton
+        value={viewMode.list}
+        aria-label="list"
+      >
+        <ViewListIcon />
       </ToggleButton>
     </ToggleButtonGroup>
   );

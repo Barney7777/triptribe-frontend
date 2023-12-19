@@ -2,6 +2,7 @@
 import useSWR, { SWRConfiguration, SWRResponse } from 'swr';
 import { AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 import axiosInstance from '@/utils/request';
+import { useEffect, useMemo } from 'react';
 
 export type GetRequest = AxiosRequestConfig | null;
 
@@ -24,6 +25,16 @@ export default function useRequest<Data = unknown, Error = unknown>(
   request: GetRequest,
   { fallbackData, ...config }: Config<Data, Error> = {}
 ): Return<Data, Error> {
+  const controller = useMemo(() => new AbortController(), [request?.url]);
+  if (request !== null) {
+    request = { ...request, controller };
+  }
+  useEffect(() => {
+    return () => {
+      controller.abort();
+    };
+  }, [controller]);
+
   const {
     data: response,
     isLoading,
@@ -39,7 +50,8 @@ export default function useRequest<Data = unknown, Error = unknown>(
 
     () => axiosInstance.request<Data>(request!),
     {
-      ...config,
+      revalidateOnFocus: false,
+      shouldRetryOnError: false,
       fallbackData:
         fallbackData &&
         ({
@@ -49,6 +61,7 @@ export default function useRequest<Data = unknown, Error = unknown>(
           headers: {},
           data: fallbackData,
         } as AxiosResponse<Data>),
+      ...config,
     }
   );
   return {
