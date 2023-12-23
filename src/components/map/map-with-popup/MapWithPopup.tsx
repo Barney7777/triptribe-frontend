@@ -12,10 +12,10 @@ export const MapWithPopup = () => {
       sx={{ height: 600 }}
       mapId="bannerMap"
     >
-      <>
+      <React.Fragment>
         <MapPins />
         {popupInfo && <MapPopUp />}
-      </>
+      </React.Fragment>
     </Map>
   );
 };

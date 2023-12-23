@@ -4,6 +4,7 @@ import React from 'react';
 export const CircularLoading: React.FC<{ size: number }> = ({ size }) => {
   return (
     <CircularProgress
+      aria-label="Circular Loading"
       size={size}
       sx={{
         position: 'absolute',

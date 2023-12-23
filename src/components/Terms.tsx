@@ -3,7 +3,7 @@ import Typography from '@mui/material/Typography';
 
 const Terms: React.FC = () => {
   return (
-    <>
+    <React.Fragment>
       <Typography
         variant="h4"
         component="h1"
@@ -180,7 +180,7 @@ const Terms: React.FC = () => {
         Terms will be posted on the Website. Your continued use of the Website after any such
         changes constitutes your acceptance of the new Terms.
       </Typography>
-    </>
+    </React.Fragment>
   );
 };
 

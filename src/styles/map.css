@@ -12,13 +12,6 @@ the any component you added as the children of the popup component
 /**
 add your HTMLElement with an Id and write your style in a new section with same subClassName start with .mapboxgl-
 */
-#bannerMap .image-hidden {
-  opacity: 0 !important;
-}
-#bannerMap .image-shown {
-  opacity: 100 !important;
-  transition: all 150ms linear 0s;
-}
 #bannerMap .mapboxgl-popup .mapboxgl-popup-tip {
   opacity: 0;
 }

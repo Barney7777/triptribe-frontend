@@ -9,7 +9,7 @@ type PinProps = {
   id: string;
 };
 
-export const Pin: React.FC<PinProps> = ({ size = 40, placeColor, placeType, placeIcon, id }) => {
+export const Pin: React.FC<PinProps> = ({ size = 40, placeColor, placeIcon, id }) => {
   return (
     <Box
       aria-label="Map Pin"

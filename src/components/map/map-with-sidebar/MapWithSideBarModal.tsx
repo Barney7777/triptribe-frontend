@@ -15,7 +15,7 @@ export const MapWithSideBarModal = ({
       aria-labelledby="listing-map-modal"
       aria-describedby="listing-map-modal"
     >
-      <>
+      <React.Fragment>
         <IconButton
           sx={{
             zIndex: 999,
@@ -37,7 +37,7 @@ export const MapWithSideBarModal = ({
           <CloseIcon />
         </IconButton>
         <MapWithSideBar />
-      </>
+      </React.Fragment>
     </Modal>
   );
 };

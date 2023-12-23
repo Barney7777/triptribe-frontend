@@ -1,5 +1,5 @@
 import { Location } from '@/types/address';
-import { CityProps } from '@/types/attractions-restaurants';
+import { PlaceProps } from '@/types/attractions-restaurants';
 import { PlacesData } from '@/types/map';
 
 import { create } from 'zustand';
@@ -8,14 +8,14 @@ type MapState = {
   mapCenter: Location;
   highLightedId?: string;
   pinInfo: PlacesData;
-  popupInfo: CityProps | null;
+  popupInfo: PlaceProps | null;
   zoom: number;
   maxDistance: number;
 };
 type MapAction = {
   updateMapCenter: (mapCenter: Location) => void;
   updatePinInfo: (pinInfo: PlacesData) => void;
-  updatePopupInfo: (data: CityProps | null) => void;
+  updatePopupInfo: (data: PlaceProps | null) => void;
   updateHighLightedId: (highLightedId: string) => void;
   updateZoom: (zoom: number) => void;
   updateMaxDistance: (maxDistance: number) => void;

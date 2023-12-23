@@ -13,7 +13,9 @@
   --mui-theme-secondary-main: #ffc400;
   --mui-theme-secondary-dark: #b28900;
 }
-
+html {
+  scroll-padding-top: 102px; /* height of sticky header */
+}
 @media (prefers-color-scheme: dark) {
   :root {
     --foreground-rgb: 255, 255, 255;

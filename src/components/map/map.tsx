@@ -9,7 +9,7 @@ import MapGL, {
   GeolocateControl,
   MapRef,
 } from 'react-map-gl';
-import { ViewStateChangeEvent, MapInstance } from 'react-map-gl/dist/esm/types';
+import { ViewStateChangeEvent, MapInstance, ControlPosition } from 'react-map-gl/dist/esm/types';
 import { PlacesData } from '@/types/map';
 import { Location } from '@/types/address';
 import { useDebounce } from '@/hooks/use-debounce';
@@ -22,11 +22,18 @@ import useSWR from 'swr';
 type MapProps = {
   mapId: string;
   sx?: SxProps | SxProps<any>;
-
+  fullScreenLocation?: ControlPosition;
+  naviControlLocation?: ControlPosition;
   // fetchData: HomepageMapFetchData;
   children?: ReactNode;
 };
-export const Map: React.FC<MapProps> = ({ sx, mapId, children }) => {
+export const Map: React.FC<MapProps> = ({
+  sx,
+  mapId,
+  fullScreenLocation = 'top-left',
+  naviControlLocation = 'top-left',
+  children,
+}) => {
   const {
     maxDistance,
     mapCenter,
@@ -159,8 +166,8 @@ export const Map: React.FC<MapProps> = ({ sx, mapId, children }) => {
           onGeolocate={() => handleMoveMap(geoLocationData)}
           position="top-left"
         />
-        <FullscreenControl position="top-left" />
-        <NavigationControl position="top-left" />
+        <FullscreenControl position={fullScreenLocation} />
+        <NavigationControl position={naviControlLocation} />
         <ScaleControl />
 
         {children}

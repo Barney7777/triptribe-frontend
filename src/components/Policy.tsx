@@ -3,7 +3,7 @@ import Typography from '@mui/material/Typography';
 
 const Policy: React.FC = () => {
   return (
-    <>
+    <React.Fragment>
       <Typography
         variant="h4"
         component="h1"
@@ -220,7 +220,7 @@ const Policy: React.FC = () => {
       >
         Last Updated: 08/11/23
       </Typography>
-    </>
+    </React.Fragment>
   );
 };
 

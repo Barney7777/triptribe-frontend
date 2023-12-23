@@ -1,62 +1,39 @@
-import { BannerMapToggle } from '@/sections/home/banner-map-toggle';
-import { render, screen, fireEvent } from '@testing-library/react';
-// use next-router-mock package
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import { BannerMapToggle } from '..'; // Adjust the import path based on your project structure
 import mockRouter from 'next-router-mock';
-// use next-router-mock to mock next router
+
 jest.mock('next/router', () => jest.requireActual('next-router-mock'));
 
-jest.mock('@/components/map', () => ({
+jest.mock('@/sections/home/banner-map-toggle/components/banner-map', () => ({
   __esModule: true,
-  Map: jest.fn((props) => <div data-testid="mocked-map" />),
+  BannerMap: () => <div data-testid="Mock Banner Map"></div>,
+}));
+
+jest.mock('@/sections/home/banner-map-toggle/components', () => ({
+  __esModule: true,
+  HeroBanner: () => <div data-testid="Mock Hero Banner"></div>,
 }));
 
 describe('BannerMapToggle', () => {
-  describe('Rendering', () => {
-    it('when showMap is true, map component is rendered on the page', () => {
-      mockRouter.query['map'] = 'shown';
-      render(<BannerMapToggle mapQueryShown={true} />);
-      const closeButton = screen.getByTestId('CloseIcon');
-      expect(closeButton).toBeInTheDocument();
+  it('should render BannerMap if urlQuery has "map" set to "shown"', () => {
+    mockRouter.query = { map: 'shown' };
+    render(<BannerMapToggle mapQueryShown={true} />);
 
-      const mapElement = screen.getByTestId('mocked-map');
-      expect(mapElement).toBeInTheDocument();
-    });
+    const bannerMap = screen.getByTestId('Mock Banner Map');
+    const heroBanner = screen.queryByTestId('Mock Hero Banner');
 
-    it('when showMap is false, hero banner is rendered on the page', () => {
-      const { map, ...rest } = mockRouter.query;
-      mockRouter.query = rest;
-
-      render(<BannerMapToggle mapQueryShown={false} />);
-      const mapViewButton = screen.getByRole('button', { name: 'Map View' });
-      expect(mapViewButton).toBeInTheDocument();
-      const heroBannerSearchBar = screen.getByPlaceholderText('Search');
-      expect(heroBannerSearchBar).toBeInTheDocument();
-    });
+    expect(bannerMap).toBeInTheDocument();
+    expect(heroBanner).toBeNull();
   });
 
-  describe('User Action', () => {
-    describe('map toggle', () => {
-      it('will render map component when click view map button', () => {
-        render(<BannerMapToggle mapQueryShown={false} />);
+  it('should render HeroBanner if urlQuery does not have "map" set to "shown"', () => {
+    mockRouter.query = {};
 
-        fireEvent.click(screen.getByRole('button', { name: 'Map View' }));
-
-        const closeButton = screen.getByTestId('CloseIcon');
-        expect(closeButton).toBeInTheDocument();
-        const mapElement = screen.getByTestId('mocked-map');
-        expect(mapElement).toBeInTheDocument();
-      });
-      it('will render hero banner component when click close button', () => {
-        render(<BannerMapToggle mapQueryShown={true} />);
-
-        fireEvent.click(screen.getByRole('button', { name: 'Close Map' }));
-
-        const mapViewButton = screen.getByRole('button', { name: 'Map View' });
-        expect(mapViewButton).toBeInTheDocument();
-        // need a searchbar
-        const heroBannerSearchBar = screen.getByPlaceholderText('Search');
-        expect(heroBannerSearchBar).toBeInTheDocument();
-      });
-    });
+    render(<BannerMapToggle mapQueryShown={false} />);
+    const bannerMap = screen.queryByTestId('Mock Banner Map');
+    const heroBanner = screen.getByTestId('Mock Hero Banner');
+    expect(bannerMap).toBeNull();
+    expect(heroBanner).toBeInTheDocument();
   });
 });

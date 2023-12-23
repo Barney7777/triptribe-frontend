@@ -1,5 +1,5 @@
-import React, { Suspense, useEffect, useState } from 'react';
-import { Box, Grid, IconButton, Link, Rating, Typography, Card, Skeleton } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Box, Grid, IconButton, Link, Rating, Typography, Card } from '@mui/material';
 import NextLink from 'next/link';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -7,12 +7,12 @@ import RateReviewIcon from '@mui/icons-material/RateReview';
 
 import { isOpening } from '@/utils/is-opening';
 
-import { CityProps } from '@/types/attractions-restaurants';
+import { PlaceProps } from '@/types/attractions-restaurants';
 import { getNextOpening } from './utils/getNextOpening';
 import { CircularLoading } from '@/components/CircularLoading';
 
 type MapItemCardProps = {
-  popupInfo: CityProps;
+  popupInfo: PlaceProps;
 };
 
 const MapItemCard: React.FC<MapItemCardProps> = ({ popupInfo }) => {
@@ -38,45 +38,21 @@ const MapItemCard: React.FC<MapItemCardProps> = ({ popupInfo }) => {
     setImageComplete(true);
   };
 
-  useEffect(() => {
-    setImageComplete(false);
-  }, [popupInfo._id]);
-
-  // when card off mount, turn it off
-  useEffect(() => {
-    return () => {
-      setImageComplete(false);
-    };
-  }, []);
-
   return (
     // add the key will tell react to render the next opened card
     <Card key={`card_${popupInfo.type}_${popupInfo._id}`}>
       <Box position={'relative'}>
         <Link
           component={NextLink}
-          href={
-            // 'http://localhost:3000' +
-            `/${popupInfo.type.toLowerCase()}s/${popupInfo._id}`
-          }
+          href={`/${popupInfo.type.toLowerCase()}s/${popupInfo._id}`}
         >
-          {!imageComplete && (
-            // <Skeleton
-            //   aria-label={'Image Skeleton'}
-            //   variant="rectangular"
-            //   width={'100%'}
-            //   height={148}
-            //   sx={{ position: 'absolute' }}
-            // />
-            <CircularLoading size={40} />
-          )}
+          {!imageComplete && <CircularLoading size={40} />}
           <img
             onLoad={handleImageComplete}
             style={{ objectFit: 'cover' }}
             width={'100%'}
             height={148}
             src={popupInfo.photos[0].imageUrl}
-            // className={imageComplete ? 'image-shown' : 'image-hidden'}
             alt={popupInfo.name}
           />
         </Link>

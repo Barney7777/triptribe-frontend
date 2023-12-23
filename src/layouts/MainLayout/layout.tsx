@@ -9,7 +9,7 @@ export const Layout: React.FC<{ children: ReactNode }> = ({ children }) => {
   const theme = useTheme();
   const sx = {};
   return (
-    <>
+    <React.Fragment>
       <Header />
       <Container
         fixed
@@ -19,6 +19,6 @@ export const Layout: React.FC<{ children: ReactNode }> = ({ children }) => {
         {children}
       </Container>
       <Footer />
-    </>
+    </React.Fragment>
   );
 };

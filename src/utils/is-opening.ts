@@ -1,4 +1,4 @@
-import { CityProps } from '@/types/attractions-restaurants';
+import { PlaceProps } from '@/types/attractions-restaurants';
 import { getLocalTime, getCurrentWeekday } from './get-current-date-time';
 import dayjs from 'dayjs';
 import isBetween from 'dayjs/plugin/isBetween';
@@ -8,7 +8,7 @@ dayjs.extend(customParseFormat);
 dayjs.extend(isBetween);
 import tzlookup from 'tz-lookup';
 
-export const isOpening = (popupInfo: CityProps): OpeningStatus => {
+export const isOpening = (popupInfo: PlaceProps): OpeningStatus => {
   // the weekday is consist between localTime and weekday.
   const timeZone = tzlookup(popupInfo.address.location.lat, popupInfo.address.location.lng);
   const weekday = getCurrentWeekday(timeZone);

@@ -38,11 +38,7 @@ const UserDetailPage = () => {
         >
           <Typography variant="h5">User Profile</Typography>
         </Box>
-        {userData && (
-          <>
-            <TabPanel user={userData} />
-          </>
-        )}
+        {userData && <TabPanel user={userData} />}
       </Container>
     </Layout>
   );

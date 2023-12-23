@@ -4,6 +4,7 @@ import { ActionType, InitializeAction, State } from '@/contexts/user-context/use
 import { SigninInputs, UserContext, initialState } from './user-context';
 import { authRegister } from '@/api/authRegister';
 import { authSignIn } from '@/api/authSignin';
+import { CanceledError } from 'axios';
 const ACCESS_KEY = 'accessToken';
 const REFRESH_KEY = 'refreshToken';
 
@@ -62,7 +63,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
           },
         });
       } catch (err) {
-        throw err;
+        console.error('init error', err);
       }
     } else {
       dispatch({
@@ -76,7 +77,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   }, [dispatch]);
 
   useEffect(() => {
-    initialize().catch((err: Error) => console.error('initialize error', err));
+    initialize();
   }, [dispatch, initialize]);
 
   const signIn = useCallback(
@@ -99,7 +100,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         });
       } catch (err) {
         console.error('sign in failed', err);
-        throw err;
+        // throw err;
       }
     },
     [dispatch]

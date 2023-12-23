@@ -7,7 +7,10 @@ const Footer: React.FC = () => {
     <div className="w-full py-12 bg-[#F8F9FA] flex items-center justify-center">
       <div>
         <div className="flex flex-col lg:flex-row mb-16 justify-center sm:gap-8 md:gap-16 lg:gap-40 xl-96">
-          <LogoButton />
+          <LogoButton
+            logoImageHeight={60}
+            logoTextHeight={20}
+          />
           <FooterList />
         </div>
         <div>

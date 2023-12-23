@@ -1,23 +1,25 @@
 // use next-router-mock package
 import mockRouter from 'next-router-mock';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { BannerMap } from '../banner-map';
+import userEvent from '@testing-library/user-event';
 // use next-router-mock to mock next router
 jest.mock('next/router', () => jest.requireActual('next-router-mock'));
 // use mockRouter to manage router
 
 // need to find a way to mock the map component
-jest.mock('@/components/map', () => ({
+jest.mock('@/components/map/map-with-popup', () => ({
   __esModule: true,
-  Map: jest.fn((props) => <div data-testid="mocked-map" />),
+  MapWithPopup: jest.fn(({ children }) => <div data-testid="mocked-map"></div>),
 }));
 
 describe('Banner Map', () => {
   describe('Close Button', () => {
-    it('will update URL', () => {
+    it('will update URL', async () => {
       render(<BannerMap />);
+      const user = userEvent.setup();
       const closeButton = screen.getByRole('button', { name: 'Close Map' });
-      fireEvent.click(closeButton);
+      await user.click(closeButton);
       expect(mockRouter.query['map']).not.toBe('shown');
     });
     // it('will update URL', () => {});
