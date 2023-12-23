@@ -4,6 +4,6 @@ export type Address = {
 };
 
 export type Location = {
-  lat: number;
   lng: number;
+  lat: number;
 };

@@ -1,4 +1,3 @@
-import { SxProps } from '@mui/system';
 import { CityProps } from './attractions-restaurants';
 // export type mapData = {
 //   mapId: string;

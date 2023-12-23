@@ -2,21 +2,16 @@ import { NaviTopSearchBar } from '@/layouts/MainLayout/HeaderLayout/navi-top-sea
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import CircularProgress from '@mui/material/CircularProgress';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import NextLink from 'next/link';
-import { Box, Hidden } from '@mui/material';
+import { Box } from '@mui/material';
 import useRouterQuery from '@/hooks/use-router-query';
-
-// type HeroBannerProps ={
-//   mapToggleHandler: (queryObj: Record<string, any>) => void;
-// }
 
 export const HeroBanner: React.FC = () => {
   const { setUrlQuery } = useRouterQuery();
-
   const [mapLoading, setMapLoading] = useState(false);
   const [shown, setShown] = useState(false);
-  const toggleMapLoadingHandler = () => {
+  const toggleMapLoading = () => {
     setMapLoading(true);
   };
 
@@ -81,7 +76,7 @@ export const HeroBanner: React.FC = () => {
             // href="?map=shown"
             onClick={() => {
               setUrlQuery({ map: 'shown' });
-              toggleMapLoadingHandler();
+              toggleMapLoading();
             }}
             disabled={mapLoading}
           >

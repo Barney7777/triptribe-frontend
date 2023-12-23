@@ -15,7 +15,7 @@ export const isOpening = (popupInfo: CityProps): OpeningStatus => {
 
   // console.log(popupInfo.openHours[weekday]);
   if (popupInfo.openHours[weekday].isClosed) {
-    return 'Closed All Day';
+    return 'Closed Temporarily';
   }
   if (popupInfo.openHours[weekday].isOpenAllDay) {
     return 'Opening All Day';

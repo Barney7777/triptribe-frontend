@@ -1,6 +1,9 @@
 import axios, { AxiosInstance, AxiosRequestConfig, CanceledError } from 'axios';
 
 const pendingMap = new Map();
+
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+
 const getPendingKey = (config: AxiosRequestConfig) => {
   let { url, method, params, data } = config;
   if (typeof data === 'string') data = JSON.parse(data);
@@ -19,7 +22,9 @@ const addPending = (config: AxiosRequestConfig) => {
 
 const removePending = (config: AxiosRequestConfig) => {
   const pendingKey = getPendingKey(config);
+  // console.log('removePendingKey PendingMap', pendingMap);
   if (pendingMap.has(pendingKey)) {
+    // console.log('removePendingKey PendingMap then', pendingMap);
     const controller = pendingMap.get(pendingKey);
     controller.abort();
     pendingMap.delete(pendingKey);
@@ -27,16 +32,18 @@ const removePending = (config: AxiosRequestConfig) => {
 };
 
 const axiosInstance: AxiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_BASIC_URL,
+  baseURL: BASE_URL,
 });
 
 axiosInstance.interceptors.request.use(
   (config) => {
     removePending(config);
+    // console.log('afterRemovePendingKey', pendingMap);
     addPending(config);
-    const token = localStorage.getItem('token');
+    // console.log('afterAddingPendingKey', pendingMap);
+    const token = localStorage.getItem('accessToken');
     if (token) {
-      config.headers.Authorization = token;
+      config.headers.Authorization = 'Bearer ' + token;
     }
 
     return config;
@@ -47,16 +54,18 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (response) => {
     removePending(response.config);
-
+    // console.log('correct removing', pendingMap);
     return response;
   },
   (error) => {
+    // console.log('responseError', error);
     if (error?.response?.status === 401) {
       localStorage.removeItem('accessToken');
     }
     if (!(error instanceof CanceledError)) {
       removePending(error?.config);
     }
+    // console.log('error removing', pendingMap);
     // TODO: handle other status
     return Promise.reject(error);
   }

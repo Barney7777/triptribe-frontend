@@ -1,44 +1,33 @@
 import { CityProps } from '@/types/attractions-restaurants';
 import React, { useCallback, useMemo, useState } from 'react';
-import { Marker, MarkerEvent } from 'react-map-gl';
+import { Marker } from 'react-map-gl';
 import Pin from '@/components/map/components/individualPin';
 import { pinIconColor, pinIconList } from './pinIconProps';
-import { PlacesData } from '@/types/map';
-type MapPinsProps = {
-  pinInfo: PlacesData;
-  imageCompleteHandler: (state: boolean) => void;
-  setPopupInfo: (data: CityProps | null) => void;
-};
 
-export const MapPins: React.FC<MapPinsProps> = ({
-  pinInfo,
-  imageCompleteHandler,
-  setPopupInfo,
-}) => {
+import { useMapContext } from '@/contexts/map-context';
+import { MarkerEvent } from 'react-map-gl/dist/esm/types';
+
+export const MapPins: React.FC = () => {
+  const highLightedId = useMapContext((state) => state.highLightedId);
+  const pinInfo = useMapContext((state) => state.pinInfo);
+  const updateImageComplete = useMapContext((state) => state.updateImageComplete);
+  const updatePopupInfo = useMapContext((state) => state.updatePopupInfo);
   const [markerLat, setMarkerLat] = useState(0);
   const [markerLng, setMarkerLng] = useState(0);
+
   const handleMarkerClick = useCallback(
-    (e: any, place: CityProps) => {
+    (e: MarkerEvent<mapboxgl.Marker, MouseEvent>, place: CityProps) => {
       if (e.target.getLngLat().lat !== markerLat && e.target.getLngLat().lng !== markerLng) {
-        imageCompleteHandler(false);
-        setMarkerLat(() => e.target.getLngLat().lat);
+        updateImageComplete(false);
         setMarkerLng(() => e.target.getLngLat().lng);
+        setMarkerLat(() => e.target.getLngLat().lat);
       }
       e.originalEvent.stopPropagation();
-      setPopupInfo(place);
+      updatePopupInfo(place);
     },
-    [imageCompleteHandler, markerLat, markerLng, setPopupInfo]
+    [updateImageComplete, markerLat, markerLng, updatePopupInfo]
   );
 
-  // const handleMarkerClick = (e: any, place: CityProps) => {
-  //   if (e.target.getLngLat().lat !== markerLat && e.target.getLngLat().lng !== markerLng) {
-  //     imageCompleteHandler(false);
-  //     setMarkerLat(() => e.target.getLngLat().lat);
-  //     setMarkerLng(() => e.target.getLngLat().lng);
-  //   }
-  //   e.originalEvent.stopPropagation();
-  //   setPopupInfo(place);
-  // };
   const pins = useMemo(() => {
     if (pinInfo.length == 0) {
       return;
@@ -46,22 +35,26 @@ export const MapPins: React.FC<MapPinsProps> = ({
       return pinInfo.map((place: CityProps, index) => (
         <React.Fragment key={`marker-${place.type}-${place._id}`}>
           <Marker
-            color="green"
             longitude={place.address.location.lng}
             latitude={place.address.location.lat}
             anchor="bottom"
             onClick={(e) => handleMarkerClick(e, place)}
           >
             <Pin
+              id={`marker-${place.type}-${place._id}`}
               placeType={place.type}
               placeIcon={pinIconList[place.type]}
-              placeColor={pinIconColor[place.type]}
+              placeColor={
+                highLightedId === `${place.type}-${place._id}`
+                  ? pinIconColor.Selected
+                  : pinIconColor[place.type]
+              }
             ></Pin>
           </Marker>
         </React.Fragment>
       ));
     }
-  }, [pinInfo, handleMarkerClick]);
+  }, [pinInfo, handleMarkerClick, highLightedId]);
 
   return pins;
 };

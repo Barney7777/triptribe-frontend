@@ -6,8 +6,9 @@ import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import theme from '@/styles/theme';
 import type { EmotionCache } from '@emotion/react';
+import 'mapbox-gl/dist/mapbox-gl.css';
 import { CacheProvider } from '@emotion/react';
-import { UserProvider } from '@/contexts/UserContext';
+import { UserProvider } from '@/contexts/user-context/user-provider';
 import { SnackbarProvider } from 'notistack';
 import createEmotionCache from '@/utils/create-emotion-cache';
 

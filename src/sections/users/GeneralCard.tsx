@@ -26,7 +26,7 @@ export const GeneralCard = (props: GeneralCardProps) => {
   const { user } = props;
   const [inputText, setInputText] = useState('');
 
-  const textHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleTextInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputText(e.target.value);
   };
   const charLimit = 300;
@@ -187,7 +187,7 @@ export const GeneralCard = (props: GeneralCardProps) => {
               rows={4}
               sx={{ mt: 1.5 }}
               defaultValue="xxx"
-              onChange={textHandler}
+              onChange={handleTextInput}
               value={inputText}
               inputProps={{
                 maxLength: { charLimit },

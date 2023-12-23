@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { Box, Button, Card, CardMedia, Pagination, Skeleton, Typography } from '@mui/material';
+import { Box, Card, CardMedia, Pagination, Skeleton, Typography } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import ListingCard from '@/sections/listing-page/listing-card';
 import SideDrawer from '@/sections/listing-page/side-drawer';
@@ -10,7 +10,6 @@ import {
   FilterQueryParamsSchema,
   ListingInfoBasic,
   MainType,
-  PageDataResponse,
   QueryParamsSchema,
   QueryParamsType,
 } from '@/types/general';
@@ -24,7 +23,7 @@ import useRouterQuery from '@/hooks/use-router-query';
 import FilterMatchInfo from './filter-match-info';
 import SortSelect from './button/sort-select';
 import Filter from './filter';
-import axiosInstance from '@/utils/request';
+import { MapWithSideBarModal } from '@/components/map/map-with-sidebar';
 
 interface MainPageProps {
   type: MainType;
@@ -175,6 +174,11 @@ const MainPage: FC<MainPageProps> = ({ type }) => {
     }
   }, [pageNumber, setPageResultsInfo, start]);
 
+  // map modal
+  const [mapIsOpen, setMapIsOpen] = useState(false);
+  const toggleMapIsOpen = (state: boolean) => {
+    setMapIsOpen(state);
+  };
   return (
     <div>
       <SideDrawer
@@ -205,7 +209,14 @@ const MainPage: FC<MainPageProps> = ({ type }) => {
         >
           <Grid>
             <Box sx={{ height: 100, mb: 2 }}>
-              <HeroMap />
+              <HeroMap
+                mapIsOpen={mapIsOpen}
+                toggleMapIsOpen={toggleMapIsOpen}
+              />
+              <MapWithSideBarModal
+                mapIsOpen={mapIsOpen}
+                toggleMapIsOpen={toggleMapIsOpen}
+              />
             </Box>
           </Grid>
           <Grid>
@@ -248,7 +259,10 @@ const MainPage: FC<MainPageProps> = ({ type }) => {
               sx={{ display: { xs: 'flex', lg: 'none' }, justifyContent: 'center' }}
             >
               <Box sx={{ height: 100, width: '100%', mb: 1 }}>
-                <HeroMap />
+                <HeroMap
+                  mapIsOpen={mapIsOpen}
+                  toggleMapIsOpen={toggleMapIsOpen}
+                />{' '}
               </Box>
             </Grid>
             <Grid

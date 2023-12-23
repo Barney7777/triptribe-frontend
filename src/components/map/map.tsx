@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { ReactNode, useCallback, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import { SxProps } from '@mui/system';
 import { useState, useRef } from 'react';
@@ -10,139 +10,132 @@ import MapGL, {
   MapRef,
 } from 'react-map-gl';
 import { ViewStateChangeEvent, MapInstance } from 'react-map-gl/dist/esm/types';
-
 import { PlacesData } from '@/types/map';
-import { CityProps } from '@/types/attractions-restaurants';
 import { Location } from '@/types/address';
-import axiosInstance from '@/utils/request';
 import { useDebounce } from '@/hooks/use-debounce';
-import { MapPopUp } from '@/components/map/components/popup';
-import { MapPins } from '@/components/map/components/MapPins';
-const TOKEN =
-  (process.env.NEXT_PUBLIC_MAP_BOX_API_KEY as string) ||
-  'pk.eyJ1IjoidHJpcHRyaWJlIiwiYSI6ImNscDB0bm9sbzBibXgya21qczY4ZDhsZXUifQ.MYlQE4YsEt5Z-tnHxFE9NA';
+import { zoomToLimit, zoomToDistance } from './utils/distance-and-limit';
+import { getLocation } from './utils/get-location';
+import { useMapContext } from '@/contexts/map-context';
+import axiosInstance from '@/utils/request';
+import useSWR from 'swr';
+
 type MapProps = {
   mapId: string;
   sx?: SxProps | SxProps<any>;
-  mapStyle?: string;
-  initZoom?: number;
-  maxZoom?: number;
-  minZoom?: number;
+
+  // fetchData: HomepageMapFetchData;
+  children?: ReactNode;
 };
-export const Map: React.FC<MapProps> = ({ sx, mapId }) => {
-  const [popupInfo, setPopupInfo] = useState<CityProps | null>(null);
-  const [pinInfo, setPinInfo] = useState<PlacesData>([]);
-  const defaultLocation: Location = { lat: -37.8136, lng: 144.9631 }; //melbourne
-  const [geoLocationData, setGeoLocationData] = useState<Location>(defaultLocation);
-  const [imageComplete, setImageComplete] = useState(false);
+export const Map: React.FC<MapProps> = ({ sx, mapId, children }) => {
+  const maxDistance = useMapContext((state) => state.maxDistance);
+  const updateMaxDistance = useMapContext((state) => state.updateMaxDistance);
+  const mapCenter = useMapContext((state) => state.mapCenter);
+  const updateMapCenter = useMapContext((state) => state.updateMapCenter);
+  const zoom = useMapContext((state) => state.zoom);
+  const updateZoom = useMapContext((state) => state.updateZoom);
+  const updatePinInfo = useMapContext((state) => state.updatePinInfo);
+  const defaultLocation: Location = { lng: 0, lat: 0 }; //melbourne
+  const [geoLocationData, setGeoLocationData] = useState<Location>(mapCenter || defaultLocation);
+  const limit = zoomToLimit(zoom);
+
   const mapRef = useRef<MapRef | null>(null);
-  const imageCompleteHandler = useCallback(
-    (state: boolean) => {
-      setImageComplete(state);
-    },
-    [setImageComplete]
-  );
-  const popupInfoHandler = useCallback(
-    (data: CityProps | null) => {
-      setPopupInfo(data);
-    },
-    [setPopupInfo]
-  );
-  const fetchData = (e: ViewStateChangeEvent<MapInstance>) => {
-    const center = mapRef.current?.getCenter();
-    // console.log(center);
-    let maxDistance;
-    let topRatingQuantity;
-    /**
-     * zoom:11 distance:30000 = 3000*10
-     * zoom:12 distance:15000 = 1000*15
-     * zoom:13 distance:10000 = 1000*10
-     * zoom:14 distance:4500
-     * zoom:15 distance:2000
-     * zoom:16 distance:1000
-     * zoom:17 distance:700
-     */
-    if (e.viewState.zoom < 14) {
-      // return;
-      maxDistance = 40000000;
-      topRatingQuantity = 999;
-    } else if (e.viewState.zoom < 15) {
-      maxDistance = 20000000;
-      topRatingQuantity = 5;
-    } else {
-      topRatingQuantity = 15;
-      maxDistance = 10000000;
-    }
 
-    // console.log(e.viewState.zoom);
-    axiosInstance
-      .request<PlacesData>({
-        url: '/search/globalSearch',
-        method: 'post',
-        headers: { 'Content-Type': 'application/json' },
-        data: {
-          keyword: '',
-          limit: topRatingQuantity,
-          maxDistance: maxDistance,
-          location: center,
-        },
-      })
-      .then((res) => {
-        // console.log(res);
-        setPinInfo(res.data);
-      })
-      .catch((e) => {
-        console.log('wrong', e);
-      });
+  const TOKEN = process.env.NEXT_PUBLIC_MAP_API_KEY;
+  if (!TOKEN) {
+    throw new Error('no valid map token');
+  }
+  const initialZoom = 11;
+  console.log(TOKEN);
+  const requestOptions = {
+    url: 'http://localhost:8080/api/v1/search/globalSearch',
+    method: 'post',
+    headers: { 'Content-Type': 'application/json' },
+    data: {
+      keyword: '',
+      limit: limit,
+      maxDistance: maxDistance,
+      location: mapCenter ?? defaultLocation,
+    },
   };
-  const fetchMapData = useDebounce(fetchData, 1000);
 
+  const { data, error, isLoading, mutate } = useSWR<PlacesData>(requestOptions, async () => {
+    const response = await axiosInstance.request<PlacesData>(requestOptions);
+    return response.data;
+  });
   useEffect(() => {
-    mapRef.current?.setCenter(geoLocationData);
-  }, [geoLocationData]);
-
-  const getLocation = useCallback(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setGeoLocationData({ lat: position.coords.latitude, lng: position.coords.longitude });
-        },
-        () => {
-          setGeoLocationData({ lat: defaultLocation.lat, lng: defaultLocation.lng });
-        },
-        { enableHighAccuracy: true }
-      );
-    } else {
-      console.log('no navigator.geolocation');
+    if (data) {
+      console.log(data);
+      updatePinInfo(data);
     }
-    // find state from url
-  }, [defaultLocation.lat, defaultLocation.lng]);
+  }, [data, updatePinInfo]);
 
+  // get map center when drag end.
+  // debounce for delay useSwr trigger .
+  const setMapCenter = () => {
+    if (mapRef.current?.getCenter()) {
+      updateMapCenter(mapRef.current?.getCenter());
+    }
+  };
+  const debounceCenter = useDebounce(setMapCenter, 700);
+  // update distance and limit when drag end
+  const setMaxDistance = (zoom: number) => {
+    const maxDistance = zoomToDistance(zoom);
+    updateMaxDistance(maxDistance);
+  };
+  const debounceDistance = useDebounce(setMaxDistance, 700);
+  // handle above two debounce
+  const onMapChange = (zoom: number) => {
+    debounceCenter();
+    debounceDistance(zoom);
+  };
+  // update max distance when map start
   useEffect(() => {
-    getLocation();
+    const maxDistance = zoomToDistance(zoom);
+    setMaxDistance(maxDistance);
+  }, []);
+
+  // ask for user geolocation
+  useEffect(() => {
+    const setLocation = async () => {
+      setGeoLocationData(await getLocation(mapCenter || { lng: 0, lat: 0 }));
+    };
+    setLocation();
   }, [getLocation]);
 
-  const handleGeolocate = () => {
-    /**
-     * if(distance < xxx){ return }
-     */
-    mapRef.current!.flyTo({ center: geoLocationData, duration: 0 });
+  // no geolocation -> user allow geolocation -> move to geolocation
+  useEffect(() => {
+    updateMapCenter(geoLocationData);
+    mapRef.current?.setCenter(geoLocationData);
+  }, []);
+
+  // geolocation control, cancel animation
+  const moveMap = useCallback((location: Location) => {
+    // updateMapCenter(location);
+    mapRef.current?.flyTo({ center: location, duration: 0 });
+  }, []);
+
+  // sidebar map click to fly to pin center
+  useEffect(() => {
+    moveMap(mapCenter);
+  }, [mapCenter]);
+
+  // set zoom
+  const handleZoom = (e: ViewStateChangeEvent<MapInstance>) => {
+    updateZoom(e.viewState.zoom);
   };
-
-  // console.log(geoLocationData);
-
   return (
     <Box
-      sx={{ height: 514, position: 'relative' }}
+      sx={{ ...sx, position: 'relative' }}
       id={mapId}
+      className="ReactMapGl"
       aria-label="Map Container"
     >
       <MapGL
         ref={mapRef}
         initialViewState={{
-          latitude: geoLocationData ? geoLocationData.lat : 40,
-          longitude: geoLocationData ? geoLocationData.lng : -100,
-          zoom: 11,
+          longitude: mapCenter ? mapCenter.lng : geoLocationData.lng,
+          latitude: mapCenter ? mapCenter.lat : geoLocationData.lat,
+          zoom: zoom || initialZoom,
           bearing: 0,
           pitch: 0,
         }}
@@ -150,34 +143,25 @@ export const Map: React.FC<MapProps> = ({ sx, mapId }) => {
         dragRotate={false}
         touchZoomRotate={false}
         minZoom={2.5}
-        onZoomEnd={fetchMapData}
-        onDragEnd={fetchMapData}
-        // onClick={}
+        onZoomEnd={(e) => {
+          handleZoom(e);
+          onMapChange(zoom);
+        }}
+        onDragEnd={() => {
+          onMapChange(zoom);
+        }}
         mapStyle="mapbox://styles/triptribe/clp18ys6w00cb01pq0t4c029g"
         mapboxAccessToken={TOKEN}
       >
         <GeolocateControl
-          onGeolocate={handleGeolocate}
+          onGeolocate={() => moveMap(geoLocationData)}
           position="top-left"
         />
         <FullscreenControl position="top-left" />
         <NavigationControl position="top-left" />
         <ScaleControl />
 
-        <MapPins
-          pinInfo={pinInfo}
-          imageCompleteHandler={imageCompleteHandler}
-          setPopupInfo={popupInfoHandler}
-        />
-
-        {popupInfo && (
-          <MapPopUp
-            popupInfo={popupInfo}
-            setPopupInfo={popupInfoHandler}
-            imageCompleteHandler={imageCompleteHandler}
-            imageComplete={imageComplete}
-          />
-        )}
+        {children}
       </MapGL>
     </Box>
   );

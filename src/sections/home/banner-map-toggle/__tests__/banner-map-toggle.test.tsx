@@ -1,6 +1,5 @@
 import { BannerMapToggle } from '@/sections/home/banner-map-toggle';
-import { render, screen, fireEvent, waitFor, act, getByRole } from '@testing-library/react';
-import { useRouter } from 'next/router';
+import { render, screen, fireEvent } from '@testing-library/react';
 // use next-router-mock package
 import mockRouter from 'next-router-mock';
 // use next-router-mock to mock next router

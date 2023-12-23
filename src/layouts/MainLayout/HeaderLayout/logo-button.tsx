@@ -3,7 +3,6 @@ import NextLink from 'next/link';
 
 import { LogoImage } from '@/icons/logo-image';
 import { LogoText } from '@/icons/logo-text';
-import { SxProps, useTheme } from '@mui/material';
 export const LogoButton = () => {
   return (
     <Box

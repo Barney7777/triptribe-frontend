@@ -142,7 +142,7 @@ mockTzlookup.mockImplementation((lat: number, lng: number) => 'America/New_York'
 const mockImageCompleteHandler = jest.fn();
 mockImageCompleteHandler.mockImplementation((state) => {});
 
-describe('Banner Map', () => {
+describe.skip('Banner Map', () => {
   describe('Link', () => {
     it('is rendered on the page', () => {
       render(

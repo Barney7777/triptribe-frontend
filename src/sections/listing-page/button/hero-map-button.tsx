@@ -3,7 +3,13 @@ import React from 'react';
 // const path = '';
 const image =
   'https://assets-global.website-files.com/609ed46055e27a02ffc0749b/63bc7e5e16e24a7c721cd994_mapbox_maps.jpeg';
-const HeroMap = () => {
+const HeroMap = ({
+  mapIsOpen,
+  toggleMapIsOpen,
+}: {
+  mapIsOpen: boolean;
+  toggleMapIsOpen: (state: boolean) => void;
+}) => {
   return (
     <Card
       elevation={2}
@@ -22,7 +28,12 @@ const HeroMap = () => {
           textDecoration: 'none',
         }}
       >
-        <Button variant="contained">Map View</Button>
+        <Button
+          variant="contained"
+          onClick={() => toggleMapIsOpen(true)}
+        >
+          Map View
+        </Button>
       </CardMedia>
     </Card>
   );
