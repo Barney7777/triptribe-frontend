@@ -6,6 +6,7 @@ import React, { useState } from 'react';
 import NextLink from 'next/link';
 import { Box } from '@mui/material';
 import useRouterQuery from '@/hooks/use-router-query';
+import { CircularLoading } from '@/components/CircularLoading';
 
 export const HeroBanner: React.FC = () => {
   const { setUrlQuery } = useRouterQuery();
@@ -82,18 +83,7 @@ export const HeroBanner: React.FC = () => {
           >
             Map View
           </Button>
-          {mapLoading && (
-            <CircularProgress
-              size={40}
-              sx={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                marginTop: '-20px',
-                marginLeft: '-20px',
-              }}
-            />
-          )}
+          {mapLoading && <CircularLoading size={40} />}
         </Box>
       </Stack>
     </>

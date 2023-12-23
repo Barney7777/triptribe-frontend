@@ -15,7 +15,7 @@ import { Location } from '@/types/address';
 import { useDebounce } from '@/hooks/use-debounce';
 import { zoomToLimit, zoomToDistance } from './utils/distance-and-limit';
 import { getLocation } from './utils/get-location';
-import { useMapContext } from '@/contexts/map-context';
+import { useMapStore } from '@/stores/map-store';
 import axiosInstance from '@/utils/request';
 import useSWR from 'swr';
 
@@ -27,13 +27,16 @@ type MapProps = {
   children?: ReactNode;
 };
 export const Map: React.FC<MapProps> = ({ sx, mapId, children }) => {
-  const maxDistance = useMapContext((state) => state.maxDistance);
-  const updateMaxDistance = useMapContext((state) => state.updateMaxDistance);
-  const mapCenter = useMapContext((state) => state.mapCenter);
-  const updateMapCenter = useMapContext((state) => state.updateMapCenter);
-  const zoom = useMapContext((state) => state.zoom);
-  const updateZoom = useMapContext((state) => state.updateZoom);
-  const updatePinInfo = useMapContext((state) => state.updatePinInfo);
+  const {
+    maxDistance,
+    mapCenter,
+    updateMaxDistance,
+    updateMapCenter,
+    zoom,
+    updateZoom,
+    updatePinInfo,
+  } = useMapStore((state) => state);
+
   const defaultLocation: Location = { lng: 0, lat: 0 }; //melbourne
   const [geoLocationData, setGeoLocationData] = useState<Location>(mapCenter || defaultLocation);
   const limit = zoomToLimit(zoom);
@@ -45,7 +48,6 @@ export const Map: React.FC<MapProps> = ({ sx, mapId, children }) => {
     throw new Error('no valid map token');
   }
   const initialZoom = 11;
-  console.log(TOKEN);
   const requestOptions = {
     url: 'http://localhost:8080/api/v1/search/globalSearch',
     method: 'post',
@@ -64,42 +66,22 @@ export const Map: React.FC<MapProps> = ({ sx, mapId, children }) => {
   });
   useEffect(() => {
     if (data) {
-      console.log(data);
       updatePinInfo(data);
     }
   }, [data, updatePinInfo]);
 
-  // get map center when drag end.
-  // debounce for delay useSwr trigger .
-  const setMapCenter = () => {
-    if (mapRef.current?.getCenter()) {
-      updateMapCenter(mapRef.current?.getCenter());
-    }
-  };
-  const debounceCenter = useDebounce(setMapCenter, 700);
-  // update distance and limit when drag end
-  const setMaxDistance = (zoom: number) => {
-    const maxDistance = zoomToDistance(zoom);
-    updateMaxDistance(maxDistance);
-  };
-  const debounceDistance = useDebounce(setMaxDistance, 700);
-  // handle above two debounce
-  const onMapChange = (zoom: number) => {
-    debounceCenter();
-    debounceDistance(zoom);
-  };
   // update max distance when map start
   useEffect(() => {
-    const maxDistance = zoomToDistance(zoom);
-    setMaxDistance(maxDistance);
+    // const maxDistance = zoomToDistance(zoom);
+    handleMaxDistanceChange(zoom);
   }, []);
 
   // ask for user geolocation
   useEffect(() => {
-    const setLocation = async () => {
+    const handleLocation = async () => {
       setGeoLocationData(await getLocation(mapCenter || { lng: 0, lat: 0 }));
     };
-    setLocation();
+    handleLocation();
   }, [getLocation]);
 
   // no geolocation -> user allow geolocation -> move to geolocation
@@ -108,16 +90,36 @@ export const Map: React.FC<MapProps> = ({ sx, mapId, children }) => {
     mapRef.current?.setCenter(geoLocationData);
   }, []);
 
+  // sidebar map click to fly to pin center
+  useEffect(() => {
+    handleMoveMap(mapCenter);
+  }, [mapCenter]);
+
+  // get map center when drag end.
+  // debounce for delay useSwr trigger .
+  const handleMapCenter = () => {
+    if (mapRef.current?.getCenter()) {
+      updateMapCenter(mapRef.current?.getCenter());
+    }
+  };
+  const debounceCenter = useDebounce(handleMapCenter, 700);
+  // update distance and limit when drag end
+  const handleMaxDistanceChange = (zoom: number) => {
+    const maxDistance = zoomToDistance(zoom);
+    updateMaxDistance(maxDistance);
+  };
+  const debounceDistance = useDebounce(handleMaxDistanceChange, 700);
+  // handle above two debounce
+  const handleMapChange = (zoom: number) => {
+    debounceCenter();
+    debounceDistance(zoom);
+  };
+
   // geolocation control, cancel animation
-  const moveMap = useCallback((location: Location) => {
+  const handleMoveMap = useCallback((location: Location) => {
     // updateMapCenter(location);
     mapRef.current?.flyTo({ center: location, duration: 0 });
   }, []);
-
-  // sidebar map click to fly to pin center
-  useEffect(() => {
-    moveMap(mapCenter);
-  }, [mapCenter]);
 
   // set zoom
   const handleZoom = (e: ViewStateChangeEvent<MapInstance>) => {
@@ -145,16 +147,16 @@ export const Map: React.FC<MapProps> = ({ sx, mapId, children }) => {
         minZoom={2.5}
         onZoomEnd={(e) => {
           handleZoom(e);
-          onMapChange(zoom);
+          handleMapChange(zoom);
         }}
         onDragEnd={() => {
-          onMapChange(zoom);
+          handleMapChange(zoom);
         }}
         mapStyle="mapbox://styles/triptribe/clp18ys6w00cb01pq0t4c029g"
         mapboxAccessToken={TOKEN}
       >
         <GeolocateControl
-          onGeolocate={() => moveMap(geoLocationData)}
+          onGeolocate={() => handleMoveMap(geoLocationData)}
           position="top-left"
         />
         <FullscreenControl position="top-left" />

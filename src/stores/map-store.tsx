@@ -8,7 +8,6 @@ type MapState = {
   mapCenter: Location;
   highLightedId?: string;
   pinInfo: PlacesData;
-  imageComplete: boolean;
   popupInfo: CityProps | null;
   zoom: number;
   maxDistance: number;
@@ -16,22 +15,19 @@ type MapState = {
 type MapAction = {
   updateMapCenter: (mapCenter: Location) => void;
   updatePinInfo: (pinInfo: PlacesData) => void;
-  updateImageComplete: (state: boolean) => void;
   updatePopupInfo: (data: CityProps | null) => void;
   updateHighLightedId: (highLightedId: string) => void;
   updateZoom: (zoom: number) => void;
   updateMaxDistance: (maxDistance: number) => void;
 };
 
-export const useMapContext = create<MapState & MapAction>((set) => ({
+export const useMapStore = create<MapState & MapAction>((set) => ({
   mapCenter: { lng: 30, lat: 31 },
   updateMapCenter: (mapCenter) => set(() => ({ mapCenter: mapCenter })),
   highLightedId: '',
   updateHighLightedId: (highLightedId) => set(() => ({ highLightedId: highLightedId })),
   pinInfo: [],
   updatePinInfo: (pinInfo) => set(() => ({ pinInfo: pinInfo })),
-  imageComplete: false,
-  updateImageComplete: (imageComplete) => set(() => ({ imageComplete: imageComplete })),
   popupInfo: null,
   updatePopupInfo: (popupInfo) => set(() => ({ popupInfo: popupInfo })),
   zoom: 11,

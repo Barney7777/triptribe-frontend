@@ -3,9 +3,9 @@ import { Map } from '../map';
 
 import { MapPopUp } from '@/components/map/components/popup';
 import { MapPins } from '@/components/map/components/MapPins';
-import { useMapContext } from '@/contexts/map-context';
+import { useMapStore } from '@/stores/map-store';
 export const MapWithPopup = () => {
-  const popupInfo = useMapContext((state) => state.popupInfo);
+  const popupInfo = useMapStore((state) => state.popupInfo);
 
   return (
     <Map

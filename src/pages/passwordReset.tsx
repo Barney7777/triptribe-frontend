@@ -27,7 +27,6 @@ export default function PasswordReset() {
 
   const onSubmit = (data: PasswordResetInputs) => {
     // Handle the form submission
-    //console.log(data);
   };
 
   return (

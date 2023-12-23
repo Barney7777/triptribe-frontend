@@ -76,19 +76,14 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   }, [dispatch]);
 
   useEffect(() => {
-    initialize().catch((err: Error) => console.log('initialize error', err));
+    initialize().catch((err: Error) => console.error('initialize error', err));
   }, [dispatch, initialize]);
 
   const signIn = useCallback(
     async ({ email, password }: SigninInputs): Promise<void> => {
       try {
         const res = await authSignIn(email, password);
-        // const res = await axios.request({
-        //   method: 'post',
-        //   url: 'http://localhost:8080/api/v1/auth/login',
-        //   data: { email, password },
-        // });
-        console.log('sign in data', res);
+
         const { accessToken, refreshToken } = res.data;
         localStorage.setItem('accessToken', accessToken);
         localStorage.setItem('refreshToken', refreshToken);
@@ -103,7 +98,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
           },
         });
       } catch (err) {
-        console.log('sign in failed', err);
+        console.error('sign in failed', err);
         throw err;
       }
     },
@@ -114,9 +109,8 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     async ({ email, password }: SigninInputs): Promise<void> => {
       try {
         const res = await authRegister(email, password);
-        console.log(res);
       } catch (err) {
-        console.log('sign up failed', err);
+        console.error('sign up failed', err);
         throw err;
       }
     },

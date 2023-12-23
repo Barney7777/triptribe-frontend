@@ -47,7 +47,6 @@ export const NaviTopSearchBar: FC<SearchBarProps> = (props) => {
         },
       })
       .then((res) => {
-        console.log(res);
         let data: SearchDataType<CityProps> = { Attraction: [], Restaurant: [] };
         res.data.forEach((item) => {
           if (item.type === 'Attraction') {
@@ -58,16 +57,20 @@ export const NaviTopSearchBar: FC<SearchBarProps> = (props) => {
         });
         setFetchedData(data);
       })
-      .catch((e) => {
-        console.log('fetch data error', e);
+      .catch((err) => {
+        console.error('fetch data error', err);
       })
       .finally(() => setLoading(false));
   };
-  const fetchDataDebounce = useDebounce(fakeFetch, DEBOUNCE_INTERVAL);
-
   useEffect(() => {
     setOptions(() => [...fetchedData.Attraction, ...fetchedData.Restaurant]);
   }, [fetchedData]);
+  useEffect(() => {
+    if (!open) {
+      setOptions([]);
+    }
+  }, [open]);
+  const fetchDataDebounce = useDebounce(fakeFetch, DEBOUNCE_INTERVAL);
 
   const handleTextInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     setLoading(true);
@@ -77,11 +80,6 @@ export const NaviTopSearchBar: FC<SearchBarProps> = (props) => {
     fetchDataDebounce(newValue); // Pass the new value to fetchDataDebounce
   };
 
-  useEffect(() => {
-    if (!open) {
-      setOptions([]);
-    }
-  }, [open]);
   return (
     <Box {...otherProps}>
       <Autocomplete

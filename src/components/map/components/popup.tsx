@@ -1,12 +1,12 @@
 import { Popup } from 'react-map-gl';
 import React from 'react';
-import { MapItemCard } from '@/components/map/components/MapItemCard';
-import { useMapContext } from '@/contexts/map-context';
+import MapItemCard from '@/components/map/components/MapItemCard';
+import { useMapStore } from '@/stores/map-store';
 
 export const MapPopUp: React.FC = () => {
-  const popupInfo = useMapContext((state) => state.popupInfo);
-  const updatePopupInfo = useMapContext((state) => state.updatePopupInfo);
-  const setPopupInfo = () => {
+  const { popupInfo, updatePopupInfo } = useMapStore((state) => state);
+
+  const handlePopupInfo = () => {
     updatePopupInfo(null);
   };
   if (popupInfo) {
@@ -15,7 +15,7 @@ export const MapPopUp: React.FC = () => {
         anchor="bottom"
         longitude={Number(popupInfo.address.location.lng)}
         latitude={Number(popupInfo.address.location.lat)}
-        onClose={setPopupInfo}
+        onClose={handlePopupInfo}
         maxWidth="240px"
         offset={50}
       >
