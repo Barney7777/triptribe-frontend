@@ -11,7 +11,7 @@ pipeline {
         VERCEL_PROJECT_ID = credentials('VERCEL_PROJECT_ID')
         VERCEL_ORG_ID = credentials('VERCEL_ORG_ID') // Set your Vercel organization ID
     }
-    
+
     stages {
         stage('Checkout') {
             steps {
@@ -20,18 +20,27 @@ pipeline {
             }
         }
 
-        stage('Test'){
+        stage('Install Dependencies') {
             steps {
-
                 script {
                     sh 'npm ci'
                     sh 'npm run lint'
-                    sh 'npm run prettier'
-                }   
+                    sh 'npm run format'
+                }
             }
         }
-        
-         stage('SonarQube Analysis') {
+
+        // stage ('Test Source Code') {
+
+        //     steps {
+        //         script {
+        //             sh 'npm run test'
+        //             sh 'npm run test:coverage'
+        //         }
+        //     }
+        // }
+
+        stage('SonarQube Analysis') {
             environment {
                 scannerHome = tool 'sonarqube'
             }
@@ -43,13 +52,12 @@ pipeline {
                             -Dsonar.projectKey=$JOB_NAME \
                             -Dsonar.projectName=$JOB_NAME \
                             -Dsonar.projectVersion=$BUILD_NUMBER \
-                            -Dsonar.sources=src/ 
+                            -Dsonar.sources=src/
                         """
                         }
                 }
             }
         }
-
 
         stage('Quality Gate') {
             steps {
@@ -86,18 +94,17 @@ pipeline {
             }
         }
     }
-    
-post {
+
+    post {
         success {
                 emailext subject: 'Build Successfully',
                 body: 'The Jenkins build succeed. Please check the build logs for more information. $DEFAULT_CONTENT',
                 recipientProviders: [
                 [$class: 'CulpritsRecipientProvider'],
                 [$class: 'DevelopersRecipientProvider'],
-                [$class: 'RequesterRecipientProvider'] 
+                [$class: 'RequesterRecipientProvider']
             ],
                 to: 'devon.li.devops@gmail.com'
-            
         }
         failure {
             emailext subject: 'Build Failed',
@@ -105,7 +112,7 @@ post {
                 recipientProviders: [
                 [$class: 'CulpritsRecipientProvider'],
                 [$class: 'DevelopersRecipientProvider'],
-                [$class: 'RequesterRecipientProvider'] 
+                [$class: 'RequesterRecipientProvider']
             ],
                 to: 'devon.li.devops@gmail.com'
         }
