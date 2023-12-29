@@ -128,21 +128,29 @@ pipeline {
                 emailext subject: 'Build Successfully',
                 body: 'The Jenkins build succeed. Please check the build logs for more information. $DEFAULT_CONTENT',
                 recipientProviders: [
-                [$class: 'CulpritsRecipientProvider'],
-                [$class: 'DevelopersRecipientProvider'],
-                [$class: 'RequesterRecipientProvider']
-            ],
-                to: 'devon.li.devops@gmail.com'
+                    [$class: 'CulpritsRecipientProvider'],
+                    [$class: 'DevelopersRecipientProvider'],
+                    [$class: 'RequesterRecipientProvider']
+                ],
+                to: 'jlix723@gmail.com'
         }
+
         failure {
-            emailext subject: 'Build Failed',
+                emailext subject: 'Build Failed',
                 body: 'The Jenkins build failed. Please check the build logs for more information. $DEFAULT_CONTENT',
                 recipientProviders: [
-                [$class: 'CulpritsRecipientProvider'],
-                [$class: 'DevelopersRecipientProvider'],
-                [$class: 'RequesterRecipientProvider']
-            ],
-                to: 'devon.li.devops@gmail.com'
+                    [$class: 'CulpritsRecipientProvider'],
+                    [$class: 'DevelopersRecipientProvider'],
+                    [$class: 'RequesterRecipientProvider']
+                ],
+                to: 'jlix723@gmail.com'
+        }
+
+        always {
+            echo 'Slack Notifications.'
+            slackSend channel: '#jenkinscicd',
+                color: COLOR_MAP[currentBuild.currentResult],
+                message: "*${currentBuild.currentResult}:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} \n More info at: ${env.BUILD_URL}"
         }
     }
 }
