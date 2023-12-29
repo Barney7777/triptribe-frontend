@@ -21,7 +21,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Checkout the repository from GitHub
-                checkout([$class: 'GitSCM', branches: [[name: 'feature/*']], userRemoteConfigs: [[url: env.REPO_URL, credentialsId: 'devon']]])
+                checkout([$class: 'GitSCM', branches: [[name: 'feature/Jenkins_pipeline']], userRemoteConfigs: [[url: env.REPO_URL, credentialsId: 'devon']]])
             }
         }
 
