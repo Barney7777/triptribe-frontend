@@ -15,16 +15,13 @@ pipeline {
         VERCEL_TOKEN = credentials('vercel-token') // Create a Jenkins secret credential with the Vercel token
         VERCEL_PROJECT_ID = credentials('VERCEL_PROJECT_ID')
         VERCEL_ORG_ID = credentials('VERCEL_ORG_ID') // Set your Vercel organization ID
-        AWS_REGION = 'ap-southeast-2'
-        s3_bucket_name = 'www.trip-tribe.com-primary'
-        build_folder = 'out'
     }
 
     stages {
         stage('Checkout') {
             steps {
                 // Checkout the repository from GitHub
-                checkout([$class: 'GitSCM', branches: [[name: '*/dev']], userRemoteConfigs: [[url: env.REPO_URL, credentialsId:'devon']]])
+                checkout([$class: 'GitSCM', branches: [[name: 'feature/Jenkins_pipeline']], userRemoteConfigs: [[url: env.REPO_URL, credentialsId: 'devon']]])
             }
         }
 
@@ -80,7 +77,6 @@ pipeline {
                 }
             }
         }
-
         stage('Install Dependencies and Deploy') {
             steps {
                 script {
@@ -93,37 +89,13 @@ pipeline {
                     echo "Vercel Token: ${VERCEL_TOKEN}"
 
                     // Pull Vercel environment information
-                    sh 'vercel pull --yes --environment=production --token=$VERCEL_TOKEN'
+                    sh 'vercel pull --yes --environment=preview --token=$VERCEL_TOKEN'
 
                     // Build project artifacts (if needed)
                     // sh 'npm ci'
-                    sh 'vercel build --prod --token=$VERCEL_TOKEN'
-
-                    input(
-                    id: 'deployToProduction',
-                    message: 'Do you want to deploy to production?',
-                    ok: 'Deploy'
-                    )
-                    sh 'vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN'
+                    sh 'vercel build --token=$VERCEL_TOKEN'
+                    sh 'vercel deploy --prebuilt --token=${VERCEL_TOKEN}'
                 }
-            }
-        }
-
-        stage('Replace next.config file and rerun build') {
-            steps {
-                // Build the static files
-                script {
-                    sh 'mv -f next.config_s3.js next.config.js'
-                    sh 'npm run build'
-                }
-            }
-        }
-
-        stage('deploy to s3 bucket') {
-            steps {
-                    withCredentials([aws(accessKeyVariable:'AWS_ACCESS_KEY_ID', credentialsId:'aws-credential', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
-                            sh "aws s3 cp ./${build_folder}/ s3://${S3_BUCKET_NAME}/ --recursive --region ${AWS_REGION}"
-                    }
             }
         }
     }
