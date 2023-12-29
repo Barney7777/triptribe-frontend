@@ -2,6 +2,8 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## The frontend is built with the following technologies:
 
+#
+
 [Reactjs]
 [Nextjs]
 [ContextAPI]
