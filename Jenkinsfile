@@ -114,6 +114,7 @@ pipeline {
                 // Build the static files
                 script {
                     sh 'mv -f next.config_s3.js next.config.js'
+                    sh 'mv -f /src/pages/index_s3.tsx /src/pages/index.tsx'
                     sh 'npm run build'
                 }
             }
