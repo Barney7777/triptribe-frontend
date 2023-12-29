@@ -33,7 +33,7 @@ pipeline {
                 script {
                     sh 'npm ci'
                     sh 'npm run lint'
-                    sh 'npm run format'
+                    // sh 'npm run format'
                 }
             }
         }
