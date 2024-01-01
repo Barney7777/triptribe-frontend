@@ -61,6 +61,7 @@ const HomepageCard: React.FC<ImageCardProps> = ({
         >
           {showFavorite && <FavoriteIcon color="error" />}
           <Rating
+            data-testid="rating-element"
             name="size-small"
             value={rating}
             size="small"
