@@ -13,7 +13,7 @@ export const getLocation = async (defaultLocation: Location) => {
       return defaultLocation;
     }
   } else {
-    console.log('no navigator.geolocation');
+    console.error('no navigator.geolocation');
     return defaultLocation;
   }
 };

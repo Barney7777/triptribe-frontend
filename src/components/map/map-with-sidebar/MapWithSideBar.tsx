@@ -2,41 +2,40 @@ import { Map } from '@/components/map';
 import { MapPins } from '@/components/map/components/MapPins';
 import { Location } from '@/types/address';
 import { Box, Button, Grid, List, ListItem, Paper } from '@mui/material';
-import React, { useCallback, useEffect, useRef } from 'react';
-import { MapItemCard } from '../components';
-import { useMapContext } from '@/contexts/map-context';
+import React, { Suspense, lazy, useCallback, useEffect, useRef } from 'react';
+import MapItemCard from '@/components/map/components/MapItemCard';
+import { useMapStore } from '@/stores/map-store';
 
 import { CityProps } from '@/types/attractions-restaurants';
+import { Loading } from '@/components/Loading';
+import { CircularLoading } from '@/components/CircularLoading';
 
+// const LazyMapItemCard = lazy(() => import('@/components/map/components/MapItemCard'));
 export const MapWithSideBar = () => {
-  const updateMapCenter = useMapContext((state) => state.updateMapCenter);
-  const updateHighLightedId = useMapContext((state) => state.updateHighLightedId);
-  const pinInfo = useMapContext((state) => state.pinInfo);
-  const popupInfo = useMapContext((state) => state.popupInfo);
+  const { updateMapCenter, updateHighLightedId, pinInfo, popupInfo } = useMapStore(
+    (state) => state
+  );
 
   const listRef = useRef<HTMLUListElement>(null);
 
-  const onHover = (id: string) => {
+  const handleOnHover = (id: string) => {
     updateHighLightedId(id);
   };
-  const offHover = (id: string) => {
+  const handleOffHover = (id: string) => {
     updateHighLightedId('');
   };
-  const onSideBarClick = (location: Location) => {
+  const handleSideBarClick = (location: Location) => {
     updateMapCenter(location);
   };
 
   const handleScroll = useCallback<(popupInfo: CityProps | null) => void>((popupInfo) => {
-    // console.log('popupInfo', popupInfo);
     if (!popupInfo) return;
     const clickPinId = popupInfo?.type + popupInfo?._id;
     const listItem = document.getElementById('list' + clickPinId);
-    // console.log('listitem', listItem);
-    // console.log('useRef list', listRef.current);
+
     if (!listItem) return;
     if (listRef.current) {
       const scrollTop = listItem.offsetTop - listRef.current.offsetTop;
-      console.log('scrollTop', scrollTop);
       listRef.current.scrollTo({ top: scrollTop, behavior: 'smooth' });
     }
   }, []);
@@ -70,11 +69,17 @@ export const MapWithSideBar = () => {
         >
           <Box
             position={'relative'}
-            sx={{ overflowY: 'scroll', height: '100vh' }}
+            sx={{
+              overflowY: 'scroll',
+              height: '100vh',
+              backgroundImage: 'url(/assets/map-sidebar-bkg2.jpg)',
+              backgroundAttachment: 'fixed',
+              backgroundSize: 'contain',
+              backgroundRepeat: 'no-repeat',
+            }}
             ref={listRef}
           >
             <List>
-              {' '}
               <Box
                 position={'absolute'}
                 left={0}
@@ -82,13 +87,11 @@ export const MapWithSideBar = () => {
                 bottom={0}
                 width={'100%'}
                 // height={'100vh'}
-                sx={{
-                  backgroundImage: 'url(/assets/map-sidebar-bkg2.jpg)',
-                  backgroundAttachment: 'fixed',
-                  backgroundSize: 'contain',
-                  backgroundRepeat: 'no-repeat',
-                  // objectFit: 'cover',
-                }}
+                sx={
+                  {
+                    // objectFit: 'cover',
+                  }
+                }
               ></Box>
               {pinInfo.length ? (
                 <>
@@ -104,11 +107,15 @@ export const MapWithSideBar = () => {
                             marginY: 1,
                             width: '100%',
                           }}
-                          onMouseEnter={() => onHover(`${item.type}-${item._id}`)}
-                          onMouseLeave={() => offHover(`${item.type}-${item._id}`)}
-                          onClick={() => onSideBarClick(item.address.location)}
+                          onMouseEnter={() => handleOnHover(`${item.type}-${item._id}`)}
+                          onMouseLeave={() => handleOffHover(`${item.type}-${item._id}`)}
+                          onClick={() => handleSideBarClick(item.address.location)}
                         >
                           <MapItemCard popupInfo={item} />
+                          {/* the effect is not as expected */}
+                          {/* <Suspense fallback={<CircularLoading size={40} />}> */}
+                          {/* <LazyMapItemCard popupInfo={item} /> */}
+                          {/* </Suspense> */}
                         </Paper>
                       </ListItem>
                     );

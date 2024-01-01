@@ -56,7 +56,6 @@ export default function Signin() {
 
   const onSubmit = async (data: SigninInputs) => {
     try {
-      console.log(data);
       await signIn(data);
       enqueueSnackbar('Login Successful!', {
         variant: 'success',

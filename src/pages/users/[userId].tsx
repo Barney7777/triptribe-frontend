@@ -12,7 +12,6 @@ const UserDetailPage = () => {
   const { userId } = router.query;
   const url = `users/${userId}`;
   const { data: userData = {}, isLoading, error } = useRequest<User>({ url });
-  // console.log(userData)
 
   if (isLoading) {
     return <span>Loading...</span>;

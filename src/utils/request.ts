@@ -22,9 +22,7 @@ const addPending = (config: AxiosRequestConfig) => {
 
 const removePending = (config: AxiosRequestConfig) => {
   const pendingKey = getPendingKey(config);
-  // console.log('removePendingKey PendingMap', pendingMap);
   if (pendingMap.has(pendingKey)) {
-    // console.log('removePendingKey PendingMap then', pendingMap);
     const controller = pendingMap.get(pendingKey);
     controller.abort();
     pendingMap.delete(pendingKey);
@@ -38,9 +36,7 @@ const axiosInstance: AxiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (config) => {
     removePending(config);
-    // console.log('afterRemovePendingKey', pendingMap);
     addPending(config);
-    // console.log('afterAddingPendingKey', pendingMap);
     const token = localStorage.getItem('accessToken');
     if (token) {
       config.headers.Authorization = 'Bearer ' + token;
@@ -54,18 +50,15 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (response) => {
     removePending(response.config);
-    // console.log('correct removing', pendingMap);
     return response;
   },
   (error) => {
-    // console.log('responseError', error);
     if (error?.response?.status === 401) {
       localStorage.removeItem('accessToken');
     }
     if (!(error instanceof CanceledError)) {
       removePending(error?.config);
     }
-    // console.log('error removing', pendingMap);
     // TODO: handle other status
     return Promise.reject(error);
   }

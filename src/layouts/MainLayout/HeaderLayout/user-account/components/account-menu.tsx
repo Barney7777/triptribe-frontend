@@ -15,8 +15,13 @@ import { UserAvatar } from './user-avatar';
 import { UserContext } from '@/contexts/user-context/user-context';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
+import { SxProps } from '@mui/system';
 
-export const AccountMenu: React.FC = () => {
+type AccountMenuProps = {
+  anchorOffset: number;
+};
+
+export const AccountMenu: React.FC<AccountMenuProps> = ({ anchorOffset }) => {
   const { enqueueSnackbar } = useSnackbar();
   const { signOut } = useContext(UserContext);
   const router = useRouter();
@@ -91,8 +96,8 @@ export const AccountMenu: React.FC = () => {
                 display: 'block',
                 position: 'absolute',
                 top: 0,
-                right: 14,
                 width: 10,
+                right: anchorOffset,
                 height: 10,
                 bgcolor: 'background.paper',
                 transform: 'translateY(-50%) rotate(45deg)',

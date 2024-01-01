@@ -13,7 +13,6 @@ export const isOpening = (popupInfo: CityProps): OpeningStatus => {
   const timeZone = tzlookup(popupInfo.address.location.lat, popupInfo.address.location.lng);
   const weekday = getCurrentWeekday(timeZone);
 
-  // console.log(popupInfo.openHours[weekday]);
   if (popupInfo.openHours[weekday].isClosed) {
     return 'Closed Temporarily';
   }

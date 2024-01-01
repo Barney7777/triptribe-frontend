@@ -37,6 +37,7 @@ const Filter: FC<FilterProps> = ({ type, closeDrawer, inDrawer = false, setQuery
   const { handleSubmit, control } = useFormContext<FilterQueryParams>();
   const formAllValues = useWatch({ control });
 
+  //
   //submit function: setQueryParams
   const onSubmit = (data: FilterQueryParams) => {
     const parsedFilterData = FilterQueryParamsSchema.parse(data);

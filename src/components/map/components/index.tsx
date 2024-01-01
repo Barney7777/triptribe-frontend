@@ -1,1 +1,1 @@
-export { MapItemCard } from './MapItemCard';
+export { default } from './MapItemCard';

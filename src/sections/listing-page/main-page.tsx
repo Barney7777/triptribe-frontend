@@ -59,7 +59,6 @@ const MainPage: FC<MainPageProps> = ({ type }) => {
 
   //request listing data
   const { queryPath } = useRouterQuery();
-  // console.log('queryParams', queryParams, ' queryPath', queryPath);
   const resourceType = type === MainType.Restaurant ? 'restaurants' : 'attractions';
   const { data = [], isLoading } = useRequest<ListingInfoBasic[]>(
     queryPath ? { url: `/${resourceType}?${queryPath}` } : null
@@ -262,7 +261,7 @@ const MainPage: FC<MainPageProps> = ({ type }) => {
                 <HeroMap
                   mapIsOpen={mapIsOpen}
                   toggleMapIsOpen={toggleMapIsOpen}
-                />{' '}
+                />
               </Box>
             </Grid>
             <Grid

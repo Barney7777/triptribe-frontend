@@ -6,7 +6,6 @@ import { NaviTopSearchBar } from '@/layouts/MainLayout/HeaderLayout/navi-top-sea
 import { PlacesTab } from '@/layouts/MainLayout/HeaderLayout/places-tab';
 import { LogoButton } from '@/layouts/MainLayout/HeaderLayout/logo-button';
 import { usePathname } from 'next/navigation';
-import { MobileMenuButton } from './components/mobile-menu-button';
 import { useTheme } from '@mui/material';
 import { UserAccount } from './user-account';
 export const TopNav: FC = () => {
@@ -34,8 +33,6 @@ export const TopNav: FC = () => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, [isHomepage, showSearchBar]);
-
-  // console.log('Rendered', pathname);
 
   const theme = useTheme();
   const responsiveStyle = {
@@ -69,17 +66,9 @@ export const TopNav: FC = () => {
           flexWrap: 'nowrap',
         }}
       >
-        {/* <Grid> */}
-        <MobileMenuButton />
-        {/* </Grid> */}
         <Grid px={2}>
           <LogoButton />
         </Grid>
-        {!showSearchBar && (
-          <Grid>
-            <MobileMenuButton sx={{ height: 0 }} />
-          </Grid>
-        )}
         {showSearchBar && (
           <Grid
             item
@@ -99,7 +88,6 @@ export const TopNav: FC = () => {
             />
           </Grid>
         )}
-
         {/* places-tab. in middle */}
         {!isSearAttrPage && (
           <Grid
@@ -116,7 +104,6 @@ export const TopNav: FC = () => {
             <PlacesTab />
           </Grid>
         )}
-
         {/* right top corner. different display with different login state */}
         <Grid
           item
@@ -125,7 +112,7 @@ export const TopNav: FC = () => {
           xs={3}
           sx={responsiveStyle}
         >
-          <UserAccount />
+          <UserAccount accountMenuStyle={'account menu'} />
         </Grid>
       </Grid>
     </Box>

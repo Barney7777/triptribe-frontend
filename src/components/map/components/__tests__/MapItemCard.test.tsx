@@ -1,4 +1,4 @@
-import { MapItemCard } from '..';
+import MapItemCard from '@/components/map/components/MapItemCard';
 import {
   render,
   screen,
@@ -252,7 +252,6 @@ describe.skip('Banner Map', () => {
     //     bubbles: true,
     //     cancelable: true,
     //   });
-    //   console.log(mockRouter);
     //   // expect(mockRouter.pathname)
     // });
   });

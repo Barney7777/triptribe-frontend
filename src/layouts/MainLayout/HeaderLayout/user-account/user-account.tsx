@@ -1,13 +1,24 @@
 import Box from '@mui/material/Box';
 import { AccountMenu } from './components/account-menu';
 import React, { useContext, useEffect, useState } from 'react';
-import { Avatar, Skeleton } from '@mui/material';
+import { Avatar, Skeleton, SxProps } from '@mui/material';
 import { SignInSignUp } from './components/sign-in-sign-up';
 import { UserContext } from '@/contexts/user-context/user-context';
+import { AccountDetail } from './components/account-detail';
 
-export const UserAccount: React.FC = () => {
+type UserAccountProps = {
+  userAccountStyle?: SxProps;
+  accountMenuStyle: 'account menu' | 'account detail';
+};
+
+export const UserAccount: React.FC<UserAccountProps> = ({ userAccountStyle, accountMenuStyle }) => {
   const { isAuthenticated } = useContext(UserContext);
   const [loading, setLoading] = useState<boolean>(true);
+
+  const accountMenuList = {
+    'account menu': <AccountMenu anchorOffset={14} />,
+    'account detail': <AccountDetail />,
+  };
 
   useEffect(() => {
     setTimeout(() => {
@@ -25,6 +36,7 @@ export const UserAccount: React.FC = () => {
         opacity: loading ? 0 : 1,
         transition: '0.5s',
         overflow: 'hidden',
+        ...userAccountStyle,
       }}
     >
       {loading ? (
@@ -35,7 +47,7 @@ export const UserAccount: React.FC = () => {
           <Avatar />
         </Skeleton>
       ) : isAuthenticated ? (
-        <AccountMenu />
+        accountMenuList[accountMenuStyle]
       ) : (
         <SignInSignUp />
       )}
