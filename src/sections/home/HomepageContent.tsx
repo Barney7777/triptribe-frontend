@@ -28,7 +28,10 @@ const HomepageContent: React.FC = () => {
   const restaurantsImageList: ImageData[] = Array(8).fill(exampleImageData2);
 
   return (
-    <Box sx={{ '& > *': { my: 10 } }}>
+    <Box
+      sx={{ '& > *': { my: 10 } }}
+      data-testid="homepage-content"
+    >
       <HomepageList
         listTitle="Attractions"
         imageList={attractionsImageList}
