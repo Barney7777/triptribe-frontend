@@ -68,7 +68,7 @@ export const GeneralCard = (props: GeneralCardProps) => {
                 }}
               >
                 <Avatar
-                  src={user.avatarUrl}
+                  src={user.userAvatar?.imageUrl ?? '/assets/download.jpeg'}
                   sx={{
                     height: 150,
                     m: 2,

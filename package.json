@@ -27,6 +27,7 @@
     "@mui/icons-material": "^5.14.15",
     "@mui/material": "^5.14.13",
     "@mui/system": "^5.14.13",
+    "@sentry/nextjs": "^7.91.0",
     "@types/mapbox-gl": "^2.7.18",
     "@types/tz-lookup": "^6.1.2",
     "@types/yup": "^0.32.0",

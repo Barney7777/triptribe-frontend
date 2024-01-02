@@ -95,9 +95,9 @@ export const MobileMenuButton = ({ sx }: { sx?: SxProps }) => {
             // secondaryTypographyProps={{ color: '#B5BCC4' }}
           />
         </ListItem>
-        <ListItem sx={{ padding: 0, ml: -1, mr: 1 }}>
+        <ListItem sx={{ padding: 0, ml: -1.75, mr: 1 }}>
           <UserAccount
-            userAccountStyle={{ justifyContent: 'center' }}
+            userAccountStyle={{ justifyContent: 'start' }}
             accountMenuStyle={'account detail'}
           />
         </ListItem>

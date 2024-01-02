@@ -8,10 +8,6 @@ import { FavoritesCard } from './FavoritesCard';
 import { ReviewsCard } from './ReviewsCard';
 import { User } from '@/types/user';
 
-type TabProps = {
-  user: User;
-};
-
 type TabPanelProps = {
   children?: React.ReactNode;
   index: number;
@@ -44,9 +40,10 @@ function a11yProps(index: number) {
     'aria-controls': `simple-tabpanel-${index}`,
   };
 }
-
-export default function TabPanel(props: TabProps) {
-  const { user } = props;
+type TabProps = {
+  user: User;
+};
+const TabPanel: React.FC<TabProps> = ({ user }) => {
   const [value, setValue] = React.useState(0);
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -104,4 +101,6 @@ export default function TabPanel(props: TabProps) {
       </CustomTabPanel>
     </Box>
   );
-}
+};
+
+export default TabPanel;
