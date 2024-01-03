@@ -90,7 +90,7 @@ export const GeneralCard: React.FC<GeneralCardProps> = ({ user }) => {
 
   const charLimit = 300;
   const watchDescription = watch('description');
-  const charLeft = charLimit - watchDescription.length;
+  const charLeft = charLimit - watchDescription?.length;
 
   return (
     <Container>

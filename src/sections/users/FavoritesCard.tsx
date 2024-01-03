@@ -1,41 +1,52 @@
-import { Container, Grid, Typography, CircularProgress } from '@mui/material';
+import { Button, Container, Grid, Typography, CircularProgress } from '@mui/material';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import PlaceCard from '../../components/PlaceCard';
 import { Attraction, MainType, Restaurant } from '@/types/general';
-import useSWR from 'swr';
 import axiosInstance from '@/utils/request';
 import Error from '@/components/Error';
-import PlaceCard from '@/components/PlaceCard';
+import useSWR from 'swr';
 
-export const FavoritesCard = () => {
+type FavoritesCardProps = {
+  isMe: boolean;
+};
+
+export const FavoritesCard: React.FC<FavoritesCardProps> = ({ isMe }) => {
   const restaurantUrl = '/users/me/saves/Restaurant';
   const attractionUrl = '/users/me/saves/Attraction';
 
-  const restaurantsRequest = {
-    url: restaurantUrl,
-    method: 'get',
-  };
-
-  const attractionRequest = {
-    url: attractionUrl,
-    method: 'get',
-  };
+  const fetcher = async (url: string) => await axiosInstance.get(url).then((res) => res.data);
 
   const {
     data: restaurantsData,
     isLoading: isRestaurantsLoading,
     error: restaurantsError,
-  } = useSWR<Restaurant[]>(restaurantsRequest, async () => {
-    const response = await axiosInstance.request<Restaurant[]>(restaurantsRequest);
-    return response.data;
+    mutate: restaurantMutate,
+  } = useSWR<Restaurant[]>(restaurantUrl, fetcher, {
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
   });
 
   const {
     data: attractionsData,
     isLoading: isAttractionsLoading,
     error: attractionsError,
-  } = useSWR<Attraction[]>(attractionRequest, async () => {
-    const response = await axiosInstance.request<Attraction[]>(attractionRequest);
-    return response.data;
+    mutate: attractionMutate,
+  } = useSWR<Attraction[]>(attractionUrl, fetcher, {
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
   });
+
+  const handleDeleteMyRestaurant = async (restaurantId: string) => {
+    await axiosInstance.delete(`/users/me/saves/Restaurant/${restaurantId}`);
+    restaurantMutate();
+  };
+
+  const handleDeleteMyAttraction = async (attractionId: string) => {
+    await axiosInstance.delete(`/users/me/saves/Attraction/${attractionId}`);
+    attractionMutate();
+  };
 
   return (
     <Container>
@@ -88,13 +99,27 @@ export const FavoritesCard = () => {
                   overAllRating={restaurantItem.overAllRating}
                   placeType={`${MainType.Restaurant}s`}
                 />
+                <Button
+                  size="small"
+                  variant="outlined"
+                  startIcon={<DeleteForeverIcon />}
+                  color="error"
+                  sx={{
+                    display: isMe ? 'flex' : 'none',
+                    ml: 'auto',
+                    mr: 'auto',
+                  }}
+                  onClick={() => handleDeleteMyRestaurant(restaurantItem._id)}
+                >
+                  Delete
+                </Button>
               </Grid>
             );
           })
         ) : (
           <Error
-            errorMessage={restaurantsError.message}
-            errorStatus={restaurantsError.response?.status}
+            errorMessage={restaurantsError!.message}
+            errorStatus={restaurantsError?.response?.status}
           />
         )}
         <Grid
@@ -144,13 +169,27 @@ export const FavoritesCard = () => {
                   overAllRating={attractionItem.overAllRating}
                   placeType={`${MainType.Attraction}s`}
                 />
+                <Button
+                  size="small"
+                  variant="outlined"
+                  startIcon={<DeleteForeverIcon />}
+                  color="error"
+                  sx={{
+                    display: isMe ? 'flex' : 'none',
+                    ml: 'auto',
+                    mr: 'auto',
+                  }}
+                  onClick={() => handleDeleteMyAttraction(attractionItem._id)}
+                >
+                  Delete
+                </Button>
               </Grid>
             );
           })
         ) : (
           <Error
-            errorMessage={attractionsError.message}
-            errorStatus={attractionsError.response?.status}
+            errorMessage={attractionsError!.message}
+            errorStatus={attractionsError?.response?.status}
           />
         )}
       </Grid>

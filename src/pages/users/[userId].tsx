@@ -70,8 +70,8 @@ const UserDetailPage = () => {
         {data && (
           <>
             <TabPanel
-              user={data}
-              showPrivacyTabs={isMe}
+              user={data as User}
+              isMe={isMe}
             />
           </>
         )}

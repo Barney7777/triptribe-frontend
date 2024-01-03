@@ -40,11 +40,13 @@ function a11yProps(index: number) {
     'aria-controls': `simple-tabpanel-${index}`,
   };
 }
+
 type TabProps = {
   user: User;
-  showPrivacyTabs: boolean;
+  isMe: boolean;
 };
-const TabPanel: React.FC<TabProps> = ({ user, showPrivacyTabs }) => {
+
+const TabPanel: React.FC<TabProps> = ({ user, isMe }) => {
   const [value, setValue] = React.useState(0);
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -73,7 +75,7 @@ const TabPanel: React.FC<TabProps> = ({ user, showPrivacyTabs }) => {
     },
   ];
 
-  if (!showPrivacyTabs) {
+  if (!isMe) {
     tabs = tabs.filter((tab) => !tab.privacyTab);
   }
 
@@ -105,7 +107,10 @@ const TabPanel: React.FC<TabProps> = ({ user, showPrivacyTabs }) => {
               key={index}
               index={index}
             >
-              <tab.component user={user} />
+              <tab.component
+                isMe={isMe}
+                user={user}
+              />
             </CustomTabPanel>
           );
         })}
