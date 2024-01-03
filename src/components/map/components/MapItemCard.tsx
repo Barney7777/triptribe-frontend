@@ -38,6 +38,17 @@ const MapItemCard: React.FC<MapItemCardProps> = ({ popupInfo }) => {
     setImageComplete(true);
   };
 
+  useEffect(() => {
+    setImageComplete(false);
+  }, [popupInfo._id]);
+
+  // when card off mount, turn it off
+  useEffect(() => {
+    return () => {
+      setImageComplete(false);
+    };
+  }, []);
+
   return (
     // add the key will tell react to render the next opened card
     <Card key={`card_${popupInfo.type}_${popupInfo._id}`}>
