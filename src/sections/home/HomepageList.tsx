@@ -4,19 +4,25 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 
-type ImageData = {
-  imageSrc: string;
-  title: string;
-  comment: string;
-  rating: number;
+type ImageCardProps = {
+  _id: string;
+  name: string;
+  description: string;
+  overAllRating: number;
+  photos: {
+    imageUrl: string;
+    _id: string;
+  }[];
 };
 
 type HomepageListProps = {
   listTitle: string;
-  imageList: ImageData[];
+  imageList: ImageCardProps[];
 };
 
 const HomepageList: React.FC<HomepageListProps> = ({ listTitle, imageList }) => {
+  const placeType = listTitle.toLowerCase();
+
   return (
     <Box>
       <Typography
@@ -39,10 +45,12 @@ const HomepageList: React.FC<HomepageListProps> = ({ listTitle, imageList }) => 
             md={3}
           >
             <HomepageCard
-              imageSrc={image.imageSrc}
-              title={image.title}
-              comment={image.comment}
-              rating={image.rating}
+              _id={image._id}
+              imageUrl={image.photos[0].imageUrl}
+              name={image.name}
+              description={image.description}
+              overAllRating={image.overAllRating}
+              placeType={placeType}
             />
           </Grid>
         ))}
