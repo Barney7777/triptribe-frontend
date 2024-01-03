@@ -1,5 +1,5 @@
-import axios, { AxiosInstance, AxiosRequestConfig, CanceledError } from 'axios';
-
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, CanceledError } from 'axios';
+import * as Sentry from '@sentry/nextjs';
 const pendingMap = new Map();
 
 const getPendingKey = (config: AxiosRequestConfig) => {
@@ -43,7 +43,10 @@ axiosInstance.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => {
+    Sentry.captureException(error);
+    Promise.reject(error);
+  }
 );
 
 axiosInstance.interceptors.response.use(
@@ -52,6 +55,7 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   (error) => {
+    Sentry.captureException(error);
     if (!(error instanceof CanceledError)) {
       removePending(error?.config);
     }

@@ -11,7 +11,7 @@ const UserDetailPage = () => {
   const router = useRouter();
   const { userId } = router.query;
   const url = `users/${userId}`;
-  const { data: userData = {}, isLoading, error } = useRequest<User>({ url });
+  const { data: userData = null, isLoading, error } = useRequest<User>({ url });
 
   if (isLoading) {
     return <span>Loading...</span>;
@@ -40,7 +40,7 @@ const UserDetailPage = () => {
         </Box>
         {userData && (
           <>
-            <TabPanel user={{ avatarUrl: '/assets/download.jpeg', ...userData } as User} />
+            <TabPanel user={userData} />
           </>
         )}
       </Container>
