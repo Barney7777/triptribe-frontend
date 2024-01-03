@@ -61,7 +61,7 @@ const MainPage: FC<MainPageProps> = ({ type }) => {
   const { queryPath } = useRouterQuery();
   const resourceType = type === MainType.Restaurant ? 'restaurants' : 'attractions';
   const { data = [], isLoading } = useRequest<ListingInfoBasic[]>(
-    queryPath ? { url: `/${resourceType}?${queryPath}` } : null
+    queryPath ? { url: `/${resourceType}?${queryPath}`, isAbortWhenUnmount: true } : null
   );
 
   // get chipData: parsed from queryParams ->show chips

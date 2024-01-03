@@ -31,7 +31,9 @@ export default function useRequest<Data = unknown, Error = unknown>(
   }
   useEffect(() => {
     return () => {
-      controller.abort();
+      if (request?.isAbortWhenUnmount === true) {
+        controller.abort();
+      }
     };
   }, [controller]);
 
