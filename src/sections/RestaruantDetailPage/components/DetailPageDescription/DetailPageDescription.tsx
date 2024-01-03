@@ -13,6 +13,8 @@ type DetailPageDescriptionProps = {
   error: any;
   isLoading: boolean;
 };
+import Reviews from './components/Reviews/reviews';
+
 const DetailPageDescription: React.FC<DetailPageDescriptionProps> = ({
   data,
   error,
@@ -119,8 +121,6 @@ const DetailPageDescription: React.FC<DetailPageDescriptionProps> = ({
             marginTop: '20px',
             maxWidth: '1200px',
             width: '100%',
-            maxHeight: '500px',
-            height: '300px',
           }}
         >
           <Grid
@@ -137,7 +137,7 @@ const DetailPageDescription: React.FC<DetailPageDescriptionProps> = ({
                   bgcolor: 'white',
                   marginRight: isDesktop ? '20px' : '0px',
                   borderRadius: '10px',
-                  height: '100%',
+                  height: '300px',
                 }}
               >
                 <Box sx={{ padding: '32px' }}>
@@ -162,7 +162,9 @@ const DetailPageDescription: React.FC<DetailPageDescriptionProps> = ({
               xs={12}
               md={8}
             >
-              <Box sx={{ padding: '32px' }}>Reviews</Box>
+              <Box sx={{ padding: '32px' }}>
+                <Reviews />
+              </Box>
             </Grid>
           </Grid>
         </Box>

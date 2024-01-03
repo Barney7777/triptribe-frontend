@@ -2,8 +2,6 @@ import axios, { AxiosInstance, AxiosRequestConfig, CanceledError } from 'axios';
 
 const pendingMap = new Map();
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
-
 const getPendingKey = (config: AxiosRequestConfig) => {
   let { url, method, params, data } = config;
   if (typeof data === 'string') data = JSON.parse(data);
@@ -29,6 +27,8 @@ const removePending = (config: AxiosRequestConfig) => {
   }
 };
 
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: BASE_URL,
 });
@@ -41,7 +41,6 @@ axiosInstance.interceptors.request.use(
     if (token) {
       config.headers.Authorization = 'Bearer ' + token;
     }
-
     return config;
   },
   (error) => Promise.reject(error)
@@ -53,11 +52,11 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   (error) => {
-    if (error?.response?.status === 401) {
-      localStorage.removeItem('accessToken');
-    }
     if (!(error instanceof CanceledError)) {
       removePending(error?.config);
+    }
+    if (error?.response?.status === 401) {
+      localStorage.removeItem('accessToken');
     }
     // TODO: handle other status
     return Promise.reject(error);

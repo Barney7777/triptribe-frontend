@@ -10,6 +10,8 @@ type RatingDistribution = {
   rating: number;
 };
 
+import { Layout } from '@/layouts/MainLayout';
+
 const RestaurantDetailPage = () => {
   const router = useRouter();
   const { id } = router.query;
@@ -24,19 +26,21 @@ const RestaurantDetailPage = () => {
   }, [id]);
 
   return (
-    <DetailPageLayout>
-      <DetailPageHeader />
-      {id ? (
-        <DetailPageDescription
-          data={data || []}
-          error={error}
-          isLoading={isLoading}
-        />
-      ) : null}
+    <Layout>
+      <DetailPageLayout>
+        <DetailPageHeader />
+        {id ? (
+          <DetailPageDescription
+            data={data || []}
+            error={error}
+            isLoading={isLoading}
+          />
+        ) : null}
 
-      <h1>Restaurant Detail Page</h1>
-      {restaurantData ? <h1>Restaurant: {restaurantData}</h1> : <p>Loading...</p>}
-    </DetailPageLayout>
+        <h1>Restaurant Detail Page</h1>
+        {restaurantData ? <h1>Restaurant: {restaurantData}</h1> : <p>Loading...</p>}
+      </DetailPageLayout>
+    </Layout>
   );
 };
 
