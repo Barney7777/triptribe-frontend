@@ -3,9 +3,9 @@ import { Container, Box, Typography } from '@mui/material';
 import Error from '@/components/Error';
 import TabPanel from '@/sections/users/TabPanel';
 import { User } from '@/types/user';
-import { Layout } from '@/layouts/MainLayout';
 import axiosInstance from '@/utils/request';
 import useSWR from 'swr';
+import Layout from '@/layouts/MainLayout';
 
 const UserDetailPage = () => {
   const router = useRouter();

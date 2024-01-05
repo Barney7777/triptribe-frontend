@@ -1,7 +1,7 @@
 import React from 'react';
 import Terms from '@/components/Terms';
 import { Box } from '@mui/material';
-import { Layout } from '@/layouts/MainLayout';
+import Layout from '@/layouts/MainLayout';
 
 export default function terms() {
   return (

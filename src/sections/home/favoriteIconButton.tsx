@@ -18,7 +18,7 @@ const FavoriteIconButton: FC<CustomFavoriteIconButtonProps> = ({
       sx={{ cursor: 'pointer' }}
       {...props}
     >
-      {isFavorite ? <Favorite color="success" /> : <FavoriteBorder color="success" />}
+      {isFavorite ? <Favorite color="error" /> : <FavoriteBorder color="error" />}
     </IconButton>
   );
 };

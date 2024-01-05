@@ -49,7 +49,7 @@ const schema = yup.object().shape({
   terms: yup.boolean().default(false).oneOf([true], 'You must agree to the Terms and Conditions'),
 });
 
-const SignUp = () => {
+const SignUpPage = () => {
   const {
     control,
     handleSubmit,
@@ -299,4 +299,4 @@ const SignUp = () => {
   );
 };
 
-export default SignUp;
+export default SignUpPage;

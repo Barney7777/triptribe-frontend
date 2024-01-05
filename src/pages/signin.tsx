@@ -29,7 +29,7 @@ const validationSchema = yup.object().shape({
     .min(8, 'Password must be at least 8 characters long'),
 });
 
-export default function Signin() {
+const SignInPage = () => {
   const {
     control,
     handleSubmit,
@@ -205,4 +205,6 @@ export default function Signin() {
       </Box>
     </AuthPageContainer>
   );
-}
+};
+
+export default SignInPage;

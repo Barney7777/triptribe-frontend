@@ -1,9 +1,9 @@
 import { Container, Grid, Typography, CircularProgress } from '@mui/material';
-import ListingCard from '../listing-page/listing-card';
 import { Attraction, MainType, Restaurant } from '@/types/general';
 import useSWR from 'swr';
 import axiosInstance from '@/utils/request';
 import Error from '@/components/Error';
+import PlaceCard from '@/components/PlaceCard';
 
 export const FavoritesCard = () => {
   const restaurantUrl = '/users/me/saves/Restaurant';
@@ -79,10 +79,14 @@ export const FavoritesCard = () => {
                 md={3}
                 key={index}
               >
-                <ListingCard
+                <PlaceCard
                   key={index}
-                  listingCardInfo={restaurantItem}
-                  type={MainType.Restaurant}
+                  _id={restaurantItem._id}
+                  imageUrl={restaurantItem.photos[0]?.imageUrl}
+                  name={restaurantItem.name}
+                  description={restaurantItem.description}
+                  overAllRating={restaurantItem.overAllRating}
+                  placeType={`${MainType.Restaurant}s`}
                 />
               </Grid>
             );
@@ -131,10 +135,14 @@ export const FavoritesCard = () => {
                 md={3}
                 key={index}
               >
-                <ListingCard
+                <PlaceCard
                   key={index}
-                  listingCardInfo={attractionItem}
-                  type={MainType.Attraction}
+                  _id={attractionItem._id}
+                  imageUrl={attractionItem.photos[0]?.imageUrl}
+                  name={attractionItem.name}
+                  description={attractionItem.description}
+                  overAllRating={attractionItem.overAllRating}
+                  placeType={`${MainType.Attraction}s`}
                 />
               </Grid>
             );

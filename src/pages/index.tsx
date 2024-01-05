@@ -2,7 +2,7 @@ import React from 'react';
 import Box from '@mui/material/Box';
 import { BannerMapToggle } from '@/sections/home/banner-map-toggle';
 import HomepageContent from '@/sections/home/HomepageContent';
-import { Layout } from '@/layouts/MainLayout';
+import Layout from '@/layouts/MainLayout';
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 
 type MapQueryShown = boolean;
@@ -12,7 +12,7 @@ const HomePage: React.FC = ({
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   return (
     <Layout>
-      <Box component="main">
+      <Box>
         <BannerMapToggle mapQueryShown={mapQueryShown} />
         <HomepageContent />
       </Box>

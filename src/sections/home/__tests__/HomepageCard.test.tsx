@@ -1,17 +1,21 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import HomepageCard from '../HomepageCard';
+import PlaceCard from '@/components/PlaceCard';
 
-describe('HomepageCard component', () => {
+describe('PlaceCard component', () => {
   const defaultProps = {
-    imageSrc: '/assets/operahouse01.png',
+    _id: 'asdasdasdasd123',
+    name: 'sample',
+    description: 'long description',
+    imageUrl: '/assets/operahouse01.png',
     title: 'Test Title',
     comment: 'Test Comment',
-    rating: 3,
+    overAllRating: 3,
+    placeType: 'Restaurant',
   };
 
-  test('renders HomepageCard component with provided props', () => {
-    render(<HomepageCard {...defaultProps} />);
+  test('renders PlaceCard component with provided props', () => {
+    render(<PlaceCard {...defaultProps} />);
 
     const titleElement = screen.getByText('Test Title');
     expect(titleElement).toBeInTheDocument();

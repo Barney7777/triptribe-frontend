@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Container, Typography, Button, SvgIcon } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import NextLink from 'next/link';
-import { Layout } from '@/layouts/MainLayout';
+import Layout from '@/layouts/MainLayout';
 
 interface ErrorProps {
   errorMessage: string;

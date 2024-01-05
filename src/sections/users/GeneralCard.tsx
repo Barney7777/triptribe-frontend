@@ -126,7 +126,6 @@ export const GeneralCard = (props: GeneralCardProps) => {
                 label="Email Address"
                 value={user.email}
                 disabled
-                defaultValue="xxx.xx@email.com"
                 fullWidth
                 sx={{
                   m: 1,
@@ -186,7 +185,6 @@ export const GeneralCard = (props: GeneralCardProps) => {
               multiline
               rows={4}
               sx={{ mt: 1.5 }}
-              defaultValue="xxx"
               onChange={handleTextInput}
               value={inputText}
               inputProps={{

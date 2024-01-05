@@ -13,7 +13,8 @@ export type MainTypeCapital = 'Restaurants' | 'Attractions' | 'Restaurant' | 'At
 
 export type PageDataResponse<T> = {
   data: T;
-  pageCount: number;
+  skip: number;
+  limit: number;
   total: number;
 };
 

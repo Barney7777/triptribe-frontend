@@ -19,13 +19,18 @@ export interface Config<Data = unknown, Error = unknown>
   extends Omit<SWRConfiguration<AxiosResponse<Data>, AxiosError<Error>>, 'fallbackData'> {
   fallbackData?: Data;
 }
+
 // use axiosInstance.request(config) -> config={method:...,url:...,data:...}
 // https://axios-http.com/docs/req_config
 export default function useRequest<Data = unknown, Error = unknown>(
   request: GetRequest,
   { fallbackData, ...config }: Config<Data, Error> = {}
 ): Return<Data, Error> {
-  const controller = useMemo(() => new AbortController(), [request?.url]);
+  const controller = useMemo(
+    () => new AbortController(),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [request?.url]
+  );
   if (request !== null) {
     request = { ...request, controller };
   }
@@ -35,6 +40,7 @@ export default function useRequest<Data = unknown, Error = unknown>(
         controller.abort();
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [controller]);
 
   const {
@@ -45,11 +51,6 @@ export default function useRequest<Data = unknown, Error = unknown>(
     mutate,
   } = useSWR<AxiosResponse<Data>, AxiosError<Error>>(
     request,
-    /**
-     * NOTE: Typescript thinks `request` can be `null` here, but the fetcher
-     * function is actually only called by `useSWR` when it isn't.
-     */
-
     () => axiosInstance.request<Data>(request!),
     {
       revalidateOnFocus: false,
@@ -66,6 +67,7 @@ export default function useRequest<Data = unknown, Error = unknown>(
       ...config,
     }
   );
+
   return {
     data: response && response.data,
     response,

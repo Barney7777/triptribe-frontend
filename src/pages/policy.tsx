@@ -1,7 +1,7 @@
 import React from 'react';
 import Policy from '@/components/Policy';
 import { Box } from '@mui/material';
-import { Layout } from '@/layouts/MainLayout';
+import Layout from '@/layouts/MainLayout';
 
 export default function policy() {
   return (

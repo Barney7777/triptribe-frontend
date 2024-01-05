@@ -7,8 +7,6 @@ import { SecurityCard } from './SecurityCard';
 import { FavoritesCard } from './FavoritesCard';
 import { ReviewsCard } from './ReviewsCard';
 import { User } from '@/types/user';
-import ListingCard from '@/sections/listing-page/listing-card';
-import { MainType } from '@/types/general';
 
 type TabPanelProps = {
   children?: React.ReactNode;

@@ -27,10 +27,8 @@ const removePending = (config: AxiosRequestConfig) => {
   }
 };
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
-
 const axiosInstance: AxiosInstance = axios.create({
-  baseURL: BASE_URL,
+  baseURL: process.env.NEXT_PUBLIC_REST_API_URL,
 });
 
 axiosInstance.interceptors.request.use(

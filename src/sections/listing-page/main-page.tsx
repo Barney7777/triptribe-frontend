@@ -2,7 +2,6 @@ import { FC, useEffect, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { Box, Card, CardMedia, Pagination, Skeleton, Typography } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
-import ListingCard from '@/sections/listing-page/listing-card';
 import SideDrawer from '@/sections/listing-page/side-drawer';
 import {
   FilterChipData,
@@ -10,13 +9,13 @@ import {
   FilterQueryParamsSchema,
   ListingInfoBasic,
   MainType,
+  PageDataResponse,
   QueryParamsSchema,
   QueryParamsType,
 } from '@/types/general';
 import ViewToggleButton from './button/view-toggle-button';
 import FilterSortButton from './button/filter-sort-button';
 import useRequest from '@/hooks/use-request';
-import ListingList from './listing-list';
 import HeroMap from './button/hero-map-button';
 import FilterChips from './filter-chips';
 import useRouterQuery from '@/hooks/use-router-query';
@@ -24,7 +23,8 @@ import FilterMatchInfo from './filter-match-info';
 import SortSelect from './button/sort-select';
 import Filter from './filter';
 import { MapWithSideBarModal } from '@/components/map/map-with-sidebar';
-
+import SkeletonCard from '@/components/SkeletonCard';
+import PlaceCard from '@/components/PlaceCard';
 interface MainPageProps {
   type: MainType;
 }
@@ -47,6 +47,7 @@ const MainPage: FC<MainPageProps> = ({ type }) => {
       return;
     }
     setQueryParams(parsedUrlQuery);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isRouterReady]);
 
   //set url on queryParams change
@@ -55,15 +56,16 @@ const MainPage: FC<MainPageProps> = ({ type }) => {
       return;
     }
     setUrlQuery(queryParams);
-  }, [isRouterReady, JSON.stringify(queryParams)]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isRouterReady, queryParams]);
 
   //request listing data
   const { queryPath } = useRouterQuery();
   const resourceType = type === MainType.Restaurant ? 'restaurants' : 'attractions';
-  const { data = [], isLoading } = useRequest<ListingInfoBasic[]>(
+  const { data: responseData, isLoading } = useRequest<PageDataResponse<ListingInfoBasic[]>>(
     queryPath ? { url: `/${resourceType}?${queryPath}`, isAbortWhenUnmount: true } : null
   );
-
+  const { data = [] } = responseData || {};
   // get chipData: parsed from queryParams ->show chips
   const chipData: FilterChipData[] = [];
   const filterChipData = FilterQueryParamsSchema.parse(queryParams);
@@ -178,6 +180,7 @@ const MainPage: FC<MainPageProps> = ({ type }) => {
   const toggleMapIsOpen = (state: boolean) => {
     setMapIsOpen(state);
   };
+
   return (
     <div>
       <SideDrawer
@@ -186,6 +189,7 @@ const MainPage: FC<MainPageProps> = ({ type }) => {
         type={type}
         setQueryParams={setQueryParams}
       />
+
       <Card
         elevation={2}
         sx={{ borderRadius: 1, height: 300, mt: 2 }}
@@ -195,17 +199,20 @@ const MainPage: FC<MainPageProps> = ({ type }) => {
           sx={{ height: '100%' }}
         />
       </Card>
+
       <Grid
         xs={12}
         container
         justifyContent="space-between"
         flexDirection="row"
       >
+        {/* desktop sidebar */}
         <Grid
           container
           sx={{ display: { xs: 'none', lg: 'block' }, pr: 3, mt: 2 }}
           md={3}
         >
+          {/* sidebar map */}
           <Grid>
             <Box sx={{ height: 100, mb: 2 }}>
               <HeroMap
@@ -218,6 +225,7 @@ const MainPage: FC<MainPageProps> = ({ type }) => {
               />
             </Box>
           </Grid>
+          {/* sidebar filter */}
           <Grid>
             <Card
               elevation={2}
@@ -234,13 +242,14 @@ const MainPage: FC<MainPageProps> = ({ type }) => {
             </Card>
           </Grid>
         </Grid>
+
         <Grid
           xs={12}
           sm={12}
           md={12}
           lg={9}
           container
-          justifyContent="flex-start"
+          // justifyContent="flex-start"
           flexDirection="column"
         >
           <Grid
@@ -250,6 +259,7 @@ const MainPage: FC<MainPageProps> = ({ type }) => {
             justifyContent="space-between"
             flexDirection="row"
           >
+            {/* mobile map */}
             <Grid
               xs={12}
               sm={12}
@@ -264,6 +274,7 @@ const MainPage: FC<MainPageProps> = ({ type }) => {
                 />
               </Box>
             </Grid>
+            {/* mobile filter & sorting */}
             <Grid
               xs={12}
               sm={12}
@@ -278,6 +289,8 @@ const MainPage: FC<MainPageProps> = ({ type }) => {
                 />
               </Box>
             </Grid>
+
+            {/* clear selected filters */}
             <Grid
               xs={12}
               sm={12}
@@ -287,6 +300,7 @@ const MainPage: FC<MainPageProps> = ({ type }) => {
             >
               <Box>{chipData.length !== 0 && <FilterMatchInfo onClear={clearAllFilter} />}</Box>
             </Grid>
+            {/* desktop sorting & views */}
             <Grid
               xs={0}
               sm={0}
@@ -308,6 +322,7 @@ const MainPage: FC<MainPageProps> = ({ type }) => {
                 />
               </Box>
             </Grid>
+            {/* selected filters */}
             <Grid xs={12}>
               <Box>
                 <FilterChips
@@ -317,81 +332,36 @@ const MainPage: FC<MainPageProps> = ({ type }) => {
               </Box>
             </Grid>
           </Grid>
+          {/* Listing Cards */}
           <Grid
             container
             spacing={3}
           >
             {(isLoading ? Array.from(new Array(12)) : data).map(
-              (item: ListingInfoBasic, index: number) =>
-                cardView ? (
-                  <Grid
-                    key={item ? item._id : index}
-                    xs={12}
-                    sm={6}
-                    md={4}
-                  >
-                    {item ? (
-                      <ListingCard
-                        listingCardInfo={item}
-                        type={type}
-                      />
-                    ) : (
-                      <Box sx={{ mb: 1.5 }}>
-                        <Skeleton
-                          variant="rectangular"
-                          height={200}
-                          sx={{ borderRadius: 2 }}
-                        />
-                        <Box sx={{ pt: 0.5 }}>
-                          <Skeleton width="30%" />
-                          <Skeleton />
-                          <Skeleton />
-                        </Box>
-                      </Box>
-                    )}
-                  </Grid>
-                ) : (
-                  <Grid
-                    key={item ? item._id : index}
-                    xs={12}
-                  >
-                    {item ? (
-                      <ListingList
-                        listingInfo={item}
-                        type={type}
-                      />
-                    ) : (
-                      <Box sx={{ borderRadius: 4, height: 200, mb: 2 }}>
-                        <Grid
-                          container
-                          sx={{ display: 'flex', flexDirection: 'row' }}
-                        >
-                          <Grid xs={4}>
-                            <Skeleton
-                              variant="rectangular"
-                              height={200}
-                              sx={{ borderRadius: 2 }}
-                            />
-                          </Grid>
-                          <Grid xs={8}>
-                            <Box sx={{ ml: 2, mt: 2 }}>
-                              <Skeleton width="30%" />
-                              <Skeleton width="50%" />
-
-                              <Skeleton
-                                variant="rectangular"
-                                height={130}
-                                sx={{ borderRadius: 2 }}
-                              />
-                            </Box>
-                          </Grid>
-                        </Grid>
-                      </Box>
-                    )}
-                  </Grid>
-                )
+              (item: ListingInfoBasic, index: number) => (
+                <Grid
+                  key={item ? item._id : index}
+                  xs={12}
+                  sm={6}
+                  md={4}
+                >
+                  {item ? (
+                    <PlaceCard
+                      _id={item._id}
+                      imageUrl={item.photos[0]?.imageUrl}
+                      name={item.name}
+                      description={item.description}
+                      overAllRating={item.overAllRating}
+                      placeType={`${type}s`}
+                    />
+                  ) : (
+                    <SkeletonCard isCardView={cardView} />
+                  )}
+                </Grid>
+              )
             )}
           </Grid>
+          {/* Pagination */}
           {data.length > 0 && (
             <Grid
               xs={12}

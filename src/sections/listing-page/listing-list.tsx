@@ -28,7 +28,7 @@ const ListingList: FC<ListingInfoProps> = ({ listingInfo, type }) => {
             <CardMedia
               component={RouterLink}
               href={path}
-              image={photos[0].imageUrl}
+              image={photos[0]?.imageUrl}
               sx={{ height: '100%', width: '100%' }}
             />
           </Box>

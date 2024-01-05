@@ -1,4 +1,4 @@
-import { Layout } from '@/layouts/MainLayout';
+import Layout from '@/layouts/MainLayout';
 import * as Sentry from '@sentry/nextjs';
 import type { NextPage } from 'next';
 import type { ErrorProps } from 'next/error';

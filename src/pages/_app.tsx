@@ -15,6 +15,8 @@ import { SnackbarProvider } from 'notistack';
 import createEmotionCache from '@/utils/create-emotion-cache';
 import type { NextPage } from 'next';
 import type { ReactElement, ReactNode } from 'react';
+import { ApolloProvider } from '@apollo/client';
+import { createApolloClient } from '@/utils/apollo-client';
 
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -31,17 +33,20 @@ export default function App({
   pageProps,
 }: TripTribeAppProps) {
   const getLayout = Component.getLayout ?? ((page) => page);
+  const client = createApolloClient();
 
   return (
     <CacheProvider value={emotionCache}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <UserProvider>
-          <SnackbarProvider maxSnack={3}>
-            {getLayout(<Component {...pageProps} />)}
-          </SnackbarProvider>
-        </UserProvider>
-      </ThemeProvider>
+      <ApolloProvider client={client}>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <UserProvider>
+            <SnackbarProvider maxSnack={3}>
+              {getLayout(<Component {...pageProps} />)}
+            </SnackbarProvider>
+          </UserProvider>
+        </ThemeProvider>
+      </ApolloProvider>
     </CacheProvider>
   );
 }

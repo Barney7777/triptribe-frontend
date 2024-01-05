@@ -1,6 +1,4 @@
-// export { default } from '@/sections/RestaruantDetailPage';
-
-import { Layout } from '@/layouts/MainLayout';
+import Layout from '@/layouts/MainLayout';
 import { NextPageWithLayout } from '@/pages/_app';
 import { type ReactElement } from 'react';
 import DetailPageLayout from '@/sections/place-detail-page/components/place-detail-page-layout';
