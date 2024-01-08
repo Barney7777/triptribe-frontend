@@ -1,7 +1,7 @@
 import { authMe } from '@/api/authMe';
 import React, { ReactNode, useCallback, useEffect, useReducer } from 'react';
 import { ActionType, InitializeAction, State } from '@/contexts/user-context/user-context-type';
-import { SigninInputs, UserContext, initialState } from './user-context';
+import { SignInInputs, SignUpInputs, UserContext, initialState } from './user-context';
 import { authRegister } from '@/api/authRegister';
 import { authSignIn } from '@/api/authSignin';
 import { CanceledError } from 'axios';
@@ -81,7 +81,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   }, [dispatch, initialize]);
 
   const signIn = useCallback(
-    async ({ email, password }: SigninInputs): Promise<void> => {
+    async ({ email, password }: SignInInputs): Promise<void> => {
       try {
         const res = await authSignIn(email, password);
 
@@ -107,9 +107,9 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   );
 
   const signUp = useCallback(
-    async ({ email, password }: SigninInputs): Promise<void> => {
+    async ({ firstName, lastName, email, password }: SignUpInputs): Promise<void> => {
       try {
-        const res = await authRegister(email, password);
+        const res = await authRegister(firstName, lastName, email, password);
       } catch (err) {
         console.error('sign up failed', err);
         throw err;
