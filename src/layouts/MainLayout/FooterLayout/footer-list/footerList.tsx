@@ -10,6 +10,8 @@ import { useTheme } from '@mui/material/styles';
 const FooterList: React.FC = () => {
   const theme = useTheme();
   const primaryGreen = theme.palette.primary.main;
+  const footerBgColor = theme.palette.grey[100];
+  const listHeaderColor = theme.palette.grey[500];
 
   type List = {
     name: string[];
@@ -39,7 +41,7 @@ const FooterList: React.FC = () => {
 
   return (
     <Box>
-      <div className="flex flex-col sm:flex-row sm:gap-4 md:gap-8 lg:gap-16">
+      <div className="grid grid-cols-1 sm:grid-cols-3 sm:gap-4 md:gap-8 lg:gap-16">
         <Box
           sx={{
             width: '100%',
@@ -47,7 +49,13 @@ const FooterList: React.FC = () => {
         >
           <List
             subheader={
-              <ListSubheader sx={{ bgcolor: '#F8F9FA', color: '#6C737F', fontWeight: 'bold' }}>
+              <ListSubheader
+                sx={{
+                  bgcolor: footerBgColor,
+                  color: listHeaderColor,
+                  fontWeight: 'bold',
+                }}
+              >
                 EXPLORE
               </ListSubheader>
             }
@@ -80,8 +88,8 @@ const FooterList: React.FC = () => {
             subheader={
               <ListSubheader
                 sx={{
-                  bgcolor: '#F8F9FA',
-                  color: '#6C737F',
+                  bgcolor: footerBgColor,
+                  color: listHeaderColor,
                   fontWeight: 'bold',
                   visibility: 'hidden',
                 }}
@@ -117,7 +125,13 @@ const FooterList: React.FC = () => {
         >
           <List
             subheader={
-              <ListSubheader sx={{ bgcolor: '#F8F9FA', color: '#6C737F', fontWeight: 'bold' }}>
+              <ListSubheader
+                sx={{
+                  bgcolor: footerBgColor,
+                  color: listHeaderColor,
+                  fontWeight: 'bold',
+                }}
+              >
                 COMPANY
               </ListSubheader>
             }
