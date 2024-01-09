@@ -18,11 +18,8 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 import AuthPageContainer from '@/components/AuthPageContainer';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
-import { UserContext } from '@/contexts/user-context/user-context';
-export interface SigninInputs {
-  email: string;
-  password: string;
-}
+import { SignInInputs, UserContext } from '@/contexts/user-context/user-context';
+export type SignInFormInputs = SignInInputs;
 
 const validationSchema = yup.object().shape({
   email: yup.string().email('Please enter a valid email address').required('Email is required'),
@@ -38,7 +35,7 @@ export default function Signin() {
     handleSubmit,
     trigger,
     formState: { errors, isValid },
-  } = useForm<SigninInputs>({
+  } = useForm<SignInFormInputs>({
     resolver: yupResolver(validationSchema),
     defaultValues: {
       email: '',
@@ -54,7 +51,7 @@ export default function Signin() {
   };
   const { enqueueSnackbar } = useSnackbar();
 
-  const onSubmit = async (data: SigninInputs) => {
+  const onSubmit = async (data: SignInFormInputs) => {
     try {
       await signIn(data);
       enqueueSnackbar('Login Successful!', {

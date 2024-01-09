@@ -5,14 +5,20 @@ export const initialState: State = {
   isAuthenticated: false,
   userData: null,
 };
-export interface SigninInputs {
+export type SignInInputs = {
   email: string;
   password: string;
-}
+};
+export type SignUpInputs = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+};
 
 export type UserContextProps = State & {
-  signIn: ({ email, password }: SigninInputs) => Promise<void>;
-  signUp: ({ email, password }: SigninInputs) => Promise<void>;
+  signIn: ({ email, password }: SignInInputs) => Promise<void>;
+  signUp: ({ firstName, lastName, email, password }: SignUpInputs) => Promise<void>;
   signOut: () => Promise<void>;
 };
 

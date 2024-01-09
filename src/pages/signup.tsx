@@ -18,16 +18,22 @@ import NextLink from 'next/link';
 import AuthPageContainer from '@/components/AuthPageContainer';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
-import { UserContext } from '@/contexts/user-context/user-context';
+import { SignUpInputs, UserContext } from '@/contexts/user-context/user-context';
 
-export type SignupInputs = {
-  email: string;
-  password: string;
+export type SignUpFormInputs = {
   passwordConfirm: string;
   terms: boolean;
-};
+} & SignUpInputs;
 
 const schema = yup.object().shape({
+  firstName: yup
+    .string()
+    .max(100, 'First name is no more than 100 characters')
+    .required('First name is required'),
+  lastName: yup
+    .string()
+    .max(100, 'Last name is no more than 100 characters')
+    .required('Last name is required'),
   email: yup.string().email('Please enter a valid email address').required('Email is required'),
   password: yup
     .string()
@@ -52,6 +58,8 @@ const SignUp = () => {
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
+      firstName: '',
+      lastName: '',
       email: '',
       password: '',
       passwordConfirm: '',
@@ -61,7 +69,7 @@ const SignUp = () => {
   const { signUp } = useContext(UserContext);
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
-  const onSubmit: SubmitHandler<SignupInputs> = async (data) => {
+  const onSubmit: SubmitHandler<SignUpFormInputs> = async (data) => {
     try {
       await signUp(data);
       router.push('/signin');
@@ -95,7 +103,7 @@ const SignUp = () => {
             padding: '32px 24px',
           }}
           justifyContent="center"
-          alignItems="center"
+          alignItems="start"
         >
           <Grid
             item
@@ -120,6 +128,54 @@ const SignUp = () => {
                 </Typography>
               }
               title="Register"
+            />
+          </Grid>
+          <Grid
+            item
+            md={6}
+            xs={12}
+          >
+            <Controller
+              name="firstName"
+              control={control}
+              render={({ field: { onChange, value } }) => (
+                <TextField
+                  fullWidth
+                  variant="outlined"
+                  label="First Name"
+                  onBlur={() => {
+                    trigger('firstName');
+                  }}
+                  onChange={onChange}
+                  value={value}
+                  error={!!errors.firstName}
+                  helperText={errors.firstName?.message}
+                />
+              )}
+            />
+          </Grid>
+          <Grid
+            item
+            md={6}
+            xs={12}
+          >
+            <Controller
+              name="lastName"
+              control={control}
+              render={({ field: { onChange, value } }) => (
+                <TextField
+                  fullWidth
+                  variant="outlined"
+                  label="Last Name"
+                  onBlur={() => {
+                    trigger('lastName');
+                  }}
+                  onChange={onChange}
+                  value={value}
+                  error={!!errors.lastName}
+                  helperText={errors.lastName?.message}
+                />
+              )}
             />
           </Grid>
           <Grid
