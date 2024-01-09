@@ -1,16 +1,19 @@
-import { NextPage } from 'next/types';
 import MainPage from '@/sections/listing-page/main-page';
 import { MainType } from '@/types/general';
 import { FilterFormProvider } from '@/contexts/listing-page/form-context';
 import { Layout } from '@/layouts/MainLayout';
-const Page: NextPage = () => {
+import { type ReactElement } from 'react';
+import { NextPageWithLayout } from '@/pages/_app';
+
+const Page: NextPageWithLayout = () => {
+  return <MainPage type={MainType.Restaurant} />;
+};
+
+Page.getLayout = function getLayout(page: ReactElement) {
   return (
     <Layout>
-      <FilterFormProvider>
-        <MainPage type={MainType.Restaurant} />
-      </FilterFormProvider>
+      <FilterFormProvider>{page}</FilterFormProvider>
     </Layout>
   );
 };
-
 export default Page;

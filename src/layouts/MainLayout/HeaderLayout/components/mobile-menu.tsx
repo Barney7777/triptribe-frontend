@@ -44,7 +44,7 @@ export const MobileMenuButton = ({ sx }: { sx?: SxProps }) => {
   // if is path include user, open user collapse
   const pathName = usePathname();
   useEffect(() => {
-    if (pathName.includes('user')) {
+    if (pathName?.includes('user')) {
       setUserCollapse(true);
     }
   }, [drawerOpen]);
@@ -97,7 +97,7 @@ export const MobileMenuButton = ({ sx }: { sx?: SxProps }) => {
         </ListItem>
         <ListItem sx={{ padding: 0, ml: -1.75, mr: 1 }}>
           <UserAccount
-            userAccountStyle={{ justifyContent: 'start' }}
+            userAccountStyle={{ justifyContent: 'center' }}
             accountMenuStyle={'account detail'}
           />
         </ListItem>
@@ -139,15 +139,30 @@ export const MobileMenuButton = ({ sx }: { sx?: SxProps }) => {
   );
 
   return (
-    <>
+    <React.Fragment>
       <Button
         variant="text"
-        sx={{ ...sx, ...responsiveStyle, marginRight: '4px' }}
+        sx={{
+          ...sx,
+          ...responsiveStyle,
+          position: 'relative',
+          marginRight: '4px',
+          // border: 1,
+        }}
         onClick={() => {
           handleDrawerOpen(true);
         }}
       >
-        <MenuIcon sx={{ height: '100%', width: 35 }} />
+        <MenuIcon
+          sx={{
+            position: 'absolute',
+            left: '50%',
+            right: '50%',
+            transform: 'translate(-50%, -50%)',
+            height: '70%',
+            width: '70%',
+          }}
+        />
       </Button>
       <Drawer
         anchor="left"
@@ -159,6 +174,6 @@ export const MobileMenuButton = ({ sx }: { sx?: SxProps }) => {
       >
         {drawerItem()}
       </Drawer>
-    </>
+    </React.Fragment>
   );
 };

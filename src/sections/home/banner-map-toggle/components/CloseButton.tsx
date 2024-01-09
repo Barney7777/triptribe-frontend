@@ -7,16 +7,18 @@ import CloseIcon from '@mui/icons-material/Close';
 export const MapCloseButton = () => {
   const { urlQuery, setUrlQuery } = useRouterQuery();
 
+  const handleClose = () => {
+    const { map, ...otherQueries } = urlQuery;
+    setUrlQuery(otherQueries);
+  };
+
   return (
     <IconButton
       aria-label="Close Map"
       role="button"
       LinkComponent={NextLink}
       // href="/"
-      onClick={() => {
-        const { map, ...otherQueries } = urlQuery;
-        setUrlQuery(otherQueries);
-      }}
+      onClick={handleClose}
       sx={{
         position: 'absolute',
         width: 40,

@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, CanceledError } from 'axios';
+import axios, { AxiosInstance, AxiosRequestConfig, CanceledError } from 'axios';
 import * as Sentry from '@sentry/nextjs';
 const pendingMap = new Map();
 

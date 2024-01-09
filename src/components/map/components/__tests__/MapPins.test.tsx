@@ -1,7 +1,11 @@
-import { CityProps } from '@/types/attractions-restaurants';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { MapPins } from '../MapPins';
+import { useMapStore } from '@/stores/map-store';
+
 import { PlacesData } from '@/types/map';
+import userEvent from '@testing-library/user-event';
+// import { useMapStore } from '@/contexts/map-context';
+
 const mockPinInfo: PlacesData = [
   {
     _id: '65573aebb5ccb958b78ee39a',
@@ -212,7 +216,6 @@ const mockPinInfo: PlacesData = [
     type: 'Restaurants',
   },
 ];
-
 const onClickHandler = jest.fn();
 jest.mock('react-map-gl', () => {
   return {
@@ -222,51 +225,41 @@ jest.mock('react-map-gl', () => {
   };
 });
 
-const pinInfo = mockPinInfo;
-const imageCompleteHandler = (state: boolean) => {};
-const popupInfoHandler = (data: CityProps | null) => {};
+const pinInfoState = {
+  highLightedId: '',
+  pinInfo: mockPinInfo,
+  updatePopupInfo: () => {},
+};
+const emptyState = {
+  highLightedId: '',
+  pinInfo: [],
+  updatePopupInfo: () => {},
+};
 
-describe.skip('Map Pins', () => {
+describe('Map Pins', () => {
   describe('Pins', () => {
     it('Should be rendered on the page when pinInfo is not empty', () => {
-      render(
-        <MapPins
-          pinInfo={pinInfo}
-          imageCompleteHandler={imageCompleteHandler}
-          popupInfoHandler={popupInfoHandler}
-        />
-      );
-      const pins = screen.getAllByTestId(/ForestIcon|RestaurantMenuIcon/);
+      useMapStore.setState(pinInfoState);
+      render(<MapPins />);
+      const pins = screen.getAllByTestId(/RestaurantMenuIcon|PhotoCameraOutlinedIcon/);
       expect(pins.length).toBe(2);
     });
+
     it('Should not be rendered on the page when pinInfo is empty', () => {
-      render(
-        <MapPins
-          pinInfo={[]}
-          imageCompleteHandler={imageCompleteHandler}
-          popupInfoHandler={popupInfoHandler}
-        />
-      );
-      const pins = screen.queryAllByTestId(/ForestIcon|RestaurantMenuIcon/);
+      useMapStore.setState(emptyState);
+      render(<MapPins />);
+      const pins = screen.queryAllByTestId(/RestaurantMenuIcon|PhotoCameraOutlinedIcon/);
       expect(pins.length).toBe(0);
     });
-    describe('Click', () => {
-      it('Should call the onClickHandler once when be clicked', () => {
-        render(
-          <MapPins
-            pinInfo={pinInfo}
-            imageCompleteHandler={imageCompleteHandler}
-            popupInfoHandler={popupInfoHandler}
-          />
-        );
-        const attractionPins = screen.getByTestId('ForestIcon');
-
-        fireEvent.click(attractionPins, {
-          bubbles: true,
-          cancelable: true,
-        });
-        expect(onClickHandler).toHaveBeenCalled();
-      });
+  });
+  describe('Click', () => {
+    it('Should call the onClickHandler once when be clicked', async () => {
+      useMapStore.setState(pinInfoState);
+      render(<MapPins />);
+      const user = userEvent.setup();
+      const attractionPins = screen.getByTestId('PhotoCameraOutlinedIcon');
+      await user.click(attractionPins);
+      expect(onClickHandler).toHaveBeenCalled();
     });
   });
 });

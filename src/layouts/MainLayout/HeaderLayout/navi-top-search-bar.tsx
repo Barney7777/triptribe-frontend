@@ -12,7 +12,7 @@ import { SearchDataType } from '@/types/search-result';
 import axiosInstance from '@/utils/request';
 import { useDebounce } from '@/hooks/use-debounce';
 import { PlacesData } from '@/types/map';
-import { CityProps } from '@/types/attractions-restaurants';
+import { PlaceProps } from '@/types/attractions-restaurants';
 import { Typography } from '@mui/material';
 import { pinIconList, pinIconColor } from '@/components/map/components/pinIconProps';
 const DEBOUNCE_INTERVAL = 500;
@@ -27,8 +27,8 @@ type SearchBarProps = {
 export const NaviTopSearchBar: FC<SearchBarProps> = (props) => {
   const [inputValue, setInputValue] = useState('');
   const [open, setOpen] = useState(false);
-  const [options, setOptions] = useState<CityProps[]>([]);
-  const [fetchedData, setFetchedData] = useState<SearchDataType<CityProps>>({
+  const [options, setOptions] = useState<PlaceProps[]>([]);
+  const [fetchedData, setFetchedData] = useState<SearchDataType<PlaceProps>>({
     Attraction: [],
     Restaurant: [],
   });
@@ -47,7 +47,7 @@ export const NaviTopSearchBar: FC<SearchBarProps> = (props) => {
         },
       })
       .then((res) => {
-        let data: SearchDataType<CityProps> = { Attraction: [], Restaurant: [] };
+        let data: SearchDataType<PlaceProps> = { Attraction: [], Restaurant: [] };
         res.data.forEach((item) => {
           if (item.type === 'Attraction') {
             data.Attraction.push(item);
@@ -141,8 +141,8 @@ export const NaviTopSearchBar: FC<SearchBarProps> = (props) => {
         renderOption={(props, option) => {
           return (
             <li
-              {...props}
               key={option._id}
+              {...props}
             >
               <Link
                 component={NextLink}

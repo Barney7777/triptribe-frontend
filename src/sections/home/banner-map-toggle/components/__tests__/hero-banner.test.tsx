@@ -1,7 +1,7 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { HeroBanner } from '..';
 // use next-router-mock package
-import mockRouter from 'next-router-mock';
+import userEvent from '@testing-library/user-event';
 // use next-router-mock to mock next router
 jest.mock('next/router', () => jest.requireActual('next-router-mock'));
 
@@ -19,10 +19,11 @@ describe('Hero Banner', () => {
       const mapToggleButton = screen.getByRole('button', { name: 'Map View' });
       expect(mapToggleButton).toBeInTheDocument();
     });
-    it('is disabled after click', () => {
+    it('is disabled after click', async () => {
       render(<HeroBanner />);
+      const user = userEvent.setup();
       const mapToggleButton = screen.getByRole('button', { name: 'Map View' });
-      fireEvent.click(mapToggleButton);
+      await user.click(mapToggleButton);
       expect(mapToggleButton).toBeDisabled();
     });
   });

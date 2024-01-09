@@ -1,4 +1,4 @@
-import { CityProps } from '@/types/attractions-restaurants';
+import { PlaceProps } from '@/types/attractions-restaurants';
 import { isOpening } from '@/utils/is-opening';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
@@ -102,21 +102,21 @@ jest.mock('tz-lookup', () => jest.fn(() => 'America/New_York'));
 
 describe('isOpening', () => {
   it('Should return an opening msg when receive a normal working hours', () => {
-    const openingState = isOpening(mockShopOpeningHourList.mondayNormalOpen as CityProps);
+    const openingState = isOpening(mockShopOpeningHourList.mondayNormalOpen as PlaceProps);
     expect(openingState).toBe('Opening');
   });
   it('Should return a close msg when receive an early close working hours', () => {
-    const openingState = isOpening(mockShopOpeningHourList.mondayEarlyClose as CityProps);
+    const openingState = isOpening(mockShopOpeningHourList.mondayEarlyClose as PlaceProps);
     expect(openingState).toBe('Closed');
   });
 
   it('Should return an all open msg when receive an all open days', () => {
-    const openingState = isOpening(mockShopOpeningHourList.mondayAllOpen as CityProps);
+    const openingState = isOpening(mockShopOpeningHourList.mondayAllOpen as PlaceProps);
     expect(openingState).toBe('Opening All Day');
   });
 
   it('Should return an all close msg when receive an all close day', () => {
-    const openingState = isOpening(mockShopOpeningHourList.mondayAllClose as CityProps);
-    expect(openingState).toBe('Closed All Day');
+    const openingState = isOpening(mockShopOpeningHourList.mondayAllClose as PlaceProps);
+    expect(openingState).toBe('Closed Temporarily');
   });
 });

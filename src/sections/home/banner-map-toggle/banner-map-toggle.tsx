@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { HeroBanner } from './components';
-import { BannerMap } from './components/banner-map';
 import useRouterQuery from '@/hooks/use-router-query';
+import { BannerMap } from '@/sections/home/banner-map-toggle/components/banner-map';
+import { HeroBanner } from '@/sections/home/banner-map-toggle/components';
 
 type BannerMapToggleProps = {
   mapQueryShown: boolean;
@@ -18,5 +18,5 @@ export const BannerMapToggle: React.FC<BannerMapToggleProps> = ({ mapQueryShown 
       setShowMap(false);
     }
   }, [urlQuery]);
-  return <>{showMap ? <BannerMap /> : <HeroBanner />}</>;
+  return showMap ? <BannerMap /> : <HeroBanner />;
 };

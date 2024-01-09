@@ -21,9 +21,13 @@ export const UserAccount: React.FC<UserAccountProps> = ({ userAccountStyle, acco
   };
 
   useEffect(() => {
-    setTimeout(() => {
+    if (isAuthenticated) {
       setLoading(false);
-    }, 500);
+    } else {
+      setTimeout(() => {
+        setLoading(false);
+      }, 300);
+    }
   }, []);
   return (
     <Box
@@ -34,7 +38,7 @@ export const UserAccount: React.FC<UserAccountProps> = ({ userAccountStyle, acco
         justifyContent: 'flex-end',
         flexWrap: 'nowrap',
         opacity: loading ? 0 : 1,
-        transition: '0.5s',
+        transition: '0.2s',
         overflow: 'hidden',
         ...userAccountStyle,
       }}

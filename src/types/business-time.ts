@@ -1,11 +1,10 @@
 export type Period = {
   openTime: string;
-
   closeTime: string;
 };
+
 export type BusinessTime = {
   isOpenAllDay: boolean;
-
   isClosed: boolean;
   period: Period[];
 };

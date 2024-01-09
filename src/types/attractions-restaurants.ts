@@ -3,7 +3,7 @@ import { Address } from './address';
 import { Photo } from './photo';
 import { MainTypeCapital } from './general';
 
-export type CityProps = {
+export type PlaceProps = {
   _id: string;
   name: string;
   description: string;
@@ -28,4 +28,6 @@ export type CityProps = {
   updatedAt?: string;
   __v?: number;
   distance?: number;
+} & {
+  [key: string]: string | object | number;
 };

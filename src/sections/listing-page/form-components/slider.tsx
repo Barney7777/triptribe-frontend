@@ -1,4 +1,5 @@
 import { FormLabel, Slider } from '@mui/material';
+import React from 'react';
 import { Controller } from 'react-hook-form';
 
 export interface FormSliderProps {
@@ -20,7 +21,7 @@ export const FormSlider = ({ name, control, label, sliderMark, sliderRange }: Fo
   const handleChange = (_: Event, newValue: number | number[]) => newValue as number;
 
   return (
-    <>
+    <React.Fragment>
       <FormLabel component="legend">{label}</FormLabel>
       <Controller
         name={name}
@@ -39,6 +40,6 @@ export const FormSlider = ({ name, control, label, sliderMark, sliderRange }: Fo
           />
         )}
       />
-    </>
+    </React.Fragment>
   );
 };

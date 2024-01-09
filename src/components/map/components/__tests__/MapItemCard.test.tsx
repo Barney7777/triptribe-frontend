@@ -1,21 +1,12 @@
 import MapItemCard from '@/components/map/components/MapItemCard';
-import {
-  render,
-  screen,
-  fireEvent,
-  waitFor,
-  act,
-  getByRole,
-  getByTestId,
-} from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { isOpening } from '@/utils/is-opening';
 import { getCurrentWeekday } from '@/utils/get-current-date-time';
 import tzlookup from 'tz-lookup';
-import { CityProps } from '@/types/attractions-restaurants';
+import { PlaceProps } from '@/types/attractions-restaurants';
 import userEvent from '@testing-library/user-event';
-import mockRouter from 'next-router-mock';
 
-const mockPopupInfo: CityProps = {
+const mockPopupInfo: PlaceProps = {
   _id: '65573aebb5ccb958b78ee39a',
   name: 'S 5th Street',
   description:
@@ -124,14 +115,12 @@ jest.mock('next/router', () => jest.requireActual('next-router-mock'));
 
 jest.mock('@/utils/is-opening');
 const mockIsOpening = jest.fn();
-mockIsOpening.mockImplementation((popupInfo: CityProps) => 'Opening');
+mockIsOpening.mockImplementation(() => 'Opening');
 (isOpening as jest.Mock).mockImplementation(mockIsOpening);
 
 jest.mock('@/utils/get-current-date-time');
 const mockGetCurrentWeekday = jest.fn();
-mockGetCurrentWeekday.mockImplementation(
-  (timeZone: string, plusDay: number = 0, date?: any) => 'Monday'
-);
+mockGetCurrentWeekday.mockImplementation(() => 'Monday');
 (getCurrentWeekday as jest.Mock).mockImplementation(mockGetCurrentWeekday);
 
 jest.mock('tz-lookup');
@@ -140,58 +129,36 @@ mockTzlookup.mockImplementation((lat: number, lng: number) => 'America/New_York'
 (tzlookup as jest.Mock).mockImplementation(mockTzlookup);
 
 const mockImageCompleteHandler = jest.fn();
-mockImageCompleteHandler.mockImplementation((state) => {});
+mockImageCompleteHandler.mockImplementation(() => {});
 
-describe.skip('Banner Map', () => {
+describe('Banner Map', () => {
   describe('Link', () => {
     it('is rendered on the page', () => {
-      render(
-        <MapItemCard
-          imageComplete={true}
-          imageCompleteHandler={mockImageCompleteHandler}
-          popupInfo={mockPopupInfo}
-        />
-      );
+      render(<MapItemCard popupInfo={mockPopupInfo} />);
       const placeImageLink = screen.getByRole('link', { name: 'S 5th Street' });
       expect(placeImageLink).toBeInTheDocument();
     });
   });
   describe('Skeleton', () => {
     it('is rendered when imageComplete is false ', () => {
-      render(
-        <MapItemCard
-          imageComplete={false}
-          imageCompleteHandler={mockImageCompleteHandler}
-          popupInfo={mockPopupInfo}
-        />
-      );
-      const imageSkeleton = screen.getByLabelText('Image Skeleton');
+      render(<MapItemCard popupInfo={mockPopupInfo} />);
+      const imageSkeleton = screen.getByLabelText('Circular Loading');
       expect(imageSkeleton).toBeInTheDocument();
     });
-    it('is not rendered when imageComplete is true', () => {
-      render(
-        <MapItemCard
-          imageComplete={true}
-          imageCompleteHandler={mockImageCompleteHandler}
-          popupInfo={mockPopupInfo}
-        />
-      );
-      const imageSkeleton = screen.queryAllByLabelText('Image Skeleton');
-      expect(imageSkeleton.length).toBe(0);
-    });
+    // need to know how to test img onload
+    // it('is not rendered when imageComplete is true', () => {
+    //   render(<MapItemCard popupInfo={mockPopupInfo} />);
+    //   const imageSkeleton = screen.queryAllByLabelText('Circular Loading');
+    //   expect(imageSkeleton.length).toBe(0);
+    // });
   });
   describe('Image', () => {
     it('will be rendered on the page', () => {
-      render(
-        <MapItemCard
-          imageComplete={true}
-          imageCompleteHandler={mockImageCompleteHandler}
-          popupInfo={mockPopupInfo}
-        />
-      );
+      render(<MapItemCard popupInfo={mockPopupInfo} />);
       const placeImage = screen.getByRole('img', { name: 'S 5th Street' });
       expect(placeImage).toBeInTheDocument();
     });
+    // need to know how to test img onload
     // it('will trigger the handler function when complete load', async () => {
     //   render(
     //     <MapItemCard
@@ -209,14 +176,10 @@ describe.skip('Banner Map', () => {
   describe('Text', () => {
     it('will be rendered in page', () => {
       const { getByText, getByRole, getByLabelText } = render(
-        <MapItemCard
-          imageComplete={true}
-          imageCompleteHandler={mockImageCompleteHandler}
-          popupInfo={mockPopupInfo}
-        />
+        <MapItemCard popupInfo={mockPopupInfo} />
       );
       const placeHeader = getByRole('heading', {
-        name: 'S 5th Street, 536 Mueller Ferry Apt. 633',
+        name: 'Attractions, S 5th Street',
       });
       expect(placeHeader).toBeInTheDocument();
       const placeRating = getByLabelText('3 Stars');
@@ -229,16 +192,11 @@ describe.skip('Banner Map', () => {
   });
   describe('Edit Icon', () => {
     it('Should be rendered on the page', () => {
-      const { getByTestId } = render(
-        <MapItemCard
-          imageComplete={true}
-          imageCompleteHandler={mockImageCompleteHandler}
-          popupInfo={mockPopupInfo}
-        />
-      );
+      const { getByTestId } = render(<MapItemCard popupInfo={mockPopupInfo} />);
       const editIcon = getByTestId('RateReviewIcon');
       expect(editIcon).toBeInTheDocument();
     });
+    // we dont have write review page path
     // it('Should be clicked to go to write review page', () => {
     //   const { getByTestId } = render(
     //     <MapItemCard
@@ -247,8 +205,9 @@ describe.skip('Banner Map', () => {
     //       popupInfo={mockPopupInfo}
     //     />
     //   );
+    // const user = userEvent.setup()
     //   const editIcon = getByTestId('RateReviewIcon');
-    //   fireEvent.click(editIcon, {
+    //   await user.click(editIcon, {
     //     bubbles: true,
     //     cancelable: true,
     //   });
@@ -257,35 +216,19 @@ describe.skip('Banner Map', () => {
   });
   describe('Favorite Icon', () => {
     it('Should be rendered on the page', () => {
-      const { getByTestId } = render(
-        <MapItemCard
-          imageComplete={true}
-          imageCompleteHandler={mockImageCompleteHandler}
-          popupInfo={mockPopupInfo}
-        />
-      );
+      const { getByTestId } = render(<MapItemCard popupInfo={mockPopupInfo} />);
       const favoriteIcon = getByTestId('FavoriteBorderIcon');
       expect(favoriteIcon).toBeInTheDocument();
     });
-    it('Should switch state after click', () => {
-      const { getByTestId } = render(
-        <MapItemCard
-          imageComplete={true}
-          imageCompleteHandler={mockImageCompleteHandler}
-          popupInfo={mockPopupInfo}
-        />
-      );
+    it('Should switch state after click', async () => {
+      const user = userEvent.setup();
+      const { getByTestId } = render(<MapItemCard popupInfo={mockPopupInfo} />);
       let favoriteIconBorder = getByTestId('FavoriteBorderIcon');
-      fireEvent.click(favoriteIconBorder, {
-        bubbles: true,
-        cancelable: true,
-      });
+      await user.click(favoriteIconBorder);
       const favoriteIcon = getByTestId('FavoriteIcon');
       expect(favoriteIcon).toBeInTheDocument();
-      fireEvent.click(favoriteIcon, {
-        bubbles: true,
-        cancelable: true,
-      });
+
+      await user.click(favoriteIcon);
       favoriteIconBorder = getByTestId('FavoriteBorderIcon');
       expect(favoriteIconBorder).toBeInTheDocument();
     });

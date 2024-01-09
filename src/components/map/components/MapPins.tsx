@@ -1,4 +1,4 @@
-import { CityProps } from '@/types/attractions-restaurants';
+import { PlaceProps } from '@/types/attractions-restaurants';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Marker } from 'react-map-gl';
 import Pin from '@/components/map/components/individualPin';
@@ -14,7 +14,7 @@ export const MapPins: React.FC = () => {
   const [markerLng, setMarkerLng] = useState(0);
 
   const handleMarkerClick = useCallback(
-    (e: MarkerEvent<mapboxgl.Marker, MouseEvent>, place: CityProps) => {
+    (e: MarkerEvent<mapboxgl.Marker, MouseEvent>, place: PlaceProps) => {
       if (e.target.getLngLat().lat !== markerLat && e.target.getLngLat().lng !== markerLng) {
         setMarkerLng(() => e.target.getLngLat().lng);
         setMarkerLat(() => e.target.getLngLat().lat);
@@ -29,7 +29,7 @@ export const MapPins: React.FC = () => {
     if (pinInfo.length == 0) {
       return;
     } else {
-      return pinInfo.map((place: CityProps, index) => (
+      return pinInfo.map((place: PlaceProps) => (
         <React.Fragment key={`marker-${place.type}-${place._id}`}>
           <Marker
             longitude={place.address.location.lng}

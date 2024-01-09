@@ -1,4 +1,4 @@
-import { CityProps } from '@/types/attractions-restaurants';
+import { PlaceProps } from '@/types/attractions-restaurants';
 import { Weekday } from '@/types/business-time';
 import { getCurrentWeekday } from '@/utils/get-current-date-time';
 import tzlookup from 'tz-lookup';
@@ -13,7 +13,7 @@ const weekList = [
 ] as Weekday[];
 
 // only for when closed to find opening.
-const findNextOpeningHours = (openingStatus: string, popupInfo: CityProps) => {
+const findNextOpeningHours = (openingStatus: string, popupInfo: PlaceProps) => {
   // 1. find current weekday
   const weekday = getCurrentWeekday(
     tzlookup(popupInfo.address.location.lat, popupInfo.address.location.lng)
@@ -34,7 +34,7 @@ const findNextOpeningHours = (openingStatus: string, popupInfo: CityProps) => {
   return 'Open until further notice';
 };
 
-export const getNextOpening = (openingStatus: string, popupInfo: CityProps) => {
+export const getNextOpening = (openingStatus: string, popupInfo: PlaceProps) => {
   // todo when database support
   // 1. get current opening status
   // 2. if close, find next opening time

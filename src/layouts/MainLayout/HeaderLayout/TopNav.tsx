@@ -68,14 +68,18 @@ export const TopNav: FC = () => {
         }}
       >
         {/* <Grid> */}
-        <MobileMenuButton />
+        <MobileMenuButton sx={{ height: 60 }} />
         {/* </Grid> */}
         <Grid px={2}>
-          <LogoButton />
+          <LogoButton
+            logoImageHeight={60}
+            logoTextHeight={20}
+          />
         </Grid>
+        {/* to balance layout for menu button */}
         {!showSearchBar && (
           <Grid>
-            <MobileMenuButton sx={{ height: 0 }} />
+            <MobileMenuButton sx={{ height: 0, opacity: 0 }} />
           </Grid>
         )}
         {showSearchBar && (

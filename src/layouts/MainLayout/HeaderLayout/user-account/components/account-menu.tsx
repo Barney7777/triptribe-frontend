@@ -15,7 +15,6 @@ import { UserAvatar } from './user-avatar';
 import { UserContext } from '@/contexts/user-context/user-context';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
-import { SxProps } from '@mui/system';
 
 type AccountMenuProps = {
   anchorOffset: number;
@@ -56,7 +55,7 @@ export const AccountMenu: React.FC<AccountMenuProps> = ({ anchorOffset }) => {
     }
   };
   return (
-    <>
+    <React.Fragment>
       <Box>
         <Tooltip title="Account settings">
           <IconButton
@@ -141,6 +140,6 @@ export const AccountMenu: React.FC<AccountMenuProps> = ({ anchorOffset }) => {
           Logout
         </MenuItem>
       </Menu>
-    </>
+    </React.Fragment>
   );
 };

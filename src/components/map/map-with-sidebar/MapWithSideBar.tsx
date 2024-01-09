@@ -1,20 +1,20 @@
 import { Map } from '@/components/map';
 import { MapPins } from '@/components/map/components/MapPins';
 import { Location } from '@/types/address';
-import { Box, Button, Grid, List, ListItem, Paper } from '@mui/material';
-import React, { Suspense, lazy, useCallback, useEffect, useRef } from 'react';
+import { Box, Grid, List, ListItem, Paper, Slide, useMediaQuery, useTheme } from '@mui/material';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import MapItemCard from '@/components/map/components/MapItemCard';
 import { useMapStore } from '@/stores/map-store';
 
-import { CityProps } from '@/types/attractions-restaurants';
-import { Loading } from '@/components/Loading';
-import { CircularLoading } from '@/components/CircularLoading';
+import { PlaceProps } from '@/types/attractions-restaurants';
 
 // const LazyMapItemCard = lazy(() => import('@/components/map/components/MapItemCard'));
 export const MapWithSideBar = () => {
   const { updateMapCenter, updateHighLightedId, pinInfo, popupInfo } = useMapStore(
     (state) => state
   );
+  const theme = useTheme();
+  const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
 
   const listRef = useRef<HTMLUListElement>(null);
 
@@ -28,118 +28,129 @@ export const MapWithSideBar = () => {
     updateMapCenter(location);
   };
 
-  const handleScroll = useCallback<(popupInfo: CityProps | null) => void>((popupInfo) => {
-    if (!popupInfo) return;
-    const clickPinId = popupInfo?.type + popupInfo?._id;
-    const listItem = document.getElementById('list' + clickPinId);
+  // prettier-ignore
+  const handleScroll = useCallback<(popupInfo: PlaceProps | null) => void>(
+    (popupInfo) => {
+      if (!popupInfo) return;
+      const clickPinId = popupInfo?.type + popupInfo?._id;
+      const listItem = document.getElementById('list' + clickPinId);
 
-    if (!listItem) return;
-    if (listRef.current) {
-      const scrollTop = listItem.offsetTop - listRef.current.offsetTop;
-      listRef.current.scrollTo({ top: scrollTop, behavior: 'smooth' });
+      if (!listItem) return;
+      if (!listRef.current) return;
+
+      if (isDesktop) {
+        const scrollTop = listItem.offsetTop - listRef.current.offsetTop;
+        listRef.current.scrollTo({ top: scrollTop, behavior: 'smooth' });
+      } else {
+        const scrollLeft = listItem.offsetLeft - listRef.current.offsetLeft - 10; // some space pix on left of a card
+        listRef.current.scrollTo({ left: scrollLeft, behavior: 'smooth' });
+      }
+    },
+  [isDesktop]
+  );
+
+  const sortedPinInfo = pinInfo.sort((a, b) => {
+    if (a.distance && b.distance) {
+      return a.distance - b.distance;
+    } else {
+      return 0;
     }
-  }, []);
+  });
 
   useEffect(() => {
     handleScroll(popupInfo);
   }, [handleScroll, popupInfo]);
 
-  // when have content :
-  // - start: flow in from left - done!
-  // - click pin to scroll sidebar to target - done!
-  // - use hand drag if can - may not need?
-  // - floating on the page left with gap, borderradius
-  // - when add or remove, flow the card from left
-  // - when data swap, swap the sequence with animation
-  // - when empty, all card removed from left, the drawer removed from left
+  const responsiveStyle = isDesktop
+    ? {
+        bottom: 'auto',
+        top: 0,
+        overflowX: 'visible',
+        overflowY: 'scroll',
+        height: '100svh',
+        width: 'auto',
+      }
+    : {
+        bottom: 0,
+        top: 'auto',
+        overflowX: 'scroll',
+        overflowY: 'visible',
+        height: '35svh',
+        width: '100svh',
+      };
+
+  const SideBarListItem = useMemo(() => {
+    return (
+      <React.Fragment>
+        {sortedPinInfo.map((item, index) => {
+          return (
+            <Slide
+              direction="right"
+              in={!!item}
+              mountOnEnter
+              unmountOnExit
+              key={item.type + item._id}
+              id={'list' + item.type + item._id}
+            >
+              <ListItem>
+                <Paper
+                  elevation={1}
+                  sx={{
+                    marginY: 1,
+                    width: 360,
+                  }}
+                  onMouseEnter={() => handleOnHover(`${item.type}-${item._id}`)}
+                  onMouseLeave={() => handleOffHover(`${item.type}-${item._id}`)}
+                  onClick={() => handleSideBarClick(item.address.location)}
+                >
+                  <MapItemCard popupInfo={item} />
+                </Paper>
+              </ListItem>
+            </Slide>
+          );
+        })}
+      </React.Fragment>
+    );
+  }, [pinInfo]);
 
   return (
     <Box>
       <Grid
         id="MapWithSideBar"
         container
-        height={'100vh'}
+        height={'100svh'}
         bgcolor={'white'}
+        position={'relative'}
       >
-        <Grid
-          item
-          xs={3}
-          marginLeft={pinInfo.length ? '0' : '-25%'}
-          sx={{ transition: '0.5s all' }}
+        <Box
+          position={'absolute'}
+          sx={{
+            ...responsiveStyle,
+            left: -10,
+            zIndex: 99999,
+            backgroundImage: 'url(/assets/map-sidebar-bkg2.jpg)',
+            backgroundAttachment: 'fixed',
+            backgroundSize: 'cover',
+            backgroundRepeat: 'no-repeat',
+          }}
+          ref={listRef}
         >
-          <Box
-            position={'relative'}
-            sx={{
-              overflowY: 'scroll',
-              height: '100vh',
-              backgroundImage: 'url(/assets/map-sidebar-bkg2.jpg)',
-              backgroundAttachment: 'fixed',
-              backgroundSize: 'contain',
-              backgroundRepeat: 'no-repeat',
-            }}
-            ref={listRef}
-          >
-            <List>
-              <Box
-                position={'absolute'}
-                left={0}
-                top={0}
-                bottom={0}
-                width={'100%'}
-                // height={'100vh'}
-                sx={
-                  {
-                    // objectFit: 'cover',
-                  }
-                }
-              ></Box>
-              {pinInfo.length ? (
-                <>
-                  {pinInfo.map((item, index) => {
-                    return (
-                      <ListItem
-                        key={item.type + item._id}
-                        id={'list' + item.type + item._id}
-                      >
-                        <Paper
-                          elevation={1}
-                          sx={{
-                            marginY: 1,
-                            width: '100%',
-                          }}
-                          onMouseEnter={() => handleOnHover(`${item.type}-${item._id}`)}
-                          onMouseLeave={() => handleOffHover(`${item.type}-${item._id}`)}
-                          onClick={() => handleSideBarClick(item.address.location)}
-                        >
-                          <MapItemCard popupInfo={item} />
-                          {/* the effect is not as expected */}
-                          {/* <Suspense fallback={<CircularLoading size={40} />}> */}
-                          {/* <LazyMapItemCard popupInfo={item} /> */}
-                          {/* </Suspense> */}
-                        </Paper>
-                      </ListItem>
-                    );
-                  })}
-                  <Button>Load More</Button>
-                </>
-              ) : (
-                <>loading</>
-              )}
-            </List>
-          </Box>
-        </Grid>
+          <List sx={isDesktop ? { display: 'block' } : { display: 'flex', flexWrap: 'nowrap' }}>
+            {pinInfo.length ? SideBarListItem : <></>}
+          </List>
+        </Box>
         <Grid
           item
-          xs={pinInfo.length ? 9 : 12}
+          xs={12}
           sx={{ transition: '0.5s all' }}
         >
           <Map
             sx={{ height: '100%' }}
             mapId="RestaurantAttractionMap"
+            fullScreenLocation="bottom-right"
+            naviControlLocation="bottom-right"
           >
-            <>
-              <MapPins />
-            </>
+            <MapPins />
           </Map>
         </Grid>
       </Grid>
