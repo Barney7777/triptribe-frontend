@@ -7,6 +7,8 @@ import { SecurityCard } from './SecurityCard';
 import { FavoritesCard } from './FavoritesCard';
 import { ReviewsCard } from './ReviewsCard';
 import { User } from '@/types/user';
+import ListingCard from '@/sections/listing-page/listing-card';
+import { MainType } from '@/types/general';
 
 type TabPanelProps = {
   children?: React.ReactNode;
@@ -42,12 +44,40 @@ function a11yProps(index: number) {
 }
 type TabProps = {
   user: User;
+  showPrivacyTabs: boolean;
 };
-const TabPanel: React.FC<TabProps> = ({ user }) => {
+const TabPanel: React.FC<TabProps> = ({ user, showPrivacyTabs }) => {
   const [value, setValue] = React.useState(0);
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
+
+  let tabs = [
+    {
+      label: 'General',
+      component: GeneralCard,
+      privacyTab: false,
+    },
+    {
+      label: 'Favorites',
+      component: FavoritesCard,
+      privacyTab: false,
+    },
+    {
+      label: 'Reviews',
+      component: ReviewsCard,
+      privacyTab: false,
+    },
+    {
+      label: 'Security',
+      component: SecurityCard,
+      privacyTab: true,
+    },
+  ];
+
+  if (!showPrivacyTabs) {
+    tabs = tabs.filter((tab) => !tab.privacyTab);
+  }
 
   return (
     <Box sx={{ width: '100%' }}>
@@ -57,48 +87,30 @@ const TabPanel: React.FC<TabProps> = ({ user }) => {
           onChange={handleChange}
           aria-label="basic tabs example"
         >
-          <Tab
-            label="General"
-            {...a11yProps(0)}
-          />
-          <Tab
-            label="Favorites"
-            {...a11yProps(1)}
-          />
-          <Tab
-            label="Reviews"
-            {...a11yProps(2)}
-          />
-          <Tab
-            label="Security"
-            {...a11yProps(3)}
-          />
+          {tabs &&
+            tabs.map((tab, index) => {
+              return (
+                <Tab
+                  label={tab.label}
+                  key={index}
+                  {...a11yProps(index)}
+                />
+              );
+            })}
         </Tabs>
       </Box>
-      <CustomTabPanel
-        value={value}
-        index={0}
-      >
-        <GeneralCard user={user} />
-      </CustomTabPanel>
-      <CustomTabPanel
-        value={value}
-        index={1}
-      >
-        <FavoritesCard />
-      </CustomTabPanel>
-      <CustomTabPanel
-        value={value}
-        index={2}
-      >
-        <ReviewsCard />
-      </CustomTabPanel>
-      <CustomTabPanel
-        value={value}
-        index={3}
-      >
-        <SecurityCard />
-      </CustomTabPanel>
+      {tabs &&
+        tabs.map((tab, index) => {
+          return (
+            <CustomTabPanel
+              value={value}
+              key={index}
+              index={index}
+            >
+              <tab.component user={user} />
+            </CustomTabPanel>
+          );
+        })}
     </Box>
   );
 };

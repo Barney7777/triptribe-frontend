@@ -57,3 +57,35 @@ export interface FilterChipData {
   label: string;
   type: keyof FilterQueryParams;
 }
+
+export type Restaurant = {
+  _id: string;
+  name: string;
+  description: string;
+  email: string;
+  phone: string;
+  address: {
+    formattedAddress: string;
+    location: {
+      lng: number;
+      lat: number;
+    };
+  };
+  overAllRating: number;
+};
+
+export type Attraction = {
+  _id: string;
+  name: string;
+  description: string;
+  email: string;
+  phone: string;
+  address: {
+    formattedAddress: string;
+    location: {
+      lng: number;
+      lat: number;
+    };
+  };
+  overAllRating: number;
+};
