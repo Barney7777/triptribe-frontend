@@ -71,6 +71,7 @@ export const Map: React.FC<MapProps> = ({
     const response = await axiosInstance.request<PlacesData>(requestOptions);
     return response.data;
   });
+  console.log(data);
   useEffect(() => {
     if (data) {
       updatePinInfo(data);

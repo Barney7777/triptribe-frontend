@@ -15,7 +15,10 @@ import {
 } from '@mui/material';
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import CardTheme from './components/CardTheme';
+import { useContext } from 'react';
 import { User } from '@/types/user';
+import { InvisibleInput } from '@/components/InvisibleInput';
+import { UserContext } from '@/contexts/user-context/user-context';
 import axiosInstance from '@/utils/request';
 import { useSnackbar } from 'notistack';
 import { useForm, Controller, SubmitHandler } from 'react-hook-form';
@@ -39,8 +42,10 @@ type UserProfileFormInputs = {
   description: string;
 };
 
-export const GeneralCard = (props: GeneralCardProps) => {
-  const { user } = props;
+export const GeneralCard: React.FC<GeneralCardProps> = ({ user }) => {
+  // if is not me, hide edit button
+  const { userData } = useContext(UserContext);
+  const isMe = user._id === userData?._id;
 
   const {
     control,
@@ -57,7 +62,6 @@ export const GeneralCard = (props: GeneralCardProps) => {
   });
 
   const { enqueueSnackbar } = useSnackbar();
-
   const onSubmit: SubmitHandler<UserProfileFormInputs> = (data) => {
     axiosInstance
       .request<User>({
@@ -129,17 +133,16 @@ export const GeneralCard = (props: GeneralCardProps) => {
                   }}
                 >
                   <Avatar
-                    src={user.userAvatar?.imageUrl ?? '/assets/download.jpeg'}
+                    src={isMe ? userData.userAvatar.imageUrl : user.userAvatar?.imageUrl}
                     sx={{
                       height: 150,
                       m: 2,
                       width: 150,
                     }}
                   />
-                  <IconButton
-                    color="primary"
-                    size="small"
+                  <Box
                     sx={{
+                      bgcolor: 'white',
                       position: 'absolute',
                       zIndex: 2,
                       border: `${CardTheme.borderColor} solid 2px`,
@@ -149,8 +152,17 @@ export const GeneralCard = (props: GeneralCardProps) => {
                       boxShadow: 'sm',
                     }}
                   >
-                    <EditRoundedIcon />
-                  </IconButton>
+                    {isMe && (
+                      <IconButton
+                        color="primary"
+                        size="small"
+                        component="label"
+                      >
+                        <EditRoundedIcon />
+                        <InvisibleInput userId={user._id} />
+                      </IconButton>
+                    )}
+                  </Box>
                 </Box>
               </Grid>
               <Grid
@@ -188,6 +200,7 @@ export const GeneralCard = (props: GeneralCardProps) => {
                   control={control}
                   render={({ field: { onChange, value } }) => (
                     <TextField
+                      disabled={isMe ? false : true}
                       variant="outlined"
                       label="Nickname"
                       name="nickname"
@@ -229,6 +242,7 @@ export const GeneralCard = (props: GeneralCardProps) => {
                 control={control}
                 render={({ field: { onChange, value } }) => (
                   <TextField
+                    disabled={isMe ? false : true}
                     size="small"
                     multiline
                     rows={4}
@@ -263,14 +277,18 @@ export const GeneralCard = (props: GeneralCardProps) => {
               p: 2,
             }}
           >
-            <Button
-              size="small"
-              variant="contained"
-              type="submit"
-              disabled={!isValid || !isDirty}
-            >
-              Save
-            </Button>
+            {isMe ? (
+              <Button
+                size="small"
+                variant="contained"
+                type="submit"
+                disabled={!isValid || !isDirty}
+              >
+                Save
+              </Button>
+            ) : (
+              <></>
+            )}
           </CardActions>
         </Card>
       </Box>

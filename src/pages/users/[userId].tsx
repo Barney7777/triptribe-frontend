@@ -6,11 +6,11 @@ import { User } from '@/types/user';
 import axiosInstance from '@/utils/request';
 import useSWR from 'swr';
 import Layout from '@/layouts/MainLayout';
+import { CircularLoading } from '@/components/CircularLoading';
 
 const UserDetailPage = () => {
   const router = useRouter();
   const { userId } = router.query;
-
   const isMe = userId === 'me';
   const userUrl = isMe ? '/users/me' : `/users/${userId}`;
 
@@ -28,7 +28,7 @@ const UserDetailPage = () => {
   });
 
   if (isLoading) {
-    return <span>Loading...</span>;
+    return <CircularLoading size={80} />;
   }
 
   if (error) {
@@ -60,7 +60,7 @@ const UserDetailPage = () => {
         {data && (
           <>
             <TabPanel
-              user={data as User}
+              user={data}
               showPrivacyTabs={isMe}
             />
           </>
