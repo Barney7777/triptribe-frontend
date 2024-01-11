@@ -18,6 +18,8 @@ import { PlaceMap } from './components/place-map';
 import { PlaceLocation } from './components/place-location';
 import { capitalizeFirstLetter } from '@/utils/cap-string-first-letter';
 import { Review } from '@/types/review';
+import Seo from '@/components/seo/Seo';
+
 export type RatingDistribution = {
   count: number;
   rating: number;
@@ -80,6 +82,12 @@ export const PlaceContent: React.FC<PlaceContentProps> = () => {
 
   return (
     <React.Fragment>
+      <Seo
+        title={placeData.name.toUpperCase()}
+        description={placeData.description}
+        type="webapp"
+        img={placeData.photos[0].imageUrl}
+      />
       <Box
         mt={1}
         display={'flex'}

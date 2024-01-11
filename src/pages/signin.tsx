@@ -19,6 +19,8 @@ import AuthPageContainer from '@/components/AuthPageContainer';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import { SignInInputs, UserContext } from '@/contexts/user-context/user-context';
+import Seo from '@/components/seo/Seo';
+
 export type SignInFormInputs = SignInInputs;
 
 const validationSchema = yup.object().shape({
@@ -73,6 +75,12 @@ const SignInPage = () => {
 
   return (
     <AuthPageContainer maxWidth="xs">
+      <Seo
+        title="TripTribe - Login"
+        description="Log in to TripTribe to explore attractions and restaurants. Join our platform for transparent ratings and authentic reviews."
+        type="webapp"
+        img=""
+      />
       <Box
         component="form"
         onSubmit={handleSubmit(onSubmit)}

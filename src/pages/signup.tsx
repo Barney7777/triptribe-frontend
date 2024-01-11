@@ -19,6 +19,7 @@ import AuthPageContainer from '@/components/AuthPageContainer';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import { SignUpInputs, UserContext } from '@/contexts/user-context/user-context';
+import Seo from '@/components/seo/Seo';
 
 export type SignUpFormInputs = {
   passwordConfirm: string;
@@ -91,6 +92,12 @@ const SignUpPage = () => {
 
   return (
     <AuthPageContainer maxWidth="xs">
+      <Seo
+        title="TripTribe - Register"
+        description="Join TripTribe to reshape your digital tourism experience. Register for transparent ratings and authentic reviews of attractions and restaurants."
+        type="webapp"
+        img=""
+      />
       <Box
         component="form"
         onSubmit={handleSubmit(onSubmit)}
