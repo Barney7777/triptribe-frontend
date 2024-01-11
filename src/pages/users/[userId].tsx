@@ -14,10 +14,13 @@ const UserDetailPage = () => {
   const isMe = userId === 'me';
   const userUrl = isMe ? '/users/me' : `/users/${userId}`;
 
-  const requestOptions = {
-    url: userUrl,
-    method: 'get',
-  };
+  const requestOptions =
+    userId === undefined
+      ? {}
+      : {
+          url: userUrl,
+          method: 'get',
+        };
 
   const { data, error, isLoading } = useSWR<User>(requestOptions, async () => {
     const response = await axiosInstance.request<User>(requestOptions);

@@ -2,6 +2,7 @@ export type User = {
   _id: string;
   email: string;
   nickname: string;
+  description: string;
   role: UserRole;
   savedAttractions: SavedAttractions;
   savedRestaurants: SavedRestaurants;

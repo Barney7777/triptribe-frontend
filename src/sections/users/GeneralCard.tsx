@@ -15,212 +15,265 @@ import {
 } from '@mui/material';
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import CardTheme from './components/CardTheme';
-import { useState } from 'react';
 import { User } from '@/types/user';
+import axiosInstance from '@/utils/request';
+import { useSnackbar } from 'notistack';
+import { useForm, Controller, SubmitHandler } from 'react-hook-form';
+import * as yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
 
 type GeneralCardProps = {
   user: User;
 };
 
+const validationSchema = yup.object().shape({
+  nickname: yup.string().required('Nickname is required'),
+  description: yup
+    .string()
+    .required('Description is required')
+    .max(300, 'Description must be less than 300 characters long'),
+});
+
+type UserProfileFormInputs = {
+  nickname: string;
+  description: string;
+};
+
 export const GeneralCard = (props: GeneralCardProps) => {
   const { user } = props;
-  const [inputText, setInputText] = useState('');
 
-  const handleTextInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputText(e.target.value);
+  const {
+    control,
+    handleSubmit,
+    trigger,
+    watch,
+    formState: { errors, isValid, isDirty },
+  } = useForm<UserProfileFormInputs>({
+    resolver: yupResolver(validationSchema),
+    defaultValues: {
+      nickname: user.nickname,
+      description: user.description,
+    },
+  });
+
+  const { enqueueSnackbar } = useSnackbar();
+
+  const onSubmit: SubmitHandler<UserProfileFormInputs> = (data) => {
+    axiosInstance
+      .request<User>({
+        url: `/users/${user._id}`,
+        method: 'put',
+        data,
+      })
+      .then(() => {
+        enqueueSnackbar('Update Succeed!', {
+          variant: 'success',
+          autoHideDuration: 1500,
+          disableWindowBlurListener: true,
+          anchorOrigin: { vertical: 'top', horizontal: 'right' },
+        });
+      })
+      .catch((err) => {
+        enqueueSnackbar(err.response.data.exceptionMessage, {
+          variant: 'error',
+          autoHideDuration: 1500,
+          disableWindowBlurListener: true,
+          anchorOrigin: { vertical: 'top', horizontal: 'right' },
+        });
+      })
+      .finally(() => {});
   };
+
   const charLimit = 300;
-  const charLeft = charLimit - inputText.length;
+  const watchDescription = watch('description');
+  const charLeft = charLimit - watchDescription.length;
 
   return (
     <Container>
-      <Card sx={{ bgcolor: CardTheme.bgColor }}>
-        <CardContent>
-          <Box sx={{ mb: 1 }}>
-            <Typography variant="h6">Personal info</Typography>
-            <Typography
-              variant="body2"
-              color={CardTheme.helperTextColor}
-              sx={{
-                mt: 1,
-              }}
-            >
-              Customize how your profile information will appear to the networks.
-            </Typography>
-          </Box>
-          <Divider />
-          <Grid
-            container
-            spacing={1}
-            mt={1}
-          >
-            <Grid
-              item
-              md={4}
-              sx={{
-                display: 'flex',
-                justifyContent: 'center',
-              }}
-            >
-              <Box
+      <Box
+        component="form"
+        onSubmit={handleSubmit(onSubmit)}
+        noValidate
+      >
+        <Card sx={{ bgcolor: CardTheme.bgColor }}>
+          <CardContent>
+            <Box sx={{ mb: 1 }}>
+              <Typography variant="h6">Personal info</Typography>
+              <Typography
+                variant="body2"
+                color={CardTheme.helperTextColor}
                 sx={{
-                  position: 'relative',
+                  mt: 1,
                 }}
               >
-                <Avatar
-                  src={user.userAvatar?.imageUrl ?? '/assets/download.jpeg'}
+                Customize how your profile information will appear to the networks.
+              </Typography>
+            </Box>
+            <Divider />
+            <Grid
+              container
+              spacing={1}
+              mt={1}
+            >
+              <Grid
+                item
+                md={4}
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                }}
+              >
+                <Box
                   sx={{
-                    height: 150,
-                    m: 2,
-                    width: 150,
-                  }}
-                />
-                <IconButton
-                  color="primary"
-                  size="small"
-                  sx={{
-                    position: 'absolute',
-                    zIndex: 2,
-                    border: `${CardTheme.borderColor} solid 2px`,
-                    borderRadius: '50%',
-                    left: 130,
-                    top: 130,
-                    boxShadow: 'sm',
+                    position: 'relative',
                   }}
                 >
-                  <EditRoundedIcon />
-                </IconButton>
-              </Box>
+                  <Avatar
+                    src={user.userAvatar?.imageUrl ?? '/assets/download.jpeg'}
+                    sx={{
+                      height: 150,
+                      m: 2,
+                      width: 150,
+                    }}
+                  />
+                  <IconButton
+                    color="primary"
+                    size="small"
+                    sx={{
+                      position: 'absolute',
+                      zIndex: 2,
+                      border: `${CardTheme.borderColor} solid 2px`,
+                      borderRadius: '50%',
+                      left: 130,
+                      top: 130,
+                      boxShadow: 'sm',
+                    }}
+                  >
+                    <EditRoundedIcon />
+                  </IconButton>
+                </Box>
+              </Grid>
+              <Grid
+                item
+                md={8}
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <TextField
+                  variant="outlined"
+                  label="ID"
+                  value={user._id}
+                  fullWidth
+                  disabled
+                  sx={{
+                    m: 1,
+                  }}
+                ></TextField>
+                <TextField
+                  variant="outlined"
+                  label="Email Address"
+                  value={user.email}
+                  disabled
+                  fullWidth
+                  sx={{
+                    m: 1,
+                  }}
+                ></TextField>
+                <Controller
+                  name="nickname"
+                  control={control}
+                  render={({ field: { onChange, value } }) => (
+                    <TextField
+                      variant="outlined"
+                      label="Nickname"
+                      name="nickname"
+                      onBlur={() => {
+                        trigger('nickname');
+                      }}
+                      value={value}
+                      onChange={onChange}
+                      error={!!errors.nickname}
+                      helperText={errors.nickname?.message}
+                      fullWidth
+                      sx={{
+                        m: 1,
+                      }}
+                    ></TextField>
+                  )}
+                />
+              </Grid>
             </Grid>
-            <Grid
-              item
-              md={8}
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
+            <Box sx={{ mb: 1 }}>
+              <Typography variant="h6">Bio</Typography>
+              <Typography
+                variant="body2"
+                color={CardTheme.helperTextColor}
+                sx={{
+                  mt: 1,
+                }}
+              >
+                Write a short introduction to be displayed on your profile.
+              </Typography>
+            </Box>
+            <Divider />
+            <Stack
+              spacing={2}
+              sx={{ my: 1 }}
             >
-              <TextField
-                variant="outlined"
-                label="ID"
-                defaultValue={user._id}
-                fullWidth
-                disabled
-                sx={{
-                  m: 1,
-                }}
-              ></TextField>
-              <TextField
-                variant="outlined"
-                label="Nickname"
-                defaultValue={user.nickname}
-                fullWidth
-                sx={{
-                  m: 1,
-                }}
-              ></TextField>
-              <TextField
-                variant="outlined"
-                label="Email Address"
-                value={user.email}
-                disabled
-                fullWidth
-                sx={{
-                  m: 1,
-                }}
-              ></TextField>
-            </Grid>
-          </Grid>
-        </CardContent>
-        <Divider />
-        <CardActions
-          sx={{
-            display: 'flex',
-            justifyContent: 'flex-end',
-            p: 2,
-          }}
-        >
-          <Button
-            size="small"
-            variant="outlined"
-          >
-            Cancel
-          </Button>
-          <Button
-            size="small"
-            variant="contained"
-          >
-            Save
-          </Button>
-        </CardActions>
-      </Card>
-      <Card
-        sx={{
-          mt: 4,
-          bgcolor: CardTheme.bgColor,
-        }}
-      >
-        <CardContent>
-          <Box sx={{ mb: 1 }}>
-            <Typography variant="h6">Bio</Typography>
-            <Typography
-              variant="body2"
-              color={CardTheme.helperTextColor}
-              sx={{
-                mt: 1,
-              }}
-            >
-              Write a short introduction to be displayed on your profile.
-            </Typography>
-          </Box>
+              <Controller
+                name="description"
+                control={control}
+                render={({ field: { onChange, value } }) => (
+                  <TextField
+                    size="small"
+                    multiline
+                    rows={4}
+                    sx={{ mt: 1.5 }}
+                    name="description"
+                    value={value}
+                    onChange={onChange}
+                    onBlur={() => {
+                      trigger('description');
+                    }}
+                    error={!!errors.description}
+                    helperText={errors.description?.message}
+                    inputProps={{
+                      maxLength: { charLimit },
+                    }}
+                  />
+                )}
+              />
+              <Typography
+                variant="body2"
+                color={CardTheme.helperTextColor}
+              >
+                {charLeft} characters left
+              </Typography>
+            </Stack>
+          </CardContent>
           <Divider />
-          <Stack
-            spacing={2}
-            sx={{ my: 1 }}
+          <CardActions
+            sx={{
+              display: 'flex',
+              justifyContent: 'flex-end',
+              p: 2,
+            }}
           >
-            <TextField
+            <Button
               size="small"
-              multiline
-              rows={4}
-              sx={{ mt: 1.5 }}
-              onChange={handleTextInput}
-              value={inputText}
-              inputProps={{
-                maxLength: { charLimit },
-              }}
-            />
-            <Typography
-              variant="body2"
-              color={CardTheme.helperTextColor}
+              variant="contained"
+              type="submit"
+              disabled={!isValid || !isDirty}
             >
-              {charLeft} characters left
-            </Typography>
-          </Stack>
-        </CardContent>
-        <Divider />
-        <CardActions
-          sx={{
-            display: 'flex',
-            justifyContent: 'flex-end',
-            p: 2,
-          }}
-        >
-          <Button
-            size="small"
-            variant="outlined"
-          >
-            Cancel
-          </Button>
-          <Button
-            size="small"
-            variant="contained"
-          >
-            Save
-          </Button>
-        </CardActions>
-      </Card>
+              Save
+            </Button>
+          </CardActions>
+        </Card>
+      </Box>
     </Container>
   );
 };
