@@ -10,6 +10,7 @@ export const LogoImage = (props: SVGProps<SVGSVGElement>) => {
       height="100%"
       preserveAspectRatio="xMidYMid meet"
       version="1.0"
+      {...props}
     >
       <defs>
         <clipPath id="6f41f9ed7f">

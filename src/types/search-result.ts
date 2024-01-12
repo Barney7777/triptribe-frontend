@@ -1,4 +1,5 @@
-export type fetchedData = {
-  label: string;
-  type: string;
-}[];
+export type SearchDataType<T> = {
+  Attraction: T[];
+  Restaurant: T[];
+  [key: string]: any;
+};

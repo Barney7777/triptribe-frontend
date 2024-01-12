@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -16,11 +16,10 @@ import {
 import NextLink from 'next/link';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import AuthPageContainer from '@/components/AuthPageContainer';
-
-export interface SigninInputs {
-  email: string;
-  password: string;
-}
+import { useRouter } from 'next/router';
+import { useSnackbar } from 'notistack';
+import { SignInInputs, UserContext } from '@/contexts/user-context/user-context';
+export type SignInFormInputs = SignInInputs;
 
 const validationSchema = yup.object().shape({
   email: yup.string().email('Please enter a valid email address').required('Email is required'),
@@ -36,7 +35,7 @@ export default function Signin() {
     handleSubmit,
     trigger,
     formState: { errors, isValid },
-  } = useForm<SigninInputs>({
+  } = useForm<SignInFormInputs>({
     resolver: yupResolver(validationSchema),
     defaultValues: {
       email: '',
@@ -45,14 +44,31 @@ export default function Signin() {
   });
 
   const [showPassword, setShowPassword] = useState(false);
-
+  const router = useRouter();
+  const { userData, signIn } = useContext(UserContext);
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
+  const { enqueueSnackbar } = useSnackbar();
 
-  const onSubmit = (data: SigninInputs) => {
-    // Handle the form submission
-    console.log(data);
+  const onSubmit = async (data: SignInFormInputs) => {
+    try {
+      await signIn(data);
+      enqueueSnackbar('Login Successful!', {
+        variant: 'success',
+        autoHideDuration: 1500,
+        disableWindowBlurListener: true,
+        anchorOrigin: { vertical: 'top', horizontal: 'right' },
+      });
+      router.push('/');
+    } catch (err) {
+      enqueueSnackbar('Login Failed!', {
+        variant: 'error',
+        autoHideDuration: 1500,
+        disableWindowBlurListener: true,
+        anchorOrigin: { vertical: 'top', horizontal: 'right' },
+      });
+    }
   };
 
   return (

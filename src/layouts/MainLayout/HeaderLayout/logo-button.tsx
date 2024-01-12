@@ -1,12 +1,24 @@
-import { Box, Button, Typography } from '@mui/material';
-import Link from 'next/link';
-import { paths } from '@/paths';
+import Box from '@mui/material/Box';
+import NextLink from 'next/link';
+
 import { LogoImage } from '@/icons/logo-image';
 import { LogoText } from '@/icons/logo-text';
-export function LogoButton() {
+type LogoButtonProps = {
+  logoImageWidth?: number;
+  logoImageHeight?: number;
+  logoTextWidth?: number;
+  logoTextHeight?: number;
+};
+
+export const LogoButton: React.FC<LogoButtonProps> = ({
+  logoImageWidth = 'auto',
+  logoImageHeight = 'auto',
+  logoTextWidth = 'auto',
+  logoTextHeight = 'auto',
+}) => {
   return (
     <Box
-      component={Link}
+      component={NextLink}
       href={'/'}
       sx={{
         height: '60px',
@@ -19,12 +31,12 @@ export function LogoButton() {
         color: 'primary.dark',
       }}
     >
-      <Box sx={{ height: '60px' }}>
+      <Box sx={{ width: logoImageWidth, height: logoImageHeight }}>
         <LogoImage />
       </Box>
-      <Box sx={{ height: '160px' }}>
+      <Box sx={{ width: logoTextWidth, height: logoTextHeight }}>
         <LogoText />
       </Box>
     </Box>
   );
-}
+};

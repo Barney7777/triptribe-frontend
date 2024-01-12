@@ -9,8 +9,12 @@ const theme = createTheme({
     },
     secondary: {
       light: '#FFCF33',
-      main: '#009688',
+      main: '#FFC400',
       dark: '#B28900',
+    },
+    grey: {
+      100: '#F8F9FA',
+      500: '#6C737F',
     },
   },
 });

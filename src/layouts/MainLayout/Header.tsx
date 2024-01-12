@@ -4,14 +4,6 @@ import Toolbar from '@mui/material/Toolbar';
 import { TopNav } from '@/layouts/MainLayout/HeaderLayout/TopNav';
 
 const Header: React.FC = () => {
-  // const appBarStyle = {
-  //   backgroundColor: '#ffcf33',
-  // color: '#111927',
-  //   position: 'fixed',
-  //   width: '100%',
-  //   top: 0,
-  // };
-
   return (
     <AppBar
       component="nav"

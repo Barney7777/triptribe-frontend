@@ -1,44 +1,162 @@
+def COLOR_MAP = [
+    'SUCCESS': 'good',
+    'FAILURE': 'danger',
+]
+
 pipeline {
     agent any
-    
+
+    tools {
+        nodejs 'nodejs-21.4.0'
+    }
+
+    environment {
+        REPO_URL = 'https://github.com/ExploreXperts/TripTribe-Frontend.git'
+        VERCEL_TOKEN = credentials('vercel-token') // Create a Jenkins secret credential with the Vercel token
+        VERCEL_PROJECT_ID = credentials('VERCEL_PROJECT_ID')
+        VERCEL_ORG_ID = credentials('VERCEL_ORG_ID') // Set your Vercel organization ID
+        AWS_REGION = 'ap-southeast-2'
+        s3_bucket_name = 'www.trip-tribe.com-primary'
+        build_folder = 'out'
+    }
+
     stages {
         stage('Checkout') {
             steps {
-                // Checkout your source code from version control
-                checkout scm
+                // Checkout the repository from GitHub
+                checkout([$class: 'GitSCM', branches: [[name: '*/dev']], userRemoteConfigs: [[url: env.REPO_URL, credentialsId:'devon']]])
             }
         }
-        
-        stage('Build') {
+
+        stage('Install Dependencies') {
             steps {
-                // Build your application
-                sh 'mvn clean install'
+                script {
+                    sh 'npm ci'
+                    sh 'npm run lint'
+                    // sh 'npm run format'
+                }
             }
         }
-        
-        stage('Test') {
+
+        // stage ('Test Source Code') {
+
+        //     steps {
+        //         script {
+        //             sh 'npm run test'
+        //             sh 'npm run test:coverage'
+        //         }
+        //     }
+        // }
+
+        stage('SonarQube Analysis') {
+            environment {
+                scannerHome = tool 'sonarqube'
+            }
             steps {
-                // Run your tests
-                sh 'mvn test'
+                script {
+                        withSonarQubeEnv('sonarqube') {
+                        sh """
+                            ${scannerHome}/bin/sonar-scanner \
+                            -Dsonar.projectKey=$JOB_NAME \
+                            -Dsonar.projectName=$JOB_NAME \
+                            -Dsonar.projectVersion=$BUILD_NUMBER \
+                            -Dsonar.sources=src/
+                        """
+                        }
+                }
             }
         }
-        
-        stage('Deploy') {
+
+        stage('Quality Gate') {
             steps {
-                // Deploy your application
-                sh './deploy.sh'
+                timeout(time: 10, unit: 'MINUTES') {
+                    // Just in case something goes wrong, pipeline will be killed after a timeout
+                    script {
+                        def qg = waitForQualityGate()
+                        if (qg.status != 'OK') {
+                            error "Pipeline aborted due to quality gate failure: ${qg.status}"
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Install Dependencies and Deploy') {
+            steps {
+                script {
+                    // Install Node.js and npm (assuming Node.js tool is already configured)
+
+                    // Install Vercel CLI
+                    sh 'npm install -g vercel'
+
+                    // Print Vercel token for debugging purposes
+                    echo "Vercel Token: ${VERCEL_TOKEN}"
+
+                    // Pull Vercel environment information
+                    sh 'vercel pull --yes --environment=production --token=$VERCEL_TOKEN'
+
+                    // Build project artifacts (if needed)
+                    // sh 'npm ci'
+                    sh 'vercel build --prod --token=$VERCEL_TOKEN'
+
+                    input(
+                    id: 'deployToProduction',
+                    message: 'Do you want to deploy to production?',
+                    ok: 'Deploy'
+                    )
+                    sh 'vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN'
+                }
+            }
+        }
+
+        stage('Replace next.config file and rerun build') {
+            steps {
+                // Build the static files
+                script {
+                    sh 'mv -f next.config_s3.js next.config.js'
+                    sh 'mv -f /src/pages/index_s3.tsx /src/pages/index.tsx'
+                    sh 'npm run build'
+                }
+            }
+        }
+
+        stage('deploy to s3 bucket') {
+            steps {
+                    withCredentials([aws(accessKeyVariable:'AWS_ACCESS_KEY_ID', credentialsId:'aws-credential', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                            sh "aws s3 cp ./${build_folder}/ s3://${S3_BUCKET_NAME}/ --recursive --region ${AWS_REGION}"
+                    }
             }
         }
     }
-    
+
     post {
         success {
-            // Actions to be taken if the pipeline is successful
-            echo 'Pipeline succeeded! Deploying to production...'
+                emailext subject: 'Build Successfully',
+                body: 'The Jenkins build succeed. Please check the build logs for more information. $DEFAULT_CONTENT',
+                recipientProviders: [
+                    [$class: 'CulpritsRecipientProvider'],
+                    [$class: 'DevelopersRecipientProvider'],
+                    [$class: 'RequesterRecipientProvider']
+                ],
+                to: 'jlix723@gmail.com'
         }
+
         failure {
-            // Actions to be taken if the pipeline fails
-            echo 'Pipeline failed. Notify the team.'
+                emailext subject: 'Build Failed',
+                body: 'The Jenkins build failed. Please check the build logs for more information. $DEFAULT_CONTENT',
+                recipientProviders: [
+                    [$class: 'CulpritsRecipientProvider'],
+                    [$class: 'DevelopersRecipientProvider'],
+                    [$class: 'RequesterRecipientProvider']
+                ],
+                to: 'jlix723@gmail.com'
+        }
+
+        always {
+            echo 'Slack Notifications.'
+            slackSend channel: '#jenkinscicd',
+                color: COLOR_MAP[currentBuild.currentResult],
+                message: "*${currentBuild.currentResult}:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} \n More info at: ${env.BUILD_URL}"
         }
     }
 }

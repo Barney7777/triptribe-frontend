@@ -1,4 +1,4 @@
-import { Box, Typography } from '@mui/material';
+import { Box } from '@mui/material';
 import Link from 'next/link';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -10,6 +10,8 @@ import { useTheme } from '@mui/material/styles';
 const FooterList: React.FC = () => {
   const theme = useTheme();
   const primaryGreen = theme.palette.primary.main;
+  const footerBgColor = theme.palette.grey[100];
+  const listHeaderColor = theme.palette.grey[500];
 
   type List = {
     name: string[];
@@ -17,24 +19,29 @@ const FooterList: React.FC = () => {
   };
 
   type FooterListObject = {
-    menu: List;
-    user: List;
+    explore1: List;
+    explore2: List;
+    company: List;
   };
 
   const footerListObj: FooterListObject = {
-    menu: {
+    explore1: {
       name: ['Homepage', 'Restaurant', 'Attraction'],
       items: ['/', '/restaurants', '/attractions'],
     },
-    user: {
+    explore2: {
       name: ['Sign in', 'Sign up', 'Write a review'],
+      items: ['/signin', '/signup', '/review'],
+    },
+    company: {
+      name: ['Terms of Use', 'Privacy and Cookies Statement', 'Contact Us'],
       items: ['/signin', '/signup', '/review'],
     },
   };
 
   return (
     <Box>
-      <div className="flex flex-col sm:flex-row sm:gap-16 md:gap-32">
+      <div className="grid grid-cols-1 sm:grid-cols-3 sm:gap-4 md:gap-8 lg:gap-16">
         <Box
           sx={{
             width: '100%',
@@ -42,23 +49,29 @@ const FooterList: React.FC = () => {
         >
           <List
             subheader={
-              <ListSubheader sx={{ bgcolor: '#F8F9FA', color: '#6C737F', fontWeight: 'bold' }}>
-                Menu
+              <ListSubheader
+                sx={{
+                  bgcolor: footerBgColor,
+                  color: listHeaderColor,
+                  fontWeight: 'bold',
+                }}
+              >
+                EXPLORE
               </ListSubheader>
             }
           >
-            {footerListObj.menu.name.map((menuItem, index) => (
+            {footerListObj.explore1.name.map((explore1Item, index) => (
               <ListItem key={index}>
                 <ListItemIcon>
                   <HorizontalRuleIcon style={{ color: primaryGreen }} />
                 </ListItemIcon>
                 <Link
-                  href={footerListObj.menu.items[index]}
+                  href={footerListObj.explore1.items[index]}
                   passHref
                   style={{ textDecoration: 'none', color: 'inherit' }}
                 >
                   <ListItemText
-                    primary={menuItem}
+                    primary={explore1Item}
                     primaryTypographyProps={{ fontSize: '14px' }}
                   />
                 </Link>
@@ -73,23 +86,68 @@ const FooterList: React.FC = () => {
         >
           <List
             subheader={
-              <ListSubheader sx={{ bgcolor: '#F8F9FA', color: '#6C737F', fontWeight: 'bold' }}>
-                User
+              <ListSubheader
+                sx={{
+                  bgcolor: footerBgColor,
+                  color: listHeaderColor,
+                  fontWeight: 'bold',
+                  visibility: 'hidden',
+                }}
+              >
+                EXPLORE2
               </ListSubheader>
             }
           >
-            {footerListObj.user.name.map((userItem, index) => (
+            {footerListObj.explore2.name.map((explore2Item, index) => (
               <ListItem key={index}>
                 <ListItemIcon>
                   <HorizontalRuleIcon style={{ color: primaryGreen }} />
                 </ListItemIcon>
                 <Link
-                  href={footerListObj.user.items[index]}
+                  href={footerListObj.explore2.items[index]}
                   passHref
                   style={{ textDecoration: 'none', color: 'inherit' }}
                 >
                   <ListItemText
-                    primary={userItem}
+                    primary={explore2Item}
+                    primaryTypographyProps={{ fontSize: '14px' }}
+                    style={{ whiteSpace: 'nowrap' }}
+                  />
+                </Link>
+              </ListItem>
+            ))}
+          </List>
+        </Box>
+        <Box
+          sx={{
+            width: '100%',
+          }}
+        >
+          <List
+            subheader={
+              <ListSubheader
+                sx={{
+                  bgcolor: footerBgColor,
+                  color: listHeaderColor,
+                  fontWeight: 'bold',
+                }}
+              >
+                COMPANY
+              </ListSubheader>
+            }
+          >
+            {footerListObj.company.name.map((companyItem, index) => (
+              <ListItem key={index}>
+                <ListItemIcon>
+                  <HorizontalRuleIcon style={{ color: primaryGreen }} />
+                </ListItemIcon>
+                <Link
+                  href={footerListObj.company.items[index]}
+                  passHref
+                  style={{ textDecoration: 'none', color: 'inherit' }}
+                >
+                  <ListItemText
+                    primary={companyItem}
                     primaryTypographyProps={{ fontSize: '14px' }}
                     style={{ whiteSpace: 'nowrap' }}
                   />

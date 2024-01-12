@@ -2,58 +2,54 @@ import type { FC } from 'react';
 import { useState, useEffect } from 'react';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import { SearchBar } from '@/layouts/MainLayout/HeaderLayout/search-bar';
-import { AccountButton } from '@/layouts/MainLayout/HeaderLayout/account-button';
+import { NaviTopSearchBar } from '@/layouts/MainLayout/HeaderLayout/navi-top-search-bar';
 import { PlacesTab } from '@/layouts/MainLayout/HeaderLayout/places-tab';
 import { LogoButton } from '@/layouts/MainLayout/HeaderLayout/logo-button';
-
 import { usePathname } from 'next/navigation';
-
+import { MobileMenuButton } from './components/mobile-menu';
+import { useTheme } from '@mui/material';
+import { UserAccount } from './user-account';
 export const TopNav: FC = () => {
-  const autoHideRestAttrPageList = ['/signup', '/signin'];
-  const autoHideSearchBarPageList = ['/signup', '/signin', '/'];
   const pathname = usePathname();
-  const isHomepage = autoHideSearchBarPageList.includes(pathname);
-  const isSearAttrPage = autoHideRestAttrPageList.includes(pathname);
-  const [loginStatus, setLoginStatus] = useState(false);
-  const [showSearchBar, setShowSearchBar] = useState(!isHomepage);
-  const [isScrolled, setIsScrolled] = useState<boolean>(false);
+  const autoHideSearchBarPageList = ['/signup', '/signin', '/'];
+  const isHomepage = autoHideSearchBarPageList.includes(pathname); // hide search bar responsively in homepage
+  const autoHideRestAttrPageList = ['/signup', '/signin'];
+  const isSearAttrPage = autoHideRestAttrPageList.includes(pathname); // hide place permanently tab in signin/signup page
+  const [showSearchBar, setShowSearchBar] = useState<boolean>(!isHomepage);
 
+  // return to homepage, rerender header
+  useEffect(() => {
+    setShowSearchBar(!isHomepage);
+  }, [isHomepage]);
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 150) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
-      setShowSearchBar(false);
-
-      if (!isHomepage || window.scrollY > 320) {
+      if (!isHomepage || (window.scrollY > 320 && showSearchBar === false)) {
         setShowSearchBar(true);
-      } else {
+      } else if (showSearchBar && window.scrollY < 320) {
         setShowSearchBar(false);
       }
     };
-
     window.addEventListener('scroll', handleScroll);
-
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, [pathname]);
+  }, [isHomepage, showSearchBar]);
 
-  console.log(showSearchBar);
-  console.log(pathname);
-  const simulateLogin = () => {
-    setLoginStatus(!loginStatus);
+  const theme = useTheme();
+  const responsiveStyle = {
+    [theme.breakpoints.down('md')]: {
+      display: 'none',
+    },
+    [theme.breakpoints.up('md')]: {
+      display: 'block',
+    },
   };
 
   return (
     <Box
       width={'100%'}
-      // borderBottom={'1px solid'}
       pt={2}
-      pb={isScrolled ? 1 : 2}
+      pb={2}
       sx={{
         transition: '0.2s',
       }}
@@ -71,25 +67,38 @@ export const TopNav: FC = () => {
           flexWrap: 'nowrap',
         }}
       >
-        <Grid
-          item
-          px={2}
-        >
-          <LogoButton />
+        {/* <Grid> */}
+        <MobileMenuButton sx={{ height: 60 }} />
+        {/* </Grid> */}
+        <Grid px={2}>
+          <LogoButton
+            logoImageHeight={60}
+            logoTextHeight={20}
+          />
         </Grid>
-        {/* 不在homepage或者showSearchBar为true */}
+        {/* to balance layout for menu button */}
+        {!showSearchBar && (
+          <Grid>
+            <MobileMenuButton sx={{ height: 0, opacity: 0 }} />
+          </Grid>
+        )}
         {showSearchBar && (
           <Grid
             item
             px={2}
-            xs={4}
-            sm={true}
+            xs={5}
+            // sm={true}
             md={4}
-            sx={{
-              borderRadius: 2,
-            }}
           >
-            <SearchBar text={'Search Everything'} />
+            <NaviTopSearchBar
+              sx={{
+                borderRadius: 2,
+                minWidth: 100,
+                maxWidth: 300,
+              }}
+              id="naviTopSearchBar"
+              text={'Search Everything'}
+            />
           </Grid>
         )}
 
@@ -114,13 +123,11 @@ export const TopNav: FC = () => {
         <Grid
           item
           // lg={showSearchBar ? 2 : 2}
-          // px={2}
-          xs={2}
+          px={2}
+          xs={3}
+          sx={responsiveStyle}
         >
-          <AccountButton
-            loginStatus={loginStatus}
-            simulateLogin={simulateLogin}
-          />
+          <UserAccount accountMenuStyle={'account menu'} />
         </Grid>
       </Grid>
     </Box>

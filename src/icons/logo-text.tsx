@@ -7,29 +7,29 @@ export const LogoText = (props: SVGProps<SVGSVGElement>) => {
       width="100%"
       zoomAndPan="magnify"
       height="100%"
-      viewBox="0 0 375 374.999991"
+      viewBox="0 162 375 38"
       preserveAspectRatio="xMidYMid meet"
       version="1.0"
     >
       <defs>
         <g />
       </defs>
-      <rect
+      {/* <rect
+        x="-37.5"
+        width="450"
+        fill="none"
+        y="-37.499999"
+        height="449.999989"
+        fillOpacity="0"
+      /> */}
+      {/* <rect
         x="-37.5"
         width="450"
         fill="none"
         y="-37.499999"
         height="449.999989"
         fillOpacity="1"
-      />
-      <rect
-        x="-37.5"
-        width="450"
-        fill="none"
-        y="-37.499999"
-        height="449.999989"
-        fillOpacity="1"
-      />
+      /> */}
       <g
         fill="#000000"
         fillOpacity="1"

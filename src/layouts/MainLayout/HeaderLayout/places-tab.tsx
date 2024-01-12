@@ -1,15 +1,17 @@
 import { FC } from 'react';
-import Link from 'next/link';
-import { Button, Box, Typography } from '@mui/material';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import NextLink from 'next/link';
 
 export const PlacesTab: FC = () => {
   return (
-    <Box sx={{ display: 'flex', justifyContent: 'space-around', width: '100%' }}>
-      {/* <Link href={'/restaurants'}> */}
+    <Box sx={{ display: 'flex', justifyContent: 'space-around', width: 400 }}>
       <Button
+        component={NextLink}
         href={'/restaurants'}
         variant="text"
-        color="inherit"
+        color="primary"
       >
         <Typography
           variant="subtitle1"
@@ -18,12 +20,11 @@ export const PlacesTab: FC = () => {
           Restaurants
         </Typography>
       </Button>
-      {/* </Link> */}
-      {/* <Link href={'/attractions'}> */}
       <Button
+        component={NextLink}
         href={'/attractions'}
         variant="text"
-        color="inherit"
+        color="primary"
       >
         <Typography
           variant="subtitle1"
@@ -32,7 +33,6 @@ export const PlacesTab: FC = () => {
           Attractions
         </Typography>
       </Button>
-      {/* </Link> */}
     </Box>
   );
 };
