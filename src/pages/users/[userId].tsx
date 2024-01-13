@@ -72,6 +72,7 @@ const UserDetailPage = () => {
             <TabPanel
               user={data as User}
               isMe={isMe}
+              userId={userId}
             />
           </>
         )}

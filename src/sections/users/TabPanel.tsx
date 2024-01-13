@@ -44,9 +44,10 @@ function a11yProps(index: number) {
 type TabProps = {
   user: User;
   isMe: boolean;
+  userId: string | string[] | undefined;
 };
 
-const TabPanel: React.FC<TabProps> = ({ user, isMe }) => {
+const TabPanel: React.FC<TabProps> = ({ user, isMe, userId }) => {
   const [value, setValue] = React.useState(0);
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -110,6 +111,7 @@ const TabPanel: React.FC<TabProps> = ({ user, isMe }) => {
               <tab.component
                 isMe={isMe}
                 user={user}
+                userId={userId}
               />
             </CustomTabPanel>
           );

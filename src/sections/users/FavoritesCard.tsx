@@ -8,11 +8,12 @@ import useSWR from 'swr';
 
 type FavoritesCardProps = {
   isMe: boolean;
+  userId: string | string[] | undefined;
 };
 
-export const FavoritesCard: React.FC<FavoritesCardProps> = ({ isMe }) => {
-  const restaurantUrl = '/users/me/saves/Restaurant';
-  const attractionUrl = '/users/me/saves/Attraction';
+export const FavoritesCard: React.FC<FavoritesCardProps> = ({ isMe, userId }) => {
+  const restaurantUrl = isMe ? '/users/me/saves/Restaurant' : `/users/${userId}/saves/Restaurant`;
+  const attractionUrl = isMe ? '/users/me/saves/Attraction' : `/users/${userId}/saves/Attraction`;
 
   const fetcher = async (url: string) => await axiosInstance.get(url).then((res) => res.data);
 
