@@ -109,7 +109,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const signUp = useCallback(
     async ({ firstName, lastName, email, password }: SignUpInputs): Promise<void> => {
       try {
-        await authRegister(email, password, firstName, lastName);
+        await authRegister(firstName, lastName, email, password);
       } catch (err) {
         console.error('sign up failed', err);
         throw err;
