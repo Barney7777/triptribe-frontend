@@ -13,3 +13,6 @@ dist
 public
 
 .github
+
+#graphql-codegen
+/src/__generated__/

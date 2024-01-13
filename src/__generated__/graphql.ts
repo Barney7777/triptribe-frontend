@@ -5,23 +5,19 @@ export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
-export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = {
-  [_ in K]?: never;
-};
-export type Incremental<T> =
-  | T
-  | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
+export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
+export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: { input: string; output: string };
-  String: { input: string; output: string };
-  Boolean: { input: boolean; output: boolean };
-  Int: { input: number; output: number };
-  Float: { input: number; output: number };
+  ID: { input: string; output: string; }
+  String: { input: string; output: string; }
+  Boolean: { input: boolean; output: boolean; }
+  Int: { input: number; output: number; }
+  Float: { input: number; output: number; }
   /** A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format. */
-  DateTime: { input: any; output: any };
+  DateTime: { input: any; output: any; }
   /** The `Upload` scalar type represents a file upload. */
-  Upload: { input: any; output: any };
+  Upload: { input: any; output: any; }
 };
 
 export type Address = {
@@ -113,14 +109,14 @@ export enum CuisineEnum {
   Asian = 'ASIAN',
   Australian = 'AUSTRALIAN',
   Cafe = 'CAFE',
-  Italian = 'ITALIAN',
+  Italian = 'ITALIAN'
 }
 
 /** Type of Duration */
 export enum DurationEnum {
   FourHoursToOneDay = 'FOUR_HOURS_TO_ONE_DAY',
   OneToFourHours = 'ONE_TO_FOUR_HOURS',
-  UpToOneHour = 'UP_TO_ONE_HOUR',
+  UpToOneHour = 'UP_TO_ONE_HOUR'
 }
 
 export type GetAttractionListFiltersDto = {
@@ -175,7 +171,7 @@ export enum MealEnum {
   Breakfast = 'BREAKFAST',
   Brunch = 'BRUNCH',
   Dinner = 'DINNER',
-  Lunch = 'LUNCH',
+  Lunch = 'LUNCH'
 }
 
 export type Mutation = {
@@ -194,29 +190,35 @@ export type Mutation = {
   updateReview: Review;
 };
 
+
 export type MutationCreateRestaurantArgs = {
   files?: InputMaybe<Array<Scalars['Upload']['input']>>;
   input: CreateRestaurantDto;
 };
+
 
 export type MutationCreateReviewArgs = {
   files?: InputMaybe<Array<Scalars['Upload']['input']>>;
   input: CreateReviewDto;
 };
 
+
 export type MutationDeleteRestaurantArgs = {
   id: Scalars['ID']['input'];
 };
 
+
 export type MutationDeleteReviewArgs = {
   id: Scalars['ID']['input'];
 };
+
 
 export type MutationUpdateRestaurantArgs = {
   files?: InputMaybe<Array<Scalars['Upload']['input']>>;
   id: Scalars['ID']['input'];
   input: UpdateRestaurantGqlDto;
 };
+
 
 export type MutationUpdateReviewArgs = {
   files?: InputMaybe<Array<Scalars['Upload']['input']>>;
@@ -260,7 +262,7 @@ export enum PhotoType {
   Attraction = 'ATTRACTION',
   Restaurant = 'RESTAURANT',
   Review = 'REVIEW',
-  User = 'USER',
+  User = 'USER'
 }
 
 export type Query = {
@@ -281,21 +283,26 @@ export type Query = {
   getOneUser: User;
 };
 
+
 export type QueryGetAllAttractionsArgs = {
   input: GetAttractionListInput;
 };
+
 
 export type QueryGetAllRestaurantsArgs = {
   input: GetRestaurantListInput;
 };
 
+
 export type QueryGetOneRestaurantArgs = {
   id: Scalars['ID']['input'];
 };
 
+
 export type QueryGetOneReviewArgs = {
   id: Scalars['ID']['input'];
 };
+
 
 export type QueryGetOneUserArgs = {
   id: Scalars['ID']['input'];
@@ -346,7 +353,7 @@ export enum TypeEnum {
   Museums = 'MUSEUMS',
   NatureAndParks = 'NATURE_AND_PARKS',
   Nightlife = 'NIGHTLIFE',
-  SightAndLandmarks = 'SIGHT_AND_LANDMARKS',
+  SightAndLandmarks = 'SIGHT_AND_LANDMARKS'
 }
 
 export type UpdateRestaurantGqlDto = {
@@ -387,167 +394,16 @@ export type GetAllAttractionsQueryVariables = Exact<{
   input: GetAttractionListInput;
 }>;
 
-export type GetAllAttractionsQuery = {
-  __typename?: 'Query';
-  getAllAttractions: {
-    __typename?: 'AttractionFilterResult';
-    data: Array<{
-      __typename?: 'Attraction';
-      _id: string;
-      description: string;
-      name: string;
-      overAllRating?: number | null;
-      photos: Array<{ __typename?: 'Photo'; _id: string; imageUrl: string }>;
-    }>;
-  };
-};
+
+export type GetAllAttractionsQuery = { __typename?: 'Query', getAllAttractions: { __typename?: 'AttractionFilterResult', data: Array<{ __typename?: 'Attraction', _id: string, description: string, name: string, overAllRating?: number | null, photos: Array<{ __typename?: 'Photo', _id: string, imageUrl: string }> }> } };
 
 export type GetAllRestaurantsQueryVariables = Exact<{
   input: GetRestaurantListInput;
 }>;
 
-export type GetAllRestaurantsQuery = {
-  __typename?: 'Query';
-  getAllRestaurants: {
-    __typename?: 'RestaurantFilterResult';
-    data: Array<{
-      __typename?: 'Restaurant';
-      _id: string;
-      description: string;
-      name: string;
-      overAllRating?: number | null;
-      photos: Array<{ __typename?: 'Photo'; _id: string; imageUrl: string }>;
-    }>;
-  };
-};
 
-export const GetAllAttractionsDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      name: { kind: 'Name', value: 'getAllAttractions' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
-          type: {
-            kind: 'NonNullType',
-            type: { kind: 'NamedType', name: { kind: 'Name', value: 'GetAttractionListInput' } },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'getAllAttractions' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'input' },
-                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'data' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: '_id' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'description' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'overAllRating' } },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'photos' },
-                        selectionSet: {
-                          kind: 'SelectionSet',
-                          selections: [
-                            { kind: 'Field', name: { kind: 'Name', value: '_id' } },
-                            { kind: 'Field', name: { kind: 'Name', value: 'imageUrl' } },
-                          ],
-                        },
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<GetAllAttractionsQuery, GetAllAttractionsQueryVariables>;
-export const GetAllRestaurantsDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      name: { kind: 'Name', value: 'getAllRestaurants' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
-          type: {
-            kind: 'NonNullType',
-            type: { kind: 'NamedType', name: { kind: 'Name', value: 'GetRestaurantListInput' } },
-          },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'getAllRestaurants' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'input' },
-                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'data' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: '_id' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'description' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'overAllRating' } },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'photos' },
-                        selectionSet: {
-                          kind: 'SelectionSet',
-                          selections: [
-                            { kind: 'Field', name: { kind: 'Name', value: '_id' } },
-                            { kind: 'Field', name: { kind: 'Name', value: 'imageUrl' } },
-                          ],
-                        },
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<GetAllRestaurantsQuery, GetAllRestaurantsQueryVariables>;
+export type GetAllRestaurantsQuery = { __typename?: 'Query', getAllRestaurants: { __typename?: 'RestaurantFilterResult', data: Array<{ __typename?: 'Restaurant', _id: string, description: string, name: string, overAllRating?: number | null, photos: Array<{ __typename?: 'Photo', _id: string, imageUrl: string }> }> } };
+
+
+export const GetAllAttractionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getAllAttractions"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"GetAttractionListInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getAllAttractions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"overAllRating"}},{"kind":"Field","name":{"kind":"Name","value":"photos"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"imageUrl"}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetAllAttractionsQuery, GetAllAttractionsQueryVariables>;
+export const GetAllRestaurantsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getAllRestaurants"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"GetRestaurantListInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getAllRestaurants"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"overAllRating"}},{"kind":"Field","name":{"kind":"Name","value":"photos"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"imageUrl"}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetAllRestaurantsQuery, GetAllRestaurantsQueryVariables>;

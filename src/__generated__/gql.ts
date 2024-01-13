@@ -13,10 +13,8 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Therefore it is highly recommended to use the babel or swc plugin for production.
  */
 const documents = {
-  '\n    query getAllAttractions($input: GetAttractionListInput!){\n        getAllAttractions(input: $input) {\n            data {\n                _id\n                description\n                name\n                overAllRating\n                photos {\n                    _id\n                    imageUrl\n                }\n            }\n        }\n    }\n':
-    types.GetAllAttractionsDocument,
-  '\n  query getAllRestaurants($input: GetRestaurantListInput!){\n    getAllRestaurants(input: $input) {\n        data{\n            _id\n            description\n            name\n            overAllRating\n            photos {\n                _id\n                imageUrl\n            }\n        }\n        \n    }\n  }\n':
-    types.GetAllRestaurantsDocument,
+    "\n    query getAllAttractions($input: GetAttractionListInput!){\n        getAllAttractions(input: $input) {\n            data {\n                _id\n                description\n                name\n                overAllRating\n                photos {\n                    _id\n                    imageUrl\n                }\n            }\n        }\n    }\n": types.GetAllAttractionsDocument,
+    "\n  query getAllRestaurants($input: GetRestaurantListInput!){\n    getAllRestaurants(input: $input) {\n        data{\n            _id\n            description\n            name\n            overAllRating\n            photos {\n                _id\n                imageUrl\n            }\n        }\n        \n    }\n  }\n": types.GetAllRestaurantsDocument,
 };
 
 /**
@@ -36,19 +34,14 @@ export function gql(source: string): unknown;
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(
-  source: '\n    query getAllAttractions($input: GetAttractionListInput!){\n        getAllAttractions(input: $input) {\n            data {\n                _id\n                description\n                name\n                overAllRating\n                photos {\n                    _id\n                    imageUrl\n                }\n            }\n        }\n    }\n'
-): (typeof documents)['\n    query getAllAttractions($input: GetAttractionListInput!){\n        getAllAttractions(input: $input) {\n            data {\n                _id\n                description\n                name\n                overAllRating\n                photos {\n                    _id\n                    imageUrl\n                }\n            }\n        }\n    }\n'];
+export function gql(source: "\n    query getAllAttractions($input: GetAttractionListInput!){\n        getAllAttractions(input: $input) {\n            data {\n                _id\n                description\n                name\n                overAllRating\n                photos {\n                    _id\n                    imageUrl\n                }\n            }\n        }\n    }\n"): (typeof documents)["\n    query getAllAttractions($input: GetAttractionListInput!){\n        getAllAttractions(input: $input) {\n            data {\n                _id\n                description\n                name\n                overAllRating\n                photos {\n                    _id\n                    imageUrl\n                }\n            }\n        }\n    }\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(
-  source: '\n  query getAllRestaurants($input: GetRestaurantListInput!){\n    getAllRestaurants(input: $input) {\n        data{\n            _id\n            description\n            name\n            overAllRating\n            photos {\n                _id\n                imageUrl\n            }\n        }\n        \n    }\n  }\n'
-): (typeof documents)['\n  query getAllRestaurants($input: GetRestaurantListInput!){\n    getAllRestaurants(input: $input) {\n        data{\n            _id\n            description\n            name\n            overAllRating\n            photos {\n                _id\n                imageUrl\n            }\n        }\n        \n    }\n  }\n'];
+export function gql(source: "\n  query getAllRestaurants($input: GetRestaurantListInput!){\n    getAllRestaurants(input: $input) {\n        data{\n            _id\n            description\n            name\n            overAllRating\n            photos {\n                _id\n                imageUrl\n            }\n        }\n        \n    }\n  }\n"): (typeof documents)["\n  query getAllRestaurants($input: GetRestaurantListInput!){\n    getAllRestaurants(input: $input) {\n        data{\n            _id\n            description\n            name\n            overAllRating\n            photos {\n                _id\n                imageUrl\n            }\n        }\n        \n    }\n  }\n"];
 
 export function gql(source: string) {
   return (documents as any)[source] ?? {};
 }
 
-export type DocumentType<TDocumentNode extends DocumentNode<any, any>> =
-  TDocumentNode extends DocumentNode<infer TType, any> ? TType : never;
+export type DocumentType<TDocumentNode extends DocumentNode<any, any>> = TDocumentNode extends DocumentNode<  infer TType,  any>  ? TType  : never;
