@@ -73,13 +73,13 @@ const SignUpPage = () => {
   const onSubmit: SubmitHandler<SignUpFormInputs> = async (data) => {
     try {
       await signUp(data);
-      router.push('/signin');
       enqueueSnackbar('Register Successful!', {
         variant: 'success',
         autoHideDuration: 1500,
         disableWindowBlurListener: true,
         anchorOrigin: { vertical: 'top', horizontal: 'right' },
       });
+      router.back();
     } catch (err) {
       enqueueSnackbar('Register Failed', {
         variant: 'error',
@@ -87,6 +87,7 @@ const SignUpPage = () => {
         disableWindowBlurListener: true,
         anchorOrigin: { vertical: 'top', horizontal: 'right' },
       });
+      console.log(err);
     }
   };
 

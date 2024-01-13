@@ -62,7 +62,7 @@ const SignInPage = () => {
         disableWindowBlurListener: true,
         anchorOrigin: { vertical: 'top', horizontal: 'right' },
       });
-      router.push('/');
+      router.back();
     } catch (err) {
       enqueueSnackbar('Login Failed!', {
         variant: 'error',

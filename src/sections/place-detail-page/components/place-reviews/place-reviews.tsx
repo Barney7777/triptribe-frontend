@@ -5,13 +5,21 @@ import { Review } from '@/types/review';
 import { AxiosError } from 'axios';
 import { grey } from '@mui/material/colors';
 import { CircularLoading } from '@/components/CircularLoading';
+import { useRouter } from 'next/router';
 
 type PlaceReviewsProps = {
   reviewsData: Review[];
   reviewError: AxiosError | undefined;
   reviewIsLoading: boolean;
+  writeReview: () => void;
 };
-const PlaceReviews: FC<PlaceReviewsProps> = ({ reviewsData, reviewError, reviewIsLoading }) => {
+const PlaceReviews: FC<PlaceReviewsProps> = ({
+  writeReview,
+  reviewsData,
+  reviewError,
+  reviewIsLoading,
+}) => {
+  const router = useRouter();
   //TODO: data pagination
 
   //handle page change
@@ -52,6 +60,7 @@ const PlaceReviews: FC<PlaceReviewsProps> = ({ reviewsData, reviewError, reviewI
             <Button
               variant="contained"
               sx={{ textTransform: 'none' }}
+              onClick={writeReview}
             >
               Write a Review
             </Button>

@@ -8,7 +8,7 @@ import PlaceReviews from '@/sections/place-detail-page/components/place-reviews/
 
 import { Box, Breadcrumbs, Grid, Link, Typography } from '@mui/material';
 
-import { useRouter } from 'next/router';
+import router, { useRouter } from 'next/router';
 
 import { PlaceProps } from '@/types/attractions-restaurants';
 import { CircularLoading } from '@/components/CircularLoading';
@@ -28,10 +28,10 @@ type PlaceContentProps = {};
 export const PlaceContent: React.FC<PlaceContentProps> = () => {
   // const theme = useTheme();
   // const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
-
   const { pathname, query, isReady } = useRouter();
   const placeType = isReady ? pathname.split('/')[1] : '';
   const placeId = typeof query.id !== 'string' ? '' : query.id;
+  const PlaceType = placeType === 'restaurants' ? 'restaurant' : 'attraction';
 
   const {
     data: placeData,
@@ -59,6 +59,15 @@ export const PlaceContent: React.FC<PlaceContentProps> = () => {
   } = useRequest<RatingDistribution[]>({
     url: `${placeType}/${placeId}/rating-distributions`,
   });
+  const writeReview = () => {
+    router.push({
+      pathname: '/createReview',
+      query: {
+        placeId: placeId,
+        placeType: PlaceType,
+      },
+    });
+  };
 
   const ratingTotalCount: number = ratingData
     ? ratingData.reduce((acc, ratings) => acc + ratings.count, 0)
@@ -139,6 +148,7 @@ export const PlaceContent: React.FC<PlaceContentProps> = () => {
             <PlaceDetails
               placeType={placeType}
               placeData={placeData}
+              writeReview={writeReview}
               ratingTotalCount={ratingTotalCount}
               id={placeId}
             />
@@ -265,6 +275,7 @@ export const PlaceContent: React.FC<PlaceContentProps> = () => {
               reviewsData={reviewsData}
               reviewError={reviewError}
               reviewIsLoading={reviewIsLoading}
+              writeReview={writeReview}
             />
           </Box>
         </Grid>

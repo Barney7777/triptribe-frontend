@@ -29,16 +29,17 @@ type PlaceDetailsProps = {
   placeType: string;
   ratingTotalCount: number;
   id: string;
+  writeReview: () => void;
 };
 
 const PlaceDetails: React.FC<PlaceDetailsProps> = ({
+  writeReview,
   placeData,
   ratingTotalCount,
   id,
   placeType,
 }) => {
   const type = placeType === 'restaurants' ? MainType.Restaurant : MainType.Attraction;
-  const writeReview = () => {};
   const router = useRouter();
   const detailIconList: { [key: string]: React.JSX.Element } = {
     phone: <PhoneCallbackOutlinedIcon fontSize="small" />,
