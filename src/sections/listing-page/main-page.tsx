@@ -195,7 +195,7 @@ const MainPage: FC<MainPageProps> = ({ type }) => {
         sx={{ borderRadius: 1, height: 300, mt: 2 }}
       >
         <CardMedia
-          image="https://drive.google.com/uc?export=view&id=13fBD9P9zs4ZO13Jm5kiusEfkYx8eezry"
+          image="/assets/bridge.png"
           sx={{ height: '100%' }}
         />
       </Card>
