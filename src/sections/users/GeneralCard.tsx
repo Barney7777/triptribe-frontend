@@ -133,7 +133,7 @@ export const GeneralCard: React.FC<GeneralCardProps> = ({ user }) => {
                   }}
                 >
                   <Avatar
-                    src={isMe ? userData.userAvatar.imageUrl : user.userAvatar?.imageUrl}
+                    src={isMe ? userData.userAvatar?.imageUrl : user.userAvatar?.imageUrl}
                     sx={{
                       height: 150,
                       m: 2,
