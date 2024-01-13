@@ -148,7 +148,7 @@ const FooterList: React.FC = () => {
                 >
                   <ListItemText
                     primary={companyItem}
-                    primaryTypographyProps={{ fontSize: '14px' }}
+                    primaryTypographyProps={{ fontSize: '14px', whiteSpace: 'normal' }}
                     style={{ whiteSpace: 'nowrap' }}
                   />
                 </Link>

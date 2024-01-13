@@ -13,25 +13,25 @@ const HomepageContent: React.FC = () => {
     error: attractionError,
     loading: isAttractionLoading,
   } = useQuery(GRAPHQL_ATTRACTION_QUERY, {
-    variables: { input: {} },
+    variables: { input: { limit: itemDisplayLimit } },
   });
   const attractionsDisplay =
     !attractionData && isAttractionLoading
       ? Array.from(new Array(itemDisplayLimit))
-      : attractionData?.getAllAttractions.data.slice(0, itemDisplayLimit) || [];
+      : attractionData?.getAllAttractions.data || [];
 
   const {
     data: restaurantData,
     error: restaurantError,
     loading: isRestaurantLoading,
   } = useQuery(GRAPHQL_RESTAURANT_QUERY, {
-    variables: { input: {} },
+    variables: { input: { limit: itemDisplayLimit } },
   });
 
   const restaurantsDisplay =
     !restaurantData && isRestaurantLoading
       ? Array.from(new Array(itemDisplayLimit))
-      : restaurantData?.getAllRestaurants.data.slice(0, itemDisplayLimit) || [];
+      : restaurantData?.getAllRestaurants.data || [];
 
   return (
     <Box

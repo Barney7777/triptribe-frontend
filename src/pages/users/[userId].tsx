@@ -49,14 +49,16 @@ const UserDetailPage = () => {
       />
     );
   }
+  if (!data) {
+    return;
+  }
 
   return (
     <Layout>
       <Container
-        component="main"
         maxWidth="xl"
         sx={{
-          mt: 5,
+          my: 5,
         }}
       >
         <Box
@@ -68,13 +70,11 @@ const UserDetailPage = () => {
           <Typography variant="h5">User Profile</Typography>
         </Box>
         {data && (
-          <>
-            <TabPanel
-              user={data as User}
-              isMe={isMe}
-              userId={userId}
-            />
-          </>
+          <TabPanel
+            user={data as User}
+            isMe={isMe}
+            userId={userId}
+          />
         )}
       </Container>
     </Layout>
