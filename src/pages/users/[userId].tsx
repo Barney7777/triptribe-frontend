@@ -6,12 +6,22 @@ import { User } from '@/types/user';
 import axiosInstance from '@/utils/request';
 import useSWR from 'swr';
 import Layout from '@/layouts/MainLayout';
+import { useUserContext } from '@/contexts/user-context/user-context';
 import { CircularLoading } from '@/components/CircularLoading';
 
 const UserDetailPage = () => {
   const router = useRouter();
   const { userId } = router.query;
+  const { isAuthenticated, userData = null } = useUserContext();
+
   const isMe = userId === 'me';
+
+  // when user log in, if url is /users/{userself's id}
+  const isMyIDAndLogin = !isMe && userId && isAuthenticated && userId === userData?._id;
+  if (isMyIDAndLogin) {
+    router.replace('/users/me');
+  }
+
   const userUrl = isMe ? '/users/me' : `/users/${userId}`;
 
   const requestOptions =

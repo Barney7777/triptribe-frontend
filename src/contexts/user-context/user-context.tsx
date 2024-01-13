@@ -1,4 +1,4 @@
-import { createContext } from 'react';
+import { createContext, useContext } from 'react';
 import { State } from './user-context-type';
 
 export const initialState: State = {
@@ -30,3 +30,5 @@ export const UserContext = createContext<UserContextProps>({
   signOut: () => Promise.resolve(),
   initialize: () => Promise.resolve(),
 });
+
+export const useUserContext = () => useContext(UserContext);

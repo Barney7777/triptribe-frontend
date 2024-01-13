@@ -5,7 +5,7 @@ import Box from '@mui/material/Box';
 import { GeneralCard } from '@/sections/users/GeneralCard';
 import { SecurityCard } from './SecurityCard';
 import { FavoritesCard } from './FavoritesCard';
-import { ReviewsCard } from './ReviewsCard';
+import ReviewsCard from './ReviewsCard';
 import { User } from '@/types/user';
 
 type TabPanelProps = {

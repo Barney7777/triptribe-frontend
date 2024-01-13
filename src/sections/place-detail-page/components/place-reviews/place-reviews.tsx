@@ -77,7 +77,7 @@ const PlaceReviews: FC<PlaceReviewsProps> = ({
             {reviewsData.map((item) => (
               <ReviewCard
                 review={item}
-                key={item.id}
+                key={item._id}
               />
             ))}
           </Box>

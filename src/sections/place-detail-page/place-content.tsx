@@ -47,8 +47,6 @@ export const PlaceContent: React.FC<PlaceContentProps> = () => {
     isLoading: reviewIsLoading,
     error: reviewError,
   } = useRequest<Review[]>({
-    // TODO: remove baseURL after backend implemented
-    baseURL: 'https://mock.apifox.com/m1/3534088-0-default/api/v1/',
     url: `${placeType}/${placeId}/reviews`,
   });
 

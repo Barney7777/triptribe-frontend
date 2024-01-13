@@ -1,7 +1,11 @@
 import React, { FC, useEffect } from 'react';
 import PhotoSwipeLightbox from 'photoswipe/lightbox';
 import { Box, Card, CardMedia, Link, Typography } from '@mui/material';
+import { grey } from '@mui/material/colors';
 
+const DEFAULT_THUMBNAIL_LIMIT = 5;
+const IMAGE_MAX_HEIGHT = '960px';
+const IMAGE_MAX_WIDTH = '1280px';
 interface GalleryProps {
   galleryID: string;
   images: { thumbnailURL: string; originalURL: string }[];
@@ -9,7 +13,13 @@ interface GalleryProps {
 
 const Gallery: FC<GalleryProps> = ({ galleryID, images }) => {
   const imageCount = images.length;
-  const thumbnailLimit = 4;
+
+  // if imageCount > thumbnailLimitDefault, thumbnailLimit means it will show (thumbnailLimit-1) thumbnail plus one button that shows how many images left
+
+  const thumbnailLimit =
+    imageCount > DEFAULT_THUMBNAIL_LIMIT ? DEFAULT_THUMBNAIL_LIMIT : imageCount;
+
+  // photoswipe
   useEffect(() => {
     const lightbox = new PhotoSwipeLightbox({
       gallery: '#' + galleryID,
@@ -29,15 +39,17 @@ const Gallery: FC<GalleryProps> = ({ galleryID, images }) => {
       className="pswp-gallery"
       id={galleryID}
       sx={{ display: 'flex', justifyContent: 'flex-start' }}
+      data-testid="gallery-box"
     >
-      {images.slice(0, imageCount - 1).map((image, index) => (
+      {/* show (thumbnailLimit-1) of thumbnails */}
+      {images.slice(0, thumbnailLimit - 1).map((image, index) => (
         <Link
           href={image.originalURL}
           key={galleryID + '-' + index}
           target="_blank"
           rel="noreferrer"
-          data-pswp-width="1000px"
-          data-pswp-height="1000px"
+          data-pswp-width={IMAGE_MAX_WIDTH}
+          data-pswp-height={IMAGE_MAX_HEIGHT}
         >
           <Card
             key={index}
@@ -55,36 +67,54 @@ const Gallery: FC<GalleryProps> = ({ galleryID, images }) => {
           </Card>
         </Link>
       ))}
-      {imageCount > thumbnailLimit && (
-        <Link
-          href={images[imageCount - 1].originalURL}
-          key={galleryID + '-' + (imageCount - 1)}
-          target="_blank"
-          rel="noreferrer"
-          data-pswp-width="1000px"
-          data-pswp-height="1000px"
+
+      {/* the last thumbnail shows the text of how many images left */}
+      <Link
+        href={images[thumbnailLimit - 1].originalURL}
+        key={galleryID + '-' + (thumbnailLimit - 1)}
+        target="_blank"
+        rel="noreferrer"
+        data-pswp-width={IMAGE_MAX_WIDTH}
+        data-pswp-height={IMAGE_MAX_HEIGHT}
+      >
+        <Card
+          key={thumbnailLimit - 1}
+          elevation={0}
+          sx={{
+            position: 'relative',
+            height: '40px',
+            width: '40px',
+            mr: 0.5,
+            bgcolor: grey[200],
+          }}
         >
-          <Card
-            key={imageCount - 1}
-            elevation={0}
+          <Typography
             sx={{
-              position: 'relative',
-              height: '40px',
-              width: '40px',
-              mr: 0.5,
-              bgcolor: 'white',
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
             }}
+            color="text.secondary"
+            fontSize="12px"
           >
-            <Typography
-              sx={{ position: 'absolute', top: '30%', left: '25% ' }}
-              color="text.secondary"
-              fontSize="12px"
-            >
-              + {imageCount - 4}
-            </Typography>
-          </Card>
-        </Link>
-      )}
+            + {imageCount - thumbnailLimit + 1}
+          </Typography>
+        </Card>
+      </Link>
+
+      {/* imageCount > thumbnailLimit, map the rest of images without thumbnails */}
+      {imageCount > thumbnailLimit &&
+        images.slice(thumbnailLimit, imageCount).map((image, index) => (
+          <Link
+            href={image.originalURL}
+            key={galleryID + '-' + index}
+            target="_blank"
+            rel="noreferrer"
+            data-pswp-width={IMAGE_MAX_WIDTH}
+            data-pswp-height={IMAGE_MAX_HEIGHT}
+          ></Link>
+        ))}
     </Box>
   );
 };

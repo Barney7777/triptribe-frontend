@@ -62,10 +62,11 @@ const MainPage: FC<MainPageProps> = ({ type }) => {
   //request listing data
   const { queryPath } = useRouterQuery();
   const resourceType = type === MainType.Restaurant ? 'restaurants' : 'attractions';
-  const { data: responseData, isLoading } = useRequest<PageDataResponse<ListingInfoBasic[]>>(
+  const { data: respondData, isLoading } = useRequest<PageDataResponse<ListingInfoBasic[]>>(
     queryPath ? { url: `/${resourceType}?${queryPath}`, isAbortWhenUnmount: true } : null
   );
-  const { data = [] } = responseData || {};
+  const { data = [], limit = 30, skip = 0, total: totalCount = 0 } = respondData || {};
+
   // get chipData: parsed from queryParams ->show chips
   const chipData: FilterChipData[] = [];
   const filterChipData = FilterQueryParamsSchema.parse(queryParams);
