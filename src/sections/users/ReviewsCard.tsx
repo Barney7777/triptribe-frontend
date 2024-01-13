@@ -6,14 +6,23 @@ import { UserReviewResponse } from '@/types/review';
 import axiosInstance from '@/utils/request';
 import { Box, CircularProgress, Divider, Pagination, Typography } from '@mui/material';
 import { useState } from 'react';
+import { PageDataResponse } from '@/types/general';
+import { DEFAULT_PAGE_NUMBER, DEFAULT_REVIEW_PAGE_SIZE } from '@/constants/pagination';
 
 const ReviewsCard = () => {
   const router = useRouter();
   const { userId } = router.query;
   const { isAuthenticated, userData = null } = useUserContext();
 
+  //handle page change
+  const [page, setPage] = useState(DEFAULT_PAGE_NUMBER);
+  const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+    setPage(value);
+  };
+
   /**
-   * if path === /users/me, and isAuthenticated === true, get current user data
+   * request review data from API findAllReviewsByUserId
+   * if path === /users/me, get current user data
    * else path === /user/:userId, get this user data
    */
   let queryUserId;
@@ -26,10 +35,18 @@ const ReviewsCard = () => {
     queryUserId = userId;
     isAuthorized = false;
   }
-  const queryUrl = `/users/${queryUserId}/reviews`;
-  const { data, isLoading, error, mutate } = useRequest<UserReviewResponse>(
-    queryUserId ? { url: queryUrl } : null
+  const queryUrl = `/users/${queryUserId}/reviews?limit=${DEFAULT_REVIEW_PAGE_SIZE}&skip=${
+    (page - 1) * DEFAULT_REVIEW_PAGE_SIZE
+  }`;
+  const {
+    data: respondData,
+    isLoading,
+    error,
+    mutate,
+  } = useRequest<PageDataResponse<UserReviewResponse>>(
+    queryUserId && page ? { url: queryUrl } : null
   );
+  const { data, total, pageCount = 1 } = respondData || {};
   const { creator, reviews } = data || {};
 
   // delete a review
@@ -37,15 +54,6 @@ const ReviewsCard = () => {
     // const updatedReview = reviews?.filter((item) => item._id !== reviewDeleteId);
     // const updatedData = { ...data, reviews: updatedReview } as UserReviewResponse;
     await mutate(axiosInstance.delete(`/reviews/${reviewDeleteId}`));
-  };
-
-  // edit button href
-
-  //handle page change
-  const defaultPageNumber = 1;
-  const [page, setPage] = useState(defaultPageNumber);
-  const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
-    setPage(value);
   };
 
   if (isLoading) {
@@ -59,12 +67,13 @@ const ReviewsCard = () => {
   return (
     <Box>
       <Box sx={{ mb: 2 }}>
-        <Typography>Reviews ({reviews?.length})</Typography>
+        <Typography>Reviews ({total})</Typography>
       </Box>
       {/* TODO: pagination of reviews for both frontend and backend */}
       {creator &&
         reviews &&
-        reviews.slice(0, 10).map((review) => (
+        reviews?.length > 0 &&
+        reviews.map((review) => (
           <UserReviewCard
             creator={creator}
             review={review}
@@ -81,8 +90,8 @@ const ReviewsCard = () => {
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <Pagination
           color="primary"
-          // count={detailPageReviewsData.pageCount}
-          // page={detailPageReviewsData.pageNumber}
+          count={pageCount}
+          page={page}
           onChange={handlePageChange}
         />
       </Box>

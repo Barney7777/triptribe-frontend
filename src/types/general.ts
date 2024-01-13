@@ -12,6 +12,7 @@ export type PageDataResponse<T> = {
   skip: number;
   limit: number;
   total: number;
+  pageCount?: number;
 };
 
 const stringToArray = (value: unknown) => {

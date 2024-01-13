@@ -127,7 +127,14 @@ const PlaceCard: React.FC<ImageCardProps> = ({
             <Typography
               variant="body2"
               color="textSecondary"
-              sx={{ fontSize: '16px' }}
+              fontSize="16px"
+              sx={{
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                display: '-webkit-box',
+                WebkitLineClamp: '2',
+                WebkitBoxOrient: 'vertical',
+              }}
             >
               {truncateText(description, 90)}
             </Typography>

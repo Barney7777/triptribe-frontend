@@ -25,6 +25,9 @@ import Filter from './filter';
 import { MapWithSideBarModal } from '@/components/map/map-with-sidebar';
 import SkeletonCard from '@/components/SkeletonCard';
 import PlaceCard from '@/components/PlaceCard';
+import { DEFAULT_LISTING_PAGE_SIZE } from '@/constants/pagination';
+import { convertQueryObject, convertSort } from '@/utils/listing-page-request-converter';
+import ListingList from './listing-list';
 interface MainPageProps {
   type: MainType;
 }
@@ -40,7 +43,7 @@ const MainPage: FC<MainPageProps> = ({ type }) => {
   const { pageNumber } = queryParams;
 
   //setQueryParams for the first time enter the page
-  const { isRouterReady, urlQuery, setUrlQuery, initUrlQuery } = useRouterQuery<QueryParamsType>();
+  const { isRouterReady, urlQuery, setUrlQuery } = useRouterQuery<QueryParamsType>();
   const parsedUrlQuery = QueryParamsSchema.parse(urlQuery);
   useEffect(() => {
     if (!isRouterReady) {
@@ -57,15 +60,29 @@ const MainPage: FC<MainPageProps> = ({ type }) => {
     }
     setUrlQuery(queryParams);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isRouterReady, queryParams]);
+  }, [isRouterReady, JSON.stringify(queryParams)]);
 
   //request listing data
+  const sortValue = queryParams && queryParams.sort ? convertSort(queryParams.sort) : 'rating_desc';
+  const filters = convertQueryObject(queryParams);
+  const requestBody = {
+    limit: DEFAULT_LISTING_PAGE_SIZE,
+    skip: (pageNumber - 1) * DEFAULT_LISTING_PAGE_SIZE,
+    sort: sortValue,
+    filters,
+  };
+  console.log({ requestBody });
   const { queryPath } = useRouterQuery();
   const resourceType = type === MainType.Restaurant ? 'restaurants' : 'attractions';
+  const listingDataRequest = {
+    url: `/${resourceType}`,
+    params: requestBody,
+    isAbortWhenUnmount: true,
+  };
   const { data: respondData, isLoading } = useRequest<PageDataResponse<ListingInfoBasic[]>>(
-    queryPath ? { url: `/${resourceType}?${queryPath}`, isAbortWhenUnmount: true } : null
+    queryPath ? listingDataRequest : null
   );
-  const { data = [], limit = 30, skip = 0, total: totalCount = 0 } = respondData || {};
+  const { data = [], limit = DEFAULT_LISTING_PAGE_SIZE, total = 0 } = respondData || {};
 
   // get chipData: parsed from queryParams ->show chips
   const chipData: FilterChipData[] = [];
@@ -162,19 +179,14 @@ const MainPage: FC<MainPageProps> = ({ type }) => {
     setQueryParams((prev) => ({ ...prev, pageNumber: value }));
 
   //page results info
-  const [pageResultsInfo, setPageResultsInfo] = useState('');
-  const total = 30;
-  const pageCount = 1;
-  const pageSize = 30;
+  const pageSize = DEFAULT_LISTING_PAGE_SIZE;
+  const pageCount = Math.floor(total / pageSize) + 1;
   const start = (pageNumber - 1) * pageSize + 1;
-  useEffect(() => {
-    if (pageNumber < pageCount) {
-      const end = pageNumber * pageSize;
-      setPageResultsInfo(`Showing  results ${start} - ${end} of ${total}`);
-    } else {
-      setPageResultsInfo(`Showing  results ${start} - ${total} of ${total}`);
-    }
-  }, [pageNumber, setPageResultsInfo, start]);
+  const end = pageNumber < pageCount ? pageNumber * pageSize : total;
+  const pageResultsInfo =
+    total < pageCount * pageSize
+      ? `Showing  results ${start} - ${end} of ${total}`
+      : `Showing  results ${start} - ${total} of ${total}`;
 
   // map modal
   const [mapIsOpen, setMapIsOpen] = useState(false);
@@ -299,7 +311,14 @@ const MainPage: FC<MainPageProps> = ({ type }) => {
               lg={6}
               sx={{ display: 'flex', justifyContent: 'flex-start', heigh: 20 }}
             >
-              <Box>{chipData.length !== 0 && <FilterMatchInfo onClear={clearAllFilter} />}</Box>
+              <Box>
+                {chipData.length !== 0 && (
+                  <FilterMatchInfo
+                    onClear={clearAllFilter}
+                    matchResultsCount={total}
+                  />
+                )}
+              </Box>
             </Grid>
             {/* desktop sorting & views */}
             <Grid
@@ -338,15 +357,30 @@ const MainPage: FC<MainPageProps> = ({ type }) => {
             container
             spacing={3}
           >
-            {(isLoading ? Array.from(new Array(12)) : data).map(
-              (item: ListingInfoBasic, index: number) => (
-                <Grid
-                  key={item ? item._id : index}
-                  xs={12}
-                  sm={6}
-                  md={4}
-                >
-                  {item ? (
+            {isLoading &&
+              Array.from(new Array(12)).map((_, index) =>
+                cardView ? (
+                  <SkeletonCard
+                    isCardView={cardView}
+                    key={index}
+                  />
+                ) : (
+                  <SkeletonCard
+                    isCardView={!cardView}
+                    key={index}
+                  />
+                )
+              )}
+            {data &&
+              data.length > 0 &&
+              data.map((item: ListingInfoBasic, index: number) =>
+                cardView ? (
+                  <Grid
+                    key={item ? item._id : index}
+                    xs={12}
+                    sm={6}
+                    md={4}
+                  >
                     <PlaceCard
                       _id={item._id}
                       imageUrl={item.photos[0]?.imageUrl}
@@ -355,12 +389,19 @@ const MainPage: FC<MainPageProps> = ({ type }) => {
                       overAllRating={item.overAllRating}
                       placeType={`${type}s`}
                     />
-                  ) : (
-                    <SkeletonCard isCardView={cardView} />
-                  )}
-                </Grid>
-              )
-            )}
+                  </Grid>
+                ) : (
+                  <Grid
+                    key={item ? item._id : index}
+                    xs={12}
+                  >
+                    <ListingList
+                      listingInfo={item}
+                      type={type}
+                    />
+                  </Grid>
+                )
+              )}
           </Grid>
           {/* Pagination */}
           {data.length > 0 && (

@@ -8,7 +8,9 @@ const createJestConfig = nextJest({
 
 // Add any custom config to be passed to Jest
 /** @type {import('jest').Config} */
+/** @type {import('ts-jest').JestConfigWithTsJest} */
 const config = {
+  preset: 'ts-jest',
   collectCoverageFrom: ['**/*.{ts,tsx}', '!**/*.config.*'],
 
   // Add more setup options before each test is run

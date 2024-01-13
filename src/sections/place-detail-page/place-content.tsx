@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import { PlaceDescriptions } from '@/sections/place-detail-page/components/place-descriptions';
 import PlaceDetails from '@/sections/place-detail-page/components/place-details';
@@ -19,12 +19,15 @@ import { PlaceLocation } from './components/place-location';
 import { capitalizeFirstLetter } from '@/utils/cap-string-first-letter';
 import { Review } from '@/types/review';
 import Seo from '@/components/seo/Seo';
+import { PageDataResponse } from '@/types/general';
+import { DEFAULT_PAGE_NUMBER, DEFAULT_REVIEW_PAGE_SIZE } from '@/constants/pagination';
 
 export type RatingDistribution = {
   count: number;
   rating: number;
 };
 type PlaceContentProps = {};
+
 export const PlaceContent: React.FC<PlaceContentProps> = () => {
   // const theme = useTheme();
   // const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
@@ -33,30 +36,41 @@ export const PlaceContent: React.FC<PlaceContentProps> = () => {
   const placeId = typeof query.id !== 'string' ? '' : query.id;
   const PlaceType = placeType === 'restaurants' ? 'restaurant' : 'attraction';
 
+  const isPlaceReady = placeType && placeId;
+  /**
+   * once the placeType && placeId is ready, return the request object
+   * otherwise it returns null (to prevent SWR sending request)
+   * @param  url
+   * @returns request object
+   */
+  const getRequest = (url: string) => (isPlaceReady ? { url } : null);
+
   const {
     data: placeData,
     error: placeError,
     isLoading: placeIsLoading,
-  } = useRequest<PlaceProps>({
-    url: `${placeType}/${placeId}`,
-    method: 'get',
-  });
+  } = useRequest<PlaceProps>(getRequest(`/${placeType}/${placeId}`));
 
+  const [page, setPage] = useState(DEFAULT_PAGE_NUMBER);
+  const handleReviewsPageChange = (pageNumber: number) => {
+    setPage(pageNumber);
+  };
+
+  const reviewsURL = `/${placeType}/${placeId}/reviews?limit=${DEFAULT_REVIEW_PAGE_SIZE}&skip=${
+    (page - 1) * DEFAULT_REVIEW_PAGE_SIZE
+  }`;
   const {
-    data: reviewsData = [],
+    data: reviewsData,
     isLoading: reviewIsLoading,
     error: reviewError,
-  } = useRequest<Review[]>({
-    url: `${placeType}/${placeId}/reviews`,
-  });
+  } = useRequest<PageDataResponse<Review[]>>(getRequest(reviewsURL));
 
   const {
     data: ratingData,
     isLoading: ratingIsLoading,
     error: ratingError,
-  } = useRequest<RatingDistribution[]>({
-    url: `${placeType}/${placeId}/rating-distributions`,
-  });
+  } = useRequest<RatingDistribution[]>(getRequest(`/${placeType}/${placeId}/rating-distributions`));
+
   const writeReview = () => {
     router.push({
       pathname: '/createReview',
@@ -269,12 +283,16 @@ export const PlaceContent: React.FC<PlaceContentProps> = () => {
               px: 1.625,
             }}
           >
-            <PlaceReviews
-              reviewsData={reviewsData}
-              reviewError={reviewError}
-              reviewIsLoading={reviewIsLoading}
-              writeReview={writeReview}
-            />
+            {reviewsData && (
+              <PlaceReviews
+                reviewPaginationData={reviewsData}
+                reviewError={reviewError}
+                reviewIsLoading={reviewIsLoading}
+                writeReview={writeReview}
+                handleReviewsPageChange={handleReviewsPageChange}
+                page={page}
+              />
+            )}
           </Box>
         </Grid>
       </Grid>
