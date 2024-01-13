@@ -132,6 +132,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         signIn,
         signUp,
         signOut,
+        initialize,
       }}
     >
       {children}

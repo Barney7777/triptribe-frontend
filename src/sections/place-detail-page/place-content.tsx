@@ -137,8 +137,10 @@ export const PlaceContent: React.FC<PlaceContentProps> = () => {
             }}
           >
             <PlaceDetails
+              placeType={placeType}
               placeData={placeData}
               ratingTotalCount={ratingTotalCount}
+              id={placeId}
             />
           </Box>
         </Grid>

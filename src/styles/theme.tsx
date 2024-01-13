@@ -20,3 +20,5 @@ const theme = createTheme({
 });
 
 export default theme;
+
+export const LIKE_BUTTON_COLOR = '#ff6d75';

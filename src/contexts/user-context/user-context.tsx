@@ -20,6 +20,7 @@ export type UserContextProps = State & {
   signIn: ({ email, password }: SignInInputs) => Promise<void>;
   signUp: ({ firstName, lastName, email, password }: SignUpInputs) => Promise<void>;
   signOut: () => Promise<void>;
+  initialize: () => Promise<void>;
 };
 
 export const UserContext = createContext<UserContextProps>({
@@ -27,4 +28,5 @@ export const UserContext = createContext<UserContextProps>({
   signIn: () => Promise.resolve(),
   signUp: () => Promise.resolve(),
   signOut: () => Promise.resolve(),
+  initialize: () => Promise.resolve(),
 });

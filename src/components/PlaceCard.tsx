@@ -10,6 +10,8 @@ import { usersSaves } from '@/api/usersSaves';
 import { usersSavesDelete } from '@/api/usersSavesDelete';
 import { useRouter } from 'next/router';
 import FavoriteIconButton from '@/sections/home/favoriteIconButton';
+import LikeIconButton from './LikeIconButton';
+import { MainType } from '@/types/general';
 
 type ImageCardProps = {
   _id: string;
@@ -29,44 +31,46 @@ const PlaceCard: React.FC<ImageCardProps> = ({
   placeType,
 }) => {
   const path = `/${placeType}/${_id}`;
-  const { isAuthenticated, userData } = useContext(UserContext);
-  const router = useRouter();
-  const [isFavorite, setisFavorite] = useState(false);
+  let type: MainType;
+  type = placeType == 'attractions' ? MainType.Attraction : MainType.Restaurant;
+  // const { isAuthenticated, userData } = useContext(UserContext);
+  // const router = useRouter();
+  // const [isFavorite, setisFavorite] = useState(false);
 
-  const initialCheck = () => {
-    if (
-      isAuthenticated &&
-      userData &&
-      (placeType === 'attractions'
-        ? userData.savedAttractions.includes(_id)
-        : userData.savedRestaurants.includes(_id))
-    ) {
-      setisFavorite(true);
-    } else {
-      setisFavorite(false);
-    }
-  };
+  // const initialCheck = () => {
+  //   if (
+  //     isAuthenticated &&
+  //     userData &&
+  //     (placeType === 'attractions'
+  //       ? userData.savedAttractions.includes(_id)
+  //       : userData.savedRestaurants.includes(_id))
+  //   ) {
+  //     setisFavorite(true);
+  //   } else {
+  //     setisFavorite(false);
+  //   }
+  // };
 
-  const handleClick = async () => {
-    if (!isAuthenticated) {
-      return router.push('/signin');
-    }
-    try {
-      if (isFavorite) {
-        await usersSavesDelete(_id, placeType === 'attractions' ? 'Attraction' : 'Restaurant');
-      } else {
-        await usersSaves(_id, placeType === 'attractions' ? 'Attraction' : 'Restaurant');
-      }
-      setisFavorite((isFavorite) => !isFavorite);
-    } catch (error) {
-      console.error('Error fetching attractions:', error);
-    }
-  };
+  // const handleClick = async () => {
+  //   if (!isAuthenticated) {
+  //     return router.push('/signin');
+  //   }
+  //   try {
+  //     if (isFavorite) {
+  //       await usersSavesDelete(_id, placeType === 'attractions' ? 'Attraction' : 'Restaurant');
+  //     } else {
+  //       await usersSaves(_id, placeType === 'attractions' ? 'Attraction' : 'Restaurant');
+  //     }
+  //     setisFavorite((isFavorite) => !isFavorite);
+  //   } catch (error) {
+  //     console.error('Error fetching attractions:', error);
+  //   }
+  // };
 
-  useEffect(() => {
-    initialCheck();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthenticated]);
+  // useEffect(() => {
+  //   initialCheck();
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [isAuthenticated]);
 
   return (
     <Card
@@ -136,9 +140,10 @@ const PlaceCard: React.FC<ImageCardProps> = ({
             xs={6}
           >
             <Box sx={{ display: 'flex', justifyContent: 'flex-start' }}>
-              <FavoriteIconButton
-                onClick={handleClick}
-                isFavorite={isFavorite}
+              <LikeIconButton
+                id={_id}
+                placeType={type}
+                withText={false}
               />{' '}
             </Box>
           </Grid>
