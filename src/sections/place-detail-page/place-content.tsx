@@ -18,9 +18,11 @@ import { PlaceMap } from './components/place-map';
 import { PlaceLocation } from './components/place-location';
 import { capitalizeFirstLetter } from '@/utils/cap-string-first-letter';
 import { Review } from '@/types/review';
-import Seo from '@/components/seo/Seo';
+// import Seo from '@/components/seo/Seo';
 import { PageDataResponse } from '@/types/general';
 import { DEFAULT_PAGE_NUMBER, DEFAULT_REVIEW_PAGE_SIZE } from '@/constants/pagination';
+// import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
+// import { SeoProps } from '@/types/seo';
 
 export type RatingDistribution = {
   count: number;
@@ -28,6 +30,9 @@ export type RatingDistribution = {
 };
 type PlaceContentProps = {};
 
+// export const PlaceContent: React.FC<PlaceContentProps> = ({
+//   seoValue,
+// }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
 export const PlaceContent: React.FC<PlaceContentProps> = () => {
   // const theme = useTheme();
   // const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
@@ -103,12 +108,14 @@ export const PlaceContent: React.FC<PlaceContentProps> = () => {
 
   return (
     <React.Fragment>
-      <Seo
-        title={placeData.name.toUpperCase()}
-        description={placeData.description}
-        type="webapp"
-        img={placeData.photos[0].imageUrl}
-      />
+      {/* <Seo
+        title=""
+        description=""
+        url=""
+        type=""
+        name=""
+        img=""
+      /> */}
       <Box
         mt={1}
         display={'flex'}
@@ -300,3 +307,25 @@ export const PlaceContent: React.FC<PlaceContentProps> = () => {
     </React.Fragment>
   );
 };
+
+// export const getServerSideProps: GetServerSideProps = (async (context) => {
+//   console.log('context', context);
+
+//   const seoValue: SeoProps = {
+//     title: 'TripTribe Restaurants - Culinary Delights Await',
+//     description:
+//       'Discover culinary delights with TripTribe Restaurants. Explore a curated list of eateries, backed by transparent ratings and authentic reviews to enhance your dining experience.',
+//     url: 'https://www.trip-tribe.com/restaurants',
+//     type: 'webapp',
+//     name: 'TripTribe',
+//     img: '/assets/bridge.png',
+//   };
+
+//   return {
+//     props: {
+//       seoValue,
+//     },
+//   };
+// }) satisfies GetServerSideProps<{
+//   seoValue: SeoProps;
+// }>;

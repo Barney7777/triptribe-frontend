@@ -5,15 +5,21 @@ import { type ReactElement } from 'react';
 import { NextPageWithLayout } from '@/pages/_app';
 import Layout from '@/layouts/MainLayout';
 import Seo from '@/components/seo';
+import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
+import { SeoProps } from '@/types/seo';
 
-const Page: NextPageWithLayout = () => {
+const Page: NextPageWithLayout = ({
+  seoValue,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   return (
     <>
       <Seo
-        title="TripTribe Attractions - Explore Exciting Places"
-        description="Browse and explore exciting attractions with TripTribe. Find detailed information, transparent ratings, and authentic reviews to plan your next adventure."
-        type="webapp"
-        img="https://drive.google.com/uc?export=view&id=13fBD9P9zs4ZO13Jm5kiusEfkYx8eezry"
+        title={seoValue.title}
+        description={seoValue.description}
+        url={seoValue.url}
+        type={seoValue.type}
+        name={seoValue.name}
+        img={seoValue.img}
       />
       <MainPage type={MainType.Attraction} />
     </>
@@ -27,4 +33,23 @@ Page.getLayout = function getLayout(page: ReactElement) {
     </Layout>
   );
 };
+
+export const getServerSideProps: GetServerSideProps = (async (context) => {
+  const seoValue: SeoProps = {
+    title: 'TripTribe Attractions - Explore Exciting Places',
+    description:
+      'Browse and explore exciting attractions with TripTribe. Find detailed information, transparent ratings, and authentic reviews to plan your next adventure.',
+    url: 'https://www.trip-tribe.com/attractions',
+    type: 'webapp',
+    name: 'TripTribe',
+    img: '/assets/bridge.png',
+  };
+  return {
+    props: {
+      seoValue,
+    },
+  };
+}) satisfies GetServerSideProps<{
+  seoValue: SeoProps;
+}>;
 export default Page;
