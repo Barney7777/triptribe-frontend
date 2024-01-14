@@ -124,10 +124,14 @@ const ReviewCard: FC<ReviewListProps> = ({ review }) => {
             item
             xs={12}
           >
-            <Gallery
-              galleryID="gallery--open-in-original-size"
-              images={images}
-            />
+            {images.length ? (
+              <Gallery
+                galleryID="gallery--open-in-original-size"
+                images={images}
+              />
+            ) : (
+              <></>
+            )}
           </Grid>
         </Box>
       </Grid>
