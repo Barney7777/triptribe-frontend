@@ -7,7 +7,7 @@ pipeline {
     agent any
 
     tools {
-        nodejs 'nodejs-21.4.0'
+        nodejs 'nodejs-20.11.0'
     }
 
     environment {
@@ -31,13 +31,16 @@ pipeline {
         stage('Install Dependencies') {
             
             steps {
-              timeout(time: 10, unit: 'MINUTES') {
+            
                 script {
+                    sh 'npm -v'
+                    sh 'node -v'
                     sh 'npm ci'
                     // sh 'npm run lint'
-                       sh 'npm run format'
+                    // sh './node_modules/.bin/eslint --fix --debug .'
+                    // sh 'npm run prettier'
                 }
-              }
+              
             }
         }
 
