@@ -93,7 +93,7 @@ const PlaceDetails: React.FC<PlaceDetailsProps> = ({
             ) : (
               <Link
                 component={NextLink}
-                href={`${router.asPath}/reviews`}
+                href={'#place-review'}
               >{`${ratingTotalCount} reviews`}</Link>
             )}
           </Typography>

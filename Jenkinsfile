@@ -29,12 +29,15 @@ pipeline {
         }
 
         stage('Install Dependencies') {
+            
             steps {
+              timeout(time: 10, unit: 'MINUTES') {
                 script {
                     sh 'npm ci'
-                    sh 'npm run lint'
-                    // sh 'npm run format'
+                    // sh 'npm run lint'
+                       sh 'npm run format'
                 }
+              }
             }
         }
 
@@ -54,7 +57,7 @@ pipeline {
             }
             steps {
                 script {
-                        withSonarQubeEnv('sonarqube') {
+                        withSonarQubeEnv('SonarQube') {
                         sh """
                             ${scannerHome}/bin/sonar-scanner \
                             -Dsonar.projectKey=$JOB_NAME \
@@ -99,11 +102,11 @@ pipeline {
                     // sh 'npm ci'
                     sh 'vercel build --prod --token=$VERCEL_TOKEN'
 
-                    input(
-                    id: 'deployToProduction',
-                    message: 'Do you want to deploy to production?',
-                    ok: 'Deploy'
-                    )
+                    // input(
+                    // id: 'deployToProduction',
+                    // message: 'Do you want to deploy to production?',
+                    // ok: 'Deploy'
+                    // )
                     sh 'vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN'
                 }
             }
@@ -114,7 +117,9 @@ pipeline {
                 // Build the static files
                 script {
                     sh 'mv -f next.config_s3.js next.config.js'
-                    sh 'mv -f /src/pages/index_s3.tsx /src/pages/index.tsx'
+                    sh 'pwd'
+                    sh 'ls -l src/pages/'
+                    sh 'mv -f src/pages/index_s3.tsx src/pages/index.tsx'
                     sh 'npm run build'
                 }
             }

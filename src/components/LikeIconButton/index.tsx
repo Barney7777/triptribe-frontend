@@ -1,10 +1,8 @@
 import React, { useEffect } from 'react';
-import { Typography, IconButton, SvgIconProps, Button } from '@mui/material';
-import CircularProgress from '@mui/material/CircularProgress';
+import { Typography, IconButton } from '@mui/material';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import { useSnackbar } from 'notistack';
-import axiosInstance from '@/utils/request';
 import { MainType } from '@/types/general';
 import { UserContext } from '@/contexts/user-context/user-context';
 import { LIKE_BUTTON_COLOR } from '@/styles/theme';
@@ -93,7 +91,12 @@ export const LikeIconButton: React.FC<IconTextProps> = ({ id, withText, placeTyp
     );
   };
   return (
-    <IconButton onClick={handleLikeClick}>
+    <IconButton
+      onClick={(e) => {
+        handleLikeClick();
+        e.stopPropagation();
+      }}
+    >
       {renderIcon()}
       {withText ? (
         <Typography

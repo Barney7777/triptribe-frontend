@@ -15,7 +15,8 @@ import { UserAvatar } from './user-avatar';
 import { UserContext } from '@/contexts/user-context/user-context';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
-
+import RateReviewIcon from '@mui/icons-material/RateReview';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 type AccountMenuProps = {
   anchorOffset: number;
 };
@@ -115,22 +116,33 @@ export const AccountMenu: React.FC<AccountMenuProps> = ({ anchorOffset }) => {
           <Avatar /> My account
         </MenuItem>
         <Divider />
+        <MenuItem
+          component={NextLink}
+          href={'/users/me'}
+        >
+          <ListItemIcon>
+            <FavoriteIcon fontSize="small" />
+          </ListItemIcon>
+          Favorites
+        </MenuItem>
 
         <MenuItem
           component={NextLink}
-          href="/write-review"
+          href={'/users/me'}
         >
           <ListItemIcon>
-            <PersonAdd fontSize="small" />
+            <RateReviewIcon fontSize="small" />
           </ListItemIcon>
-          write review
+          Reviews
         </MenuItem>
-
-        <MenuItem onClick={handleClick}>
+        <MenuItem
+          component={NextLink}
+          href={'/users/me'}
+        >
           <ListItemIcon>
             <Settings fontSize="small" />
           </ListItemIcon>
-          Settings
+          Security
         </MenuItem>
 
         <MenuItem onClick={handleSignOut}>

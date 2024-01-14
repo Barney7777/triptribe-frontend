@@ -272,6 +272,7 @@ export const PlaceContent: React.FC<PlaceContentProps> = () => {
           md={9}
         >
           <Box
+            id="place-review"
             sx={{
               bgcolor: 'white',
               borderRadius: 1,

@@ -63,6 +63,7 @@ export const MapWithSideBar = () => {
 
   const responsiveStyle = isDesktop
     ? {
+        left: -10,
         bottom: 'auto',
         top: 0,
         overflowX: 'visible',
@@ -71,12 +72,13 @@ export const MapWithSideBar = () => {
         width: 'auto',
       }
     : {
+        left: 0,
         bottom: 0,
         top: 'auto',
         overflowX: 'scroll',
         overflowY: 'visible',
-        height: '35svh',
-        width: '100svh',
+        height: 'auto',
+        width: '100svw',
       };
 
   const SideBarListItem = useMemo(() => {
@@ -126,7 +128,6 @@ export const MapWithSideBar = () => {
           position={'absolute'}
           sx={{
             ...responsiveStyle,
-            left: -10,
             zIndex: 99999,
             backgroundImage: 'url(/assets/map-sidebar-bkg2.jpg)',
             backgroundAttachment: 'fixed',
