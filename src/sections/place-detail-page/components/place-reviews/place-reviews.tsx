@@ -58,7 +58,7 @@ const PlaceReviews: FC<PlaceReviewsProps> = ({
               lineHeight={1.5}
               fontWeight={600}
             >
-              Reviews({total})
+              Reviews{reviewsData?.length && `(${total})`}
             </Typography>
           </Grid>
           <Grid item>
@@ -79,12 +79,16 @@ const PlaceReviews: FC<PlaceReviewsProps> = ({
           }}
         >
           <Box sx={{ minHeight: '300px', mt: 2 }}>
-            {reviewsData.map((item) => (
-              <ReviewCard
-                review={item}
-                key={item._id}
-              />
-            ))}
+            {reviewsData && reviewsData.length ? (
+              reviewsData.map((item) => (
+                <ReviewCard
+                  review={item}
+                  key={item._id}
+                />
+              ))
+            ) : (
+              <>Please left your review and be the lucky first. Thank you.</>
+            )}
           </Box>
         </Grid>
         <Grid
