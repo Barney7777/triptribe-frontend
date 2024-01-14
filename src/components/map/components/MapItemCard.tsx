@@ -95,7 +95,10 @@ const MapItemCard: React.FC<MapItemCardProps> = ({ popupInfo }) => {
           >
             <IconButton
               LinkComponent={NextLink}
-              href="/write-review"
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+              href={`/createReview?place=${popupInfo._id}&placeType=${popupInfo.type}`}
             >
               <RateReviewIcon
                 sx={{ pt: 0.25 }}

@@ -18,6 +18,8 @@ import { getLocation } from './utils/get-location';
 import { useMapStore } from '@/stores/map-store';
 import axiosInstance from '@/utils/request';
 import useSWR from 'swr';
+import useRequest from '@/hooks/use-request';
+import { enqueueSnackbar } from 'notistack';
 
 type MapProps = {
   mapId: string;
@@ -67,13 +69,19 @@ export const Map: React.FC<MapProps> = ({
     },
   };
 
-  const { data, error, isLoading, mutate } = useSWR<PlacesData>(requestOptions, async () => {
-    const response = await axiosInstance.request<PlacesData>(requestOptions);
-    return response.data;
-  });
-  console.log(data);
+  const { data, error, isLoading, mutate } = useRequest<PlacesData>(requestOptions);
+
   useEffect(() => {
     if (data) {
+      // sort data by distance
+      data.sort((a, b) => {
+        if (a.distance && b.distance) {
+          return a.distance - b.distance;
+        } else return 0;
+      });
+
+      console.log(data);
+      // add data to state
       updatePinInfo(data);
     }
   }, [data, updatePinInfo]);
@@ -102,7 +110,13 @@ export const Map: React.FC<MapProps> = ({
   useEffect(() => {
     handleMoveMap(mapCenter);
   }, [mapCenter]);
-
+  if (isLoading) {
+    enqueueSnackbar('Loading Content', {
+      variant: 'info',
+      preventDuplicate: true,
+      autoHideDuration: 1000,
+    });
+  }
   // get map center when drag end.
   // debounce for delay useSwr trigger .
   const handleMapCenter = () => {

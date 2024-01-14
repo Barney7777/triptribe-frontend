@@ -15,6 +15,7 @@ import Layout from '@/layouts/MainLayout';
 import { useContext } from 'react';
 import { UserContext } from '@/contexts/user-context/user-context';
 import Link from 'next/link';
+import { CircularLoading } from '@/components/CircularLoading';
 
 type Image = {
   src: string;
@@ -50,20 +51,17 @@ const CreateReview: React.FC<CreateReviewProps> = () => {
   const router = useRouter();
   const { isAuthenticated } = useContext(UserContext);
 
-  const { placeId, placeType } = router.query as { placeId: string; placeType: string };
+  const { place, placeType } = router.query as { place: string; placeType: string };
 
-  const basicUrl: string = process.env.NEXT_PUBLIC_API_URL || '';
+  const basicUrl: string = process.env.NEXT_PUBLIC_REST_API_URL || '';
 
   // Fetch placeInfo data using useSWR
   const {
     data: placeInfo,
     error,
     isValidating,
-  } = useSWR<PlaceInfo>(
-    placeType && placeId ? `${basicUrl}/${placeType}s/${placeId}` : null,
-    fetcher
-  );
-
+  } = useSWR<PlaceInfo>(placeType && place ? `${basicUrl}/${placeType}s/${place}` : null, fetcher);
+  if (!router.isReady) return <CircularLoading size={80} />;
   // Determine loading status based on placeInfo, error, and isValidating
   const isLoading: boolean = (!placeInfo && !error) || isValidating;
 
@@ -80,7 +78,7 @@ const CreateReview: React.FC<CreateReviewProps> = () => {
   };
 
   const navigateToPlaceDetail = () => {
-    router.push(`${placeType}s/${placeId}`);
+    router.push(`${placeType.toLowerCase()}s/${place}`);
   };
 
   return (
@@ -154,7 +152,7 @@ const CreateReview: React.FC<CreateReviewProps> = () => {
               sx={{ borderLeft: isMediumScreen ? '1px solid gray' : 'none' }}
             >
               <ReviewForm
-                placeId={placeId}
+                placeId={place}
                 placeType={placeType}
               />
             </Grid>

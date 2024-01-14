@@ -105,11 +105,18 @@ const VerifyEmail = () => {
                   color="text.secondary"
                   variant="body2"
                 >
-                  {verificationStatus === 'verified'
-                    ? 'Email has been successfully verified.'
-                    : verificationStatus === 'illegal code'
-                      ? 'illegal code'
-                      : 'An error occurred during email verification. Please try again later.'}
+                  {(() => {
+                    switch (verificationStatus) {
+                      case 'verified':
+                        return 'Email has been successfully verified.';
+
+                      case 'illegal code':
+                        return 'Illegal code';
+
+                      default:
+                        return 'An error occurred during email verification. Please try again later.';
+                    }
+                  })()}
                   <br />
                 </Typography>
               }
