@@ -1,4 +1,4 @@
-import { List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
+import { Fade, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
 
 import { PlaceProps } from '@/types/attractions-restaurants';
 import { Typography } from '@mui/material';
@@ -8,12 +8,21 @@ import ComputerOutlinedIcon from '@mui/icons-material/ComputerOutlined';
 import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
 import { getCurrentWeekday } from '@/utils/get-current-date-time';
 import tz_lookup from 'tz-lookup';
+import { useInView } from 'react-intersection-observer';
+import { useEffect, useState } from 'react';
 
 type PlaceLocationProps = {
   placeData: PlaceProps;
 };
 
 export const PlaceLocation: React.FC<PlaceLocationProps> = ({ placeData }) => {
+  const { ref, inView, entry } = useInView();
+  const [show, setShow] = useState(false);
+  useEffect(() => {
+    if (inView) {
+      setShow(true);
+    }
+  }, [inView]);
   const timeZone = tz_lookup(placeData.address.location.lat, placeData.address.location.lng);
   const weekday = getCurrentWeekday(timeZone);
   const locationDetailList = [
@@ -56,30 +65,38 @@ export const PlaceLocation: React.FC<PlaceLocationProps> = ({ placeData }) => {
   ];
 
   return (
-    <List disablePadding>
-      <ListItem sx={{ p: 0, pl: 1, mt: 0 }}>
-        <Typography
-          variant="h5"
-          fontWeight={600}
-        >
-          Location and Contact
-        </Typography>
-      </ListItem>
-      {locationDetailList.map((item, index) => {
-        return (
-          <ListItem
-            key={item.key}
-            sx={{ p: 0, pl: 1, mt: 1 }}
+    <Fade
+      in={show}
+      timeout={1100}
+    >
+      <List
+        ref={ref}
+        disablePadding
+      >
+        <ListItem sx={{ p: 0, pl: 1, mt: 0 }}>
+          <Typography
+            variant="h5"
+            fontWeight={600}
           >
-            <ListItemIcon>{item.icon}</ListItemIcon>
-            <ListItemText
-              sx={{ ml: -1 }}
-              primary={item.key}
-              primaryTypographyProps={{}}
-            />
-          </ListItem>
-        );
-      })}
-    </List>
+            Location and Contact
+          </Typography>
+        </ListItem>
+        {locationDetailList.map((item, index) => {
+          return (
+            <ListItem
+              key={item.key}
+              sx={{ p: 0, pl: 1, mt: 1 }}
+            >
+              <ListItemIcon>{item.icon}</ListItemIcon>
+              <ListItemText
+                sx={{ ml: -1 }}
+                primary={item.key}
+                primaryTypographyProps={{}}
+              />
+            </ListItem>
+          );
+        })}
+      </List>
+    </Fade>
   );
 };

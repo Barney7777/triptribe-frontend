@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import NextLink from 'next/link';
 import {
   Box,
@@ -11,6 +11,7 @@ import {
   ListItemIcon,
   ListItemText,
   Link,
+  Fade,
 } from '@mui/material';
 import PhoneCallbackOutlinedIcon from '@mui/icons-material/PhoneCallbackOutlined';
 import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
@@ -23,6 +24,7 @@ import { PlaceProps } from '@/types/attractions-restaurants';
 import { useRouter } from 'next/router';
 import LikeIconButton from '@/components/LikeIconButton';
 import { MainType } from '@/types/general';
+import { useInView } from 'react-intersection-observer';
 
 type PlaceDetailsProps = {
   placeData: PlaceProps;
@@ -39,8 +41,14 @@ const PlaceDetails: React.FC<PlaceDetailsProps> = ({
   id,
   placeType,
 }) => {
+  const { ref, inView, entry } = useInView();
+  const [show, setShow] = useState(false);
+  useEffect(() => {
+    if (inView) {
+      setShow(true);
+    }
+  }, [inView]);
   const type = placeType === 'restaurants' ? MainType.Restaurant : MainType.Attraction;
-  const router = useRouter();
   const detailIconList: { [key: string]: React.JSX.Element } = {
     phone: <PhoneCallbackOutlinedIcon fontSize="small" />,
     email: <EmailOutlinedIcon fontSize="small" />,
@@ -48,126 +56,134 @@ const PlaceDetails: React.FC<PlaceDetailsProps> = ({
   };
 
   return (
-    <Box width={1}>
-      <Grid container>
-        <Grid
-          item
-          xs={8}
-        >
-          <Typography
-            fontSize={30}
-            component="h2"
-            sx={{ fontWeight: 'bold' }}
+    <Fade
+      in={show}
+      timeout={1100}
+    >
+      <Box
+        width={1}
+        ref={ref}
+      >
+        <Grid container>
+          <Grid
+            item
+            xs={8}
           >
-            {placeData.name.toUpperCase()}
-          </Typography>
-          <Typography
-            fontSize={16}
-            component="h3"
-            noWrap
-          >
-            {placeData.description}
-          </Typography>
-          <Link href={'#place-description'}>More</Link>
-          <Typography
-            sx={{
-              marginTop: '8px',
-              fontWeight: 'bold',
-              display: 'flex',
-              alignItems: 'center',
-              flexDirection: 'row',
-              gap: '8px',
-            }}
-            variant="body2"
-            gutterBottom
-          >
-            <Rating
-              name="read-only"
-              value={placeData.overAllRating}
-              readOnly
-              size="small"
-              sx={{ mr: 1 }}
-            />
-            {ratingTotalCount === 0 ? (
-              <>No Review</>
-            ) : (
-              <Link
-                component={NextLink}
-                href={'#place-review'}
-              >{`${ratingTotalCount} reviews`}</Link>
-            )}
-          </Typography>
-        </Grid>
-        <Grid
-          item
-          xs={4}
-        >
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'flex-end',
-              height: 45,
-            }}
-          >
-            <LikeIconButton
-              placeType={type}
-              id={id}
-              withText={true}
-            />
-            <Divider
-              orientation="vertical"
-              flexItem
-              sx={{ mx: 1 }}
-            />
-            <Button
-              sx={{ color: 'black' }}
-              onClick={writeReview}
+            <Typography
+              fontSize={30}
+              component="h2"
+              sx={{ fontWeight: 'bold' }}
             >
-              <IconText
-                icon={<CreateOutlinedIcon fontSize="small" />}
-                text="Write"
+              {placeData.name.toUpperCase()}
+            </Typography>
+            <Typography
+              fontSize={16}
+              component="h3"
+              noWrap
+            >
+              {placeData.description}
+            </Typography>
+            <Link href={'#place-description'}>More</Link>
+            <Typography
+              sx={{
+                marginTop: '8px',
+                fontWeight: 'bold',
+                display: 'flex',
+                alignItems: 'center',
+                flexDirection: 'row',
+                gap: '8px',
+              }}
+              variant="body2"
+              gutterBottom
+            >
+              <Rating
+                name="read-only"
+                value={placeData.overAllRating}
+                readOnly
+                size="small"
+                sx={{ mr: 1 }}
               />
-            </Button>
-          </Box>
-        </Grid>
-      </Grid>
-      <Box>
-        <List
-          sx={{
-            display: 'flex',
-            justifyContent: 'left',
-            flexWrap: 'wrap',
-          }}
-        >
-          {['phone', 'email', 'website'].map((text, index) => {
-            return (
-              <ListItem
-                key={text}
-                sx={{ p: 0, width: 'auto' }}
+              {ratingTotalCount === 0 ? (
+                <>No Review</>
+              ) : (
+                <Link
+                  component={NextLink}
+                  href={'#place-review'}
+                >{`${ratingTotalCount} reviews`}</Link>
+              )}
+            </Typography>
+          </Grid>
+          <Grid
+            item
+            xs={4}
+          >
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'flex-end',
+                height: 45,
+              }}
+            >
+              <LikeIconButton
+                placeType={type}
+                id={id}
+                withText={true}
+              />
+              <Divider
+                orientation="vertical"
+                flexItem
+                sx={{ mx: 1 }}
+              />
+              <Button
+                sx={{ color: 'black' }}
+                onClick={writeReview}
               >
-                <ListItemIcon sx={{ color: 'black', justifyContent: 'center', ml: -1 }}>
-                  {detailIconList[text]}
-                </ListItemIcon>
-
-                <Box
-                  // ml={-1}
-                  mr={1}
+                <IconText
+                  icon={<CreateOutlinedIcon fontSize="small" />}
+                  text="Write"
+                />
+              </Button>
+            </Box>
+          </Grid>
+        </Grid>
+        <Box>
+          <List
+            sx={{
+              display: 'flex',
+              justifyContent: 'left',
+              flexWrap: 'wrap',
+            }}
+          >
+            {['phone', 'email', 'website'].map((text, index) => {
+              return (
+                <ListItem
+                  key={text}
+                  sx={{ p: 0, width: 'auto' }}
                 >
-                  {text === 'website' ? (
-                    <Button href={placeData.website}>Website</Button>
-                  ) : (
-                    <ListItemText
-                      primary={placeData[text] as string}
-                      primaryTypographyProps={{ fontSize: 16 }}
-                    />
-                  )}
-                </Box>
-              </ListItem>
-            );
-          })}
-        </List>
+                  <ListItemIcon sx={{ color: 'black', justifyContent: 'center', ml: -1 }}>
+                    {detailIconList[text]}
+                  </ListItemIcon>
+
+                  <Box
+                    // ml={-1}
+                    mr={1}
+                  >
+                    {text === 'website' ? (
+                      <Button href={placeData.website}>Website</Button>
+                    ) : (
+                      <ListItemText
+                        primary={placeData[text] as string}
+                        primaryTypographyProps={{ fontSize: 16 }}
+                      />
+                    )}
+                  </Box>
+                </ListItem>
+              );
+            })}
+          </List>
+        </Box>
       </Box>
-    </Box>
+    </Fade>
   );
 };
 

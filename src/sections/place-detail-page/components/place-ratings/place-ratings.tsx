@@ -1,11 +1,12 @@
 import { PlaceProps } from '@/types/attractions-restaurants';
-import { Box, Button, LinearProgress, Rating, Stack, Typography } from '@mui/material';
-import React from 'react';
+import { Box, Button, Fade, LinearProgress, Rating, Stack, Typography } from '@mui/material';
+import React, { useEffect, useState } from 'react';
 import { RatingDistribution } from '../../place-content';
 import { AxiosError } from 'axios';
 import { CircularLoading } from '@/components/CircularLoading';
 import NextLink from 'next/link';
 import { grey } from '@mui/material/colors';
+import { useInView } from 'react-intersection-observer';
 
 type PlaceRatingsProps = {
   placeData: PlaceProps;
@@ -22,28 +23,49 @@ export const PlaceRatings: React.FC<PlaceRatingsProps> = ({
   ratingError,
   ratingIsLoading,
 }) => {
+  const { ref, inView, entry } = useInView();
+  const [show, setShow] = useState(false);
+  useEffect(() => {
+    if (inView) {
+      setShow(true);
+    }
+  }, [inView]);
+
   const avgRating: number = placeData.overAllRating;
   if (ratingIsLoading) return <CircularLoading size={80} />;
   if (ratingError) return <Box>{`${ratingError.code}: ${ratingError.message}`}</Box>;
   if (ratingData === undefined || ratingTotalCount === 0) {
     return (
-      <Box pt={10}>
-        <Typography
-          textAlign={'center'}
-          variant="h5"
-          fontWeight={600}
+      <Fade
+        in={show}
+        timeout={1100}
+      >
+        <Box
+          pt={10}
+          ref={ref}
         >
-          No Reviews
-        </Typography>
-        <Button
-          sx={{ position: 'absolute', left: '50%', top: '60%', transform: 'translate(-50%,-50%)' }}
-          href="/write-review"
-          LinkComponent={NextLink}
-          variant="contained"
-        >
-          Write Review
-        </Button>
-      </Box>
+          <Typography
+            textAlign={'center'}
+            variant="h5"
+            fontWeight={600}
+          >
+            No Reviews
+          </Typography>
+          <Button
+            sx={{
+              position: 'absolute',
+              left: '50%',
+              top: '60%',
+              transform: 'translate(-50%,-50%)',
+            }}
+            href="/write-review"
+            LinkComponent={NextLink}
+            variant="contained"
+          >
+            Write Review
+          </Button>
+        </Box>
+      </Fade>
     );
   }
   return (
