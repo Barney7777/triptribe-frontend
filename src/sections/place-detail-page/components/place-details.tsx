@@ -21,15 +21,25 @@ import Divider from '@mui/material/Divider';
 import IconText from '@/components/IconText';
 import { PlaceProps } from '@/types/attractions-restaurants';
 import { useRouter } from 'next/router';
+import LikeIconButton from '@/components/LikeIconButton';
+import { MainType } from '@/types/general';
 
 type PlaceDetailsProps = {
   placeData: PlaceProps;
+  placeType: string;
   ratingTotalCount: number;
+  id: string;
+  writeReview: () => void;
 };
 
-const PlaceDetails: React.FC<PlaceDetailsProps> = ({ placeData, ratingTotalCount }) => {
-  const addLike = () => {};
-  const writeReview = () => {};
+const PlaceDetails: React.FC<PlaceDetailsProps> = ({
+  writeReview,
+  placeData,
+  ratingTotalCount,
+  id,
+  placeType,
+}) => {
+  const type = placeType === 'restaurants' ? MainType.Restaurant : MainType.Attraction;
   const router = useRouter();
   const detailIconList: { [key: string]: React.JSX.Element } = {
     phone: <PhoneCallbackOutlinedIcon fontSize="small" />,
@@ -99,15 +109,11 @@ const PlaceDetails: React.FC<PlaceDetailsProps> = ({ placeData, ratingTotalCount
               height: 45,
             }}
           >
-            <Button
-              sx={{ color: 'black' }}
-              onClick={addLike}
-            >
-              <IconText
-                icon={<FavoriteBorderOutlinedIcon fontSize="small" />}
-                text="Save"
-              />
-            </Button>
+            <LikeIconButton
+              placeType={type}
+              id={id}
+              withText={true}
+            />
             <Divider
               orientation="vertical"
               flexItem

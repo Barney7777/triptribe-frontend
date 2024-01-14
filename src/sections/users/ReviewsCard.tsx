@@ -1,3 +1,102 @@
-export const ReviewsCard = () => {
-  return <div>this is reviews card</div>;
+import UserReviewCard from './components/user-reviews-card';
+import { useRouter } from 'next/router';
+import { useUserContext } from '@/contexts/user-context/user-context';
+import useRequest from '@/hooks/use-request';
+import { UserReviewResponse } from '@/types/review';
+import axiosInstance from '@/utils/request';
+import { Box, CircularProgress, Divider, Pagination, Typography } from '@mui/material';
+import { useState } from 'react';
+import { PageDataResponse } from '@/types/general';
+import { DEFAULT_PAGE_NUMBER, DEFAULT_REVIEW_PAGE_SIZE } from '@/constants/pagination';
+
+const ReviewsCard = () => {
+  const router = useRouter();
+  const { userId } = router.query;
+  const { isAuthenticated, userData = null } = useUserContext();
+
+  //handle page change
+  const [page, setPage] = useState(DEFAULT_PAGE_NUMBER);
+  const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+    setPage(value);
+  };
+
+  /**
+   * request review data from API findAllReviewsByUserId
+   * if path === /users/me, get current user data
+   * else path === /user/:userId, get this user data
+   */
+  let queryUserId;
+  let isAuthorized = false;
+
+  if (userId === 'me') {
+    queryUserId = userData?._id;
+    isAuthorized = true;
+  } else {
+    queryUserId = userId;
+    isAuthorized = false;
+  }
+  const queryUrl = `/users/${queryUserId}/reviews?limit=${DEFAULT_REVIEW_PAGE_SIZE}&skip=${
+    (page - 1) * DEFAULT_REVIEW_PAGE_SIZE
+  }`;
+  const {
+    data: respondData,
+    isLoading,
+    error,
+    mutate,
+  } = useRequest<PageDataResponse<UserReviewResponse>>(
+    queryUserId && page ? { url: queryUrl } : null
+  );
+  const { data, total, pageCount = 1 } = respondData || {};
+  const { creator, reviews } = data || {};
+
+  // delete a review
+  const handleDeleteReview = async (reviewDeleteId: string) => {
+    // const updatedReview = reviews?.filter((item) => item._id !== reviewDeleteId);
+    // const updatedData = { ...data, reviews: updatedReview } as UserReviewResponse;
+    await mutate(axiosInstance.delete(`/reviews/${reviewDeleteId}`));
+  };
+
+  if (isLoading) {
+    return <CircularProgress size={40} />;
+  }
+
+  if (error) {
+    return <div>error</div>;
+  }
+
+  return (
+    <Box>
+      <Box sx={{ mb: 2 }}>
+        <Typography>Reviews ({total})</Typography>
+      </Box>
+      {/* TODO: pagination of reviews for both frontend and backend */}
+      {creator &&
+        reviews &&
+        reviews?.length > 0 &&
+        reviews.map((review) => (
+          <UserReviewCard
+            creator={creator}
+            review={review}
+            key={review._id}
+            onDelete={() => handleDeleteReview(review._id)}
+            onEdit={() => {
+              const editPath = `/write-review?placeType=${review.placeType}&placeId=${review.placeId}&reviewId=${review._id}`;
+              router.push(editPath);
+            }}
+            isAuthenticated={isAuthenticated}
+            isAuthorized={isAuthorized}
+          />
+        ))}
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <Pagination
+          color="primary"
+          count={pageCount}
+          page={page}
+          onChange={handlePageChange}
+        />
+      </Box>
+    </Box>
+  );
 };
+
+export default ReviewsCard;

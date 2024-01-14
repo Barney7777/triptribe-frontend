@@ -1,8 +1,7 @@
 import { Button, Card, CardMedia } from '@mui/material';
 import React from 'react';
 // const path = '';
-const image =
-  'https://assets-global.website-files.com/609ed46055e27a02ffc0749b/63bc7e5e16e24a7c721cd994_mapbox_maps.jpeg';
+const image = '/assets/list-page-map.jpeg';
 const HeroMap = ({
   mapIsOpen,
   toggleMapIsOpen,

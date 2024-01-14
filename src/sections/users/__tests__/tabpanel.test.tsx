@@ -4,6 +4,11 @@ import TabPanel from '../TabPanel';
 import userEvent from '@testing-library/user-event';
 import { UserRole } from '@/types/user';
 
+jest.mock('../ReviewsCard', () => {
+  const mockReviewCard = () => <div>this is reviews card</div>;
+  return mockReviewCard;
+});
+
 describe('TabPanel Component', () => {
   const mockUser = {
     _id: '12345',

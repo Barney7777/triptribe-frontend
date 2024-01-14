@@ -4,7 +4,7 @@ import { ActionType, InitializeAction, State } from '@/contexts/user-context/use
 import { SignInInputs, SignUpInputs, UserContext, initialState } from './user-context';
 import { authRegister } from '@/api/authRegister';
 import { authSignIn } from '@/api/authSignin';
-import { CanceledError } from 'axios';
+
 const ACCESS_KEY = 'accessToken';
 const REFRESH_KEY = 'refreshToken';
 
@@ -109,7 +109,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const signUp = useCallback(
     async ({ firstName, lastName, email, password }: SignUpInputs): Promise<void> => {
       try {
-        const res = await authRegister(firstName, lastName, email, password);
+        await authRegister(firstName, lastName, email, password);
       } catch (err) {
         console.error('sign up failed', err);
         throw err;
@@ -132,6 +132,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         signIn,
         signUp,
         signOut,
+        initialize,
       }}
     >
       {children}

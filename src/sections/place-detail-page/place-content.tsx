@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import { PlaceDescriptions } from '@/sections/place-detail-page/components/place-descriptions';
 import PlaceDetails from '@/sections/place-detail-page/components/place-details';
@@ -8,7 +8,7 @@ import PlaceReviews from '@/sections/place-detail-page/components/place-reviews/
 
 import { Box, Breadcrumbs, Grid, Link, Typography } from '@mui/material';
 
-import { useRouter } from 'next/router';
+import router, { useRouter } from 'next/router';
 
 import { PlaceProps } from '@/types/attractions-restaurants';
 import { CircularLoading } from '@/components/CircularLoading';
@@ -18,45 +18,68 @@ import { PlaceMap } from './components/place-map';
 import { PlaceLocation } from './components/place-location';
 import { capitalizeFirstLetter } from '@/utils/cap-string-first-letter';
 import { Review } from '@/types/review';
+import Seo from '@/components/seo/Seo';
+import { PageDataResponse } from '@/types/general';
+import { DEFAULT_PAGE_NUMBER, DEFAULT_REVIEW_PAGE_SIZE } from '@/constants/pagination';
+
 export type RatingDistribution = {
   count: number;
   rating: number;
 };
 type PlaceContentProps = {};
+
 export const PlaceContent: React.FC<PlaceContentProps> = () => {
   // const theme = useTheme();
   // const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
-
   const { pathname, query, isReady } = useRouter();
   const placeType = isReady ? pathname.split('/')[1] : '';
   const placeId = typeof query.id !== 'string' ? '' : query.id;
+  const PlaceType = placeType === 'restaurants' ? 'restaurant' : 'attraction';
+
+  const isPlaceReady = placeType && placeId;
+  /**
+   * once the placeType && placeId is ready, return the request object
+   * otherwise it returns null (to prevent SWR sending request)
+   * @param  url
+   * @returns request object
+   */
+  const getRequest = (url: string) => (isPlaceReady ? { url } : null);
 
   const {
     data: placeData,
     error: placeError,
     isLoading: placeIsLoading,
-  } = useRequest<PlaceProps>({
-    url: `${placeType}/${placeId}`,
-    method: 'get',
-  });
+  } = useRequest<PlaceProps>(getRequest(`/${placeType}/${placeId}`));
 
+  const [page, setPage] = useState(DEFAULT_PAGE_NUMBER);
+  const handleReviewsPageChange = (pageNumber: number) => {
+    setPage(pageNumber);
+  };
+
+  const reviewsURL = `/${placeType}/${placeId}/reviews?limit=${DEFAULT_REVIEW_PAGE_SIZE}&skip=${
+    (page - 1) * DEFAULT_REVIEW_PAGE_SIZE
+  }`;
   const {
-    data: reviewsData = [],
+    data: reviewsData,
     isLoading: reviewIsLoading,
     error: reviewError,
-  } = useRequest<Review[]>({
-    // TODO: remove baseURL after backend implemented
-    baseURL: 'https://mock.apifox.com/m1/3534088-0-default/api/v1/',
-    url: `${placeType}/${placeId}/reviews`,
-  });
+  } = useRequest<PageDataResponse<Review[]>>(getRequest(reviewsURL));
 
   const {
     data: ratingData,
     isLoading: ratingIsLoading,
     error: ratingError,
-  } = useRequest<RatingDistribution[]>({
-    url: `${placeType}/${placeId}/rating-distributions`,
-  });
+  } = useRequest<RatingDistribution[]>(getRequest(`/${placeType}/${placeId}/rating-distributions`));
+
+  const writeReview = () => {
+    router.push({
+      pathname: '/createReview',
+      query: {
+        placeId: placeId,
+        placeType: PlaceType,
+      },
+    });
+  };
 
   const ratingTotalCount: number = ratingData
     ? ratingData.reduce((acc, ratings) => acc + ratings.count, 0)
@@ -80,6 +103,12 @@ export const PlaceContent: React.FC<PlaceContentProps> = () => {
 
   return (
     <React.Fragment>
+      <Seo
+        title={placeData.name.toUpperCase()}
+        description={placeData.description}
+        type="webapp"
+        img={placeData.photos[0].imageUrl}
+      />
       <Box
         mt={1}
         display={'flex'}
@@ -129,8 +158,11 @@ export const PlaceContent: React.FC<PlaceContentProps> = () => {
             }}
           >
             <PlaceDetails
+              placeType={placeType}
               placeData={placeData}
+              writeReview={writeReview}
               ratingTotalCount={ratingTotalCount}
+              id={placeId}
             />
           </Box>
         </Grid>
@@ -251,11 +283,16 @@ export const PlaceContent: React.FC<PlaceContentProps> = () => {
               px: 1.625,
             }}
           >
-            <PlaceReviews
-              reviewsData={reviewsData}
-              reviewError={reviewError}
-              reviewIsLoading={reviewIsLoading}
-            />
+            {reviewsData && (
+              <PlaceReviews
+                reviewPaginationData={reviewsData}
+                reviewError={reviewError}
+                reviewIsLoading={reviewIsLoading}
+                writeReview={writeReview}
+                handleReviewsPageChange={handleReviewsPageChange}
+                page={page}
+              />
+            )}
           </Box>
         </Grid>
       </Grid>

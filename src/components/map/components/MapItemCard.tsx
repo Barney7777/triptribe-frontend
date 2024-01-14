@@ -4,20 +4,20 @@ import NextLink from 'next/link';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import RateReviewIcon from '@mui/icons-material/RateReview';
-
 import { isOpening } from '@/utils/is-opening';
-
 import { PlaceProps } from '@/types/attractions-restaurants';
 import { getNextOpening } from './utils/getNextOpening';
 import { CircularLoading } from '@/components/CircularLoading';
+import LikeIconButton from '@/components/LikeIconButton';
+import { MainType } from '@/types/general';
 
 type MapItemCardProps = {
   popupInfo: PlaceProps;
 };
 
 const MapItemCard: React.FC<MapItemCardProps> = ({ popupInfo }) => {
+  const placeType = popupInfo.type === 'Restaurant' ? MainType.Restaurant : MainType.Attraction;
   const [imageComplete, setImageComplete] = useState(false);
-  const [likedPlace, setLikedPlace] = useState(false);
   useEffect(() => {
     setImageComplete(false);
   }, [popupInfo._id]);
@@ -29,10 +29,7 @@ const MapItemCard: React.FC<MapItemCardProps> = ({ popupInfo }) => {
     };
   }, []);
   const openingStatus = isOpening(popupInfo);
-  // find if the place is liked in the list
-  const addLikedPlace = () => {
-    setLikedPlace((prev) => !prev);
-  };
+  const id = popupInfo._id;
 
   const handleImageComplete = () => {
     setImageComplete(true);
@@ -105,13 +102,11 @@ const MapItemCard: React.FC<MapItemCardProps> = ({ popupInfo }) => {
                 color="secondary"
               />
             </IconButton>
-            <IconButton onClick={addLikedPlace}>
-              {likedPlace ? (
-                <FavoriteIcon sx={{ color: '#ff3d47' }} />
-              ) : (
-                <FavoriteBorderIcon sx={{ color: '#ff6d75' }} />
-              )}
-            </IconButton>
+            <LikeIconButton
+              placeType={placeType}
+              id={id}
+              withText={false}
+            />
           </Grid>
         </Grid>
       </Box>

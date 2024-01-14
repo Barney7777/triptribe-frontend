@@ -5,10 +5,8 @@ import Box from '@mui/material/Box';
 import { GeneralCard } from '@/sections/users/GeneralCard';
 import { SecurityCard } from './SecurityCard';
 import { FavoritesCard } from './FavoritesCard';
-import { ReviewsCard } from './ReviewsCard';
+import ReviewsCard from './ReviewsCard';
 import { User } from '@/types/user';
-import ListingCard from '@/sections/listing-page/listing-card';
-import { MainType } from '@/types/general';
 
 type TabPanelProps = {
   children?: React.ReactNode;
@@ -28,7 +26,7 @@ function CustomTabPanel(props: TabPanelProps) {
       {...other}
     >
       {value === index && (
-        <Box sx={{ p: 3 }}>
+        <Box sx={{ py: 3 }}>
           <div>{children}</div>
         </Box>
       )}
@@ -42,11 +40,14 @@ function a11yProps(index: number) {
     'aria-controls': `simple-tabpanel-${index}`,
   };
 }
+
 type TabProps = {
   user: User;
-  showPrivacyTabs: boolean;
+  isMe: boolean;
+  userId: string | string[] | undefined;
 };
-const TabPanel: React.FC<TabProps> = ({ user, showPrivacyTabs }) => {
+
+const TabPanel: React.FC<TabProps> = ({ user, isMe, userId }) => {
   const [value, setValue] = React.useState(0);
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -75,7 +76,7 @@ const TabPanel: React.FC<TabProps> = ({ user, showPrivacyTabs }) => {
     },
   ];
 
-  if (!showPrivacyTabs) {
+  if (!isMe) {
     tabs = tabs.filter((tab) => !tab.privacyTab);
   }
 
@@ -107,7 +108,11 @@ const TabPanel: React.FC<TabProps> = ({ user, showPrivacyTabs }) => {
               key={index}
               index={index}
             >
-              <tab.component user={user} />
+              <tab.component
+                isMe={isMe}
+                user={user}
+                userId={userId}
+              />
             </CustomTabPanel>
           );
         })}

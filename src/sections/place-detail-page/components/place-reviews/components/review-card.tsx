@@ -10,7 +10,7 @@ interface ReviewListProps {
 
 const ReviewCard: FC<ReviewListProps> = ({ review }) => {
   const { title, description, creator, updatedAt, photos } = review;
-  const avatarURL = creator.userAvatar ? creator.userAvatar.imageUrl : undefined;
+  const avatarURL = creator?.userAvatar ? creator.userAvatar.imageUrl : undefined;
   const images = useMemo(() => {
     let imageArr = [];
     for (const photo of photos) {
@@ -42,7 +42,7 @@ const ReviewCard: FC<ReviewListProps> = ({ review }) => {
           src={avatarURL}
           sx={{ height: '40px' }}
         >
-          {avatarURL === undefined && creator.nickname[0]}
+          {avatarURL === undefined && creator?.nickname[0]}
         </Avatar>
       </Grid>
       <Grid
@@ -68,7 +68,7 @@ const ReviewCard: FC<ReviewListProps> = ({ review }) => {
                 fontWeight="500"
                 color="text.primary"
               >
-                {creator.nickname}
+                {creator?.nickname}
               </Typography>
 
               <Box>

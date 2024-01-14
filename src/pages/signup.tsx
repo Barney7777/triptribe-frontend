@@ -19,6 +19,7 @@ import AuthPageContainer from '@/components/AuthPageContainer';
 import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import { SignUpInputs, UserContext } from '@/contexts/user-context/user-context';
+import Seo from '@/components/seo/Seo';
 
 export type SignUpFormInputs = {
   passwordConfirm: string;
@@ -49,7 +50,7 @@ const schema = yup.object().shape({
   terms: yup.boolean().default(false).oneOf([true], 'You must agree to the Terms and Conditions'),
 });
 
-const SignUp = () => {
+const SignUpPage = () => {
   const {
     control,
     handleSubmit,
@@ -72,13 +73,13 @@ const SignUp = () => {
   const onSubmit: SubmitHandler<SignUpFormInputs> = async (data) => {
     try {
       await signUp(data);
-      router.push('/signin');
       enqueueSnackbar('Register Successful!', {
         variant: 'success',
         autoHideDuration: 1500,
         disableWindowBlurListener: true,
         anchorOrigin: { vertical: 'top', horizontal: 'right' },
       });
+      router.back();
     } catch (err) {
       enqueueSnackbar('Register Failed', {
         variant: 'error',
@@ -86,11 +87,18 @@ const SignUp = () => {
         disableWindowBlurListener: true,
         anchorOrigin: { vertical: 'top', horizontal: 'right' },
       });
+      console.log(err);
     }
   };
 
   return (
     <AuthPageContainer maxWidth="xs">
+      <Seo
+        title="TripTribe - Register"
+        description="Join TripTribe to reshape your digital tourism experience. Register for transparent ratings and authentic reviews of attractions and restaurants."
+        type="webapp"
+        img=""
+      />
       <Box
         component="form"
         onSubmit={handleSubmit(onSubmit)}
@@ -299,4 +307,4 @@ const SignUp = () => {
   );
 };
 
-export default SignUp;
+export default SignUpPage;

@@ -4,17 +4,15 @@ export enum MainType {
   Restaurant = 'restaurant',
   Attraction = 'attraction',
 }
-// export enum MainTypeCapital {
-//   Restaurant = 'Restaurant',
-//   Attraction = 'Attraction',
-// }
 
-export type MainTypeCapital = 'Restaurants' | 'Attractions' | 'Restaurant' | 'Attraction';
+export type MainTypeCapital = 'Restaurant' | 'Attraction';
 
 export type PageDataResponse<T> = {
   data: T;
-  pageCount: number;
+  skip: number;
+  limit: number;
   total: number;
+  pageCount?: number;
 };
 
 const stringToArray = (value: unknown) => {

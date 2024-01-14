@@ -2,6 +2,9 @@ export type User = {
   _id: string;
   email: string;
   nickname: string;
+  firstName: string;
+  lastName: string;
+  description: string;
   role: UserRole;
   savedAttractions: SavedAttractions;
   savedRestaurants: SavedRestaurants;
@@ -15,12 +18,11 @@ export type UserRole = 'user' | 'admin';
 
 export type SavedAttractions = string[];
 export type SavedRestaurants = string[];
-export type UserAvatar =
-  | {
-      imageAlt: string;
-      imageUrl: string;
-      imageType: string;
-      uploadUserId: string;
-      _id: string;
-    }
-  | undefined;
+export type UserAvatar = {
+  imageAlt: string;
+  imageUrl: string;
+  imageType: string;
+  uploadUserId: string;
+  _id: string;
+  __v: number;
+};

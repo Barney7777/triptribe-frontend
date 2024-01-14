@@ -4,10 +4,9 @@ import { FC } from 'react';
 
 interface FilterMatchInfoProps {
   onClear: () => void;
+  matchResultsCount: number;
 }
-const FilterMatchInfo: FC<FilterMatchInfoProps> = ({ onClear }) => {
-  const matchResultsCount = 88;
-
+const FilterMatchInfo: FC<FilterMatchInfoProps> = ({ onClear, matchResultsCount }) => {
   return (
     <Box
       sx={{

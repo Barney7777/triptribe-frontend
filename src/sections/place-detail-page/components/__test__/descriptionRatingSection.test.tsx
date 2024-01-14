@@ -13,8 +13,14 @@ jest.mock('../place-ratings', () => {
     </div>
   ));
 });
+
+jest.mock('../place-reviews/place-reviews', () => {
+  const mockReview = () => <div />;
+  return mockReview;
+});
+
 describe.skip('rating distribution in description section of detail page', () => {
-  const mockRatingData: RatingDistributionType[] = [
+  const mockData: RatingDistributionType[] = [
     {
       count: 5,
       rating: 5,

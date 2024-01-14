@@ -1,28 +1,23 @@
-import React from 'react';
-import HomepageCard from './HomepageCard';
+import { FC } from 'react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
+import { ListingInfoBasic } from '@/types/general';
+import { ApolloError } from '@apollo/client';
+import SkeletonCard from '@/components/SkeletonCard';
+import PlaceCard from '@/components/PlaceCard';
 
-type ImageCardProps = {
-  _id: string;
-  name: string;
-  description: string;
-  overAllRating: number;
-  photos: {
-    imageUrl: string;
-    _id: string;
-  }[];
-};
-
-type HomepageListProps = {
+type Props = {
   listTitle: string;
-  imageList: ImageCardProps[];
+  listData: ListingInfoBasic[];
+  error?: ApolloError;
 };
 
-const HomepageList: React.FC<HomepageListProps> = ({ listTitle, imageList }) => {
-  const placeType = listTitle.toLowerCase();
-
+const HomepageList: FC<Props> = ({ listTitle, listData, error = undefined }) => {
+  if (error) {
+    console.log(`Error: ${error.message}`);
+    return;
+  }
   return (
     <Box>
       <Typography
@@ -36,22 +31,26 @@ const HomepageList: React.FC<HomepageListProps> = ({ listTitle, imageList }) => 
         container
         spacing={3}
       >
-        {imageList.map((image, index) => (
+        {listData.map((item, index) => (
           <Grid
-            key={index}
+            key={item ? item._id : index}
             item
             xs={12}
             sm={6}
             md={3}
           >
-            <HomepageCard
-              _id={image._id}
-              imageUrl={image.photos[0].imageUrl}
-              name={image.name}
-              description={image.description}
-              overAllRating={image.overAllRating}
-              placeType={placeType}
-            />
+            {item ? (
+              <PlaceCard
+                _id={item._id}
+                imageUrl={item.photos[0]?.imageUrl}
+                name={item.name}
+                description={item.description}
+                overAllRating={item.overAllRating}
+                placeType={listTitle.toLowerCase()}
+              />
+            ) : (
+              <SkeletonCard />
+            )}
           </Grid>
         ))}
       </Grid>

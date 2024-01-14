@@ -5,21 +5,34 @@ import { Review } from '@/types/review';
 import { AxiosError } from 'axios';
 import { grey } from '@mui/material/colors';
 import { CircularLoading } from '@/components/CircularLoading';
+import { useRouter } from 'next/router';
+import { DEFAULT_PAGE_NUMBER, DEFAULT_REVIEW_PAGE_SIZE } from '@/constants/pagination';
+import { PageDataResponse } from '@/types/general';
 
 type PlaceReviewsProps = {
-  reviewsData: Review[];
+  reviewPaginationData: PageDataResponse<Review[]>;
   reviewError: AxiosError | undefined;
   reviewIsLoading: boolean;
+  writeReview: () => void;
+  handleReviewsPageChange: (value: number) => void;
+  page: number;
 };
-const PlaceReviews: FC<PlaceReviewsProps> = ({ reviewsData, reviewError, reviewIsLoading }) => {
-  //TODO: data pagination
 
-  //handle page change
-  const defaultPageNumber = 1;
-  const [page, setPage] = useState(defaultPageNumber);
-  const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
-    setPage(value);
+const PlaceReviews: FC<PlaceReviewsProps> = ({
+  writeReview,
+  reviewPaginationData,
+  reviewError,
+  reviewIsLoading,
+  handleReviewsPageChange,
+  page,
+}) => {
+  const router = useRouter();
+  const { data: reviewsData, total, pageCount = 1 } = reviewPaginationData || {};
+
+  const handlePageChange = (_: React.ChangeEvent<unknown>, value: number) => {
+    handleReviewsPageChange(value);
   };
+
   if (reviewIsLoading) return <CircularLoading size={80} />;
   if (reviewError) return <Box>{`${reviewError.code}: ${reviewError.message}`}</Box>;
 
@@ -45,13 +58,14 @@ const PlaceReviews: FC<PlaceReviewsProps> = ({ reviewsData, reviewError, reviewI
               lineHeight={1.5}
               fontWeight={600}
             >
-              Reviews({reviewsData?.length})
+              Reviews({total})
             </Typography>
           </Grid>
           <Grid item>
             <Button
               variant="contained"
               sx={{ textTransform: 'none' }}
+              onClick={writeReview}
             >
               Write a Review
             </Button>
@@ -68,7 +82,7 @@ const PlaceReviews: FC<PlaceReviewsProps> = ({ reviewsData, reviewError, reviewI
             {reviewsData.map((item) => (
               <ReviewCard
                 review={item}
-                key={item.id}
+                key={item._id}
               />
             ))}
           </Box>
@@ -86,9 +100,9 @@ const PlaceReviews: FC<PlaceReviewsProps> = ({ reviewsData, reviewError, reviewI
           >
             <Pagination
               color="primary"
-              // count={detailPageReviewsData.pageCount}
-              // page={detailPageReviewsData.pageNumber}
-              onChange={handleChange}
+              count={pageCount}
+              page={page}
+              onChange={handlePageChange}
             />
           </Box>
         </Grid>

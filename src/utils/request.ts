@@ -27,16 +27,14 @@ const removePending = (config: AxiosRequestConfig) => {
   }
 };
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
-
 const axiosInstance: AxiosInstance = axios.create({
-  baseURL: BASE_URL,
+  baseURL: process.env.NEXT_PUBLIC_REST_API_URL,
 });
 
 axiosInstance.interceptors.request.use(
   (config) => {
-    removePending(config);
-    addPending(config);
+    // removePending(config);
+    // addPending(config);
     const token = localStorage.getItem('accessToken');
     if (token) {
       config.headers.Authorization = 'Bearer ' + token;
@@ -51,14 +49,19 @@ axiosInstance.interceptors.request.use(
 
 axiosInstance.interceptors.response.use(
   (response) => {
-    removePending(response.config);
+    // removePending(response.config);
     return response;
   },
   (error) => {
     Sentry.captureException(error);
-    if (!(error instanceof CanceledError)) {
-      removePending(error?.config);
+
+    // not throwing CanceledError cased by duplicated request
+    if (error instanceof CanceledError) {
+      return;
     }
+
+    // removePending(error?.config);
+
     if (error?.response?.status === 401) {
       localStorage.removeItem('accessToken');
     }

@@ -15,25 +15,89 @@ import {
 } from '@mui/material';
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import CardTheme from './components/CardTheme';
-import { useState } from 'react';
+import { useContext } from 'react';
 import { User } from '@/types/user';
+import { InvisibleInput } from '@/components/InvisibleInput';
+import { UserContext } from '@/contexts/user-context/user-context';
+import axiosInstance from '@/utils/request';
+import { useSnackbar } from 'notistack';
+import { useForm, Controller, SubmitHandler } from 'react-hook-form';
+import * as yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
 
 type GeneralCardProps = {
   user: User;
 };
 
-export const GeneralCard = (props: GeneralCardProps) => {
-  const { user } = props;
-  const [inputText, setInputText] = useState('');
+const validationSchema = yup.object().shape({
+  nickname: yup.string().required('Nickname is required'),
+  description: yup
+    .string()
+    .required('Description is required')
+    .max(300, 'Description must be less than 300 characters long'),
+});
 
-  const handleTextInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputText(e.target.value);
+type UserProfileFormInputs = {
+  nickname: string;
+  description: string;
+};
+
+export const GeneralCard: React.FC<GeneralCardProps> = ({ user }) => {
+  // if is not me, hide edit button
+  const { userData } = useContext(UserContext);
+  const isMe = user._id === userData?._id;
+
+  const {
+    control,
+    handleSubmit,
+    trigger,
+    watch,
+    formState: { errors, isValid, isDirty },
+  } = useForm<UserProfileFormInputs>({
+    resolver: yupResolver(validationSchema),
+    defaultValues: {
+      nickname: user.nickname,
+      description: user.description,
+    },
+  });
+
+  const { enqueueSnackbar } = useSnackbar();
+  const onSubmit: SubmitHandler<UserProfileFormInputs> = (data) => {
+    axiosInstance
+      .request<User>({
+        url: `/users/${user._id}`,
+        method: 'put',
+        data,
+      })
+      .then(() => {
+        enqueueSnackbar('Update Succeed!', {
+          variant: 'success',
+          autoHideDuration: 1500,
+          disableWindowBlurListener: true,
+          anchorOrigin: { vertical: 'top', horizontal: 'right' },
+        });
+      })
+      .catch((err) => {
+        enqueueSnackbar(err.response.data.exceptionMessage, {
+          variant: 'error',
+          autoHideDuration: 1500,
+          disableWindowBlurListener: true,
+          anchorOrigin: { vertical: 'top', horizontal: 'right' },
+        });
+      })
+      .finally(() => {});
   };
+
   const charLimit = 300;
-  const charLeft = charLimit - inputText.length;
+  const watchDescription = watch('description');
+  const charLeft = charLimit - watchDescription?.length;
 
   return (
-    <Container>
+    <Box
+      component="form"
+      onSubmit={handleSubmit(onSubmit)}
+      noValidate
+    >
       <Card sx={{ bgcolor: CardTheme.bgColor }}>
         <CardContent>
           <Box sx={{ mb: 1 }}>
@@ -68,17 +132,16 @@ export const GeneralCard = (props: GeneralCardProps) => {
                 }}
               >
                 <Avatar
-                  src={user.userAvatar?.imageUrl ?? '/assets/download.jpeg'}
+                  src={isMe ? userData.userAvatar?.imageUrl : user.userAvatar?.imageUrl}
                   sx={{
                     height: 150,
                     m: 2,
                     width: 150,
                   }}
                 />
-                <IconButton
-                  color="primary"
-                  size="small"
+                <Box
                   sx={{
+                    bgcolor: 'white',
                     position: 'absolute',
                     zIndex: 2,
                     border: `${CardTheme.borderColor} solid 2px`,
@@ -88,8 +151,17 @@ export const GeneralCard = (props: GeneralCardProps) => {
                     boxShadow: 'sm',
                   }}
                 >
-                  <EditRoundedIcon />
-                </IconButton>
+                  {isMe && (
+                    <IconButton
+                      color="primary"
+                      size="small"
+                      component="label"
+                    >
+                      <EditRoundedIcon />
+                      <InvisibleInput userId={user._id} />
+                    </IconButton>
+                  )}
+                </Box>
               </Box>
             </Grid>
             <Grid
@@ -105,18 +177,9 @@ export const GeneralCard = (props: GeneralCardProps) => {
               <TextField
                 variant="outlined"
                 label="ID"
-                defaultValue={user._id}
+                value={user._id}
                 fullWidth
                 disabled
-                sx={{
-                  m: 1,
-                }}
-              ></TextField>
-              <TextField
-                variant="outlined"
-                label="Nickname"
-                defaultValue={user.nickname}
-                fullWidth
                 sx={{
                   m: 1,
                 }}
@@ -126,44 +189,36 @@ export const GeneralCard = (props: GeneralCardProps) => {
                 label="Email Address"
                 value={user.email}
                 disabled
-                defaultValue="xxx.xx@email.com"
                 fullWidth
                 sx={{
                   m: 1,
                 }}
               ></TextField>
+              <Controller
+                name="nickname"
+                control={control}
+                render={({ field: { onChange, value } }) => (
+                  <TextField
+                    disabled={isMe ? false : true}
+                    variant="outlined"
+                    label="Nickname"
+                    name="nickname"
+                    onBlur={() => {
+                      trigger('nickname');
+                    }}
+                    value={value}
+                    onChange={onChange}
+                    error={!!errors.nickname}
+                    helperText={errors.nickname?.message}
+                    fullWidth
+                    sx={{
+                      m: 1,
+                    }}
+                  ></TextField>
+                )}
+              />
             </Grid>
           </Grid>
-        </CardContent>
-        <Divider />
-        <CardActions
-          sx={{
-            display: 'flex',
-            justifyContent: 'flex-end',
-            p: 2,
-          }}
-        >
-          <Button
-            size="small"
-            variant="outlined"
-          >
-            Cancel
-          </Button>
-          <Button
-            size="small"
-            variant="contained"
-          >
-            Save
-          </Button>
-        </CardActions>
-      </Card>
-      <Card
-        sx={{
-          mt: 4,
-          bgcolor: CardTheme.bgColor,
-        }}
-      >
-        <CardContent>
           <Box sx={{ mb: 1 }}>
             <Typography variant="h6">Bio</Typography>
             <Typography
@@ -181,17 +236,29 @@ export const GeneralCard = (props: GeneralCardProps) => {
             spacing={2}
             sx={{ my: 1 }}
           >
-            <TextField
-              size="small"
-              multiline
-              rows={4}
-              sx={{ mt: 1.5 }}
-              defaultValue="xxx"
-              onChange={handleTextInput}
-              value={inputText}
-              inputProps={{
-                maxLength: { charLimit },
-              }}
+            <Controller
+              name="description"
+              control={control}
+              render={({ field: { onChange, value } }) => (
+                <TextField
+                  disabled={isMe ? false : true}
+                  size="small"
+                  multiline
+                  rows={4}
+                  sx={{ mt: 1.5 }}
+                  name="description"
+                  value={value}
+                  onChange={onChange}
+                  onBlur={() => {
+                    trigger('description');
+                  }}
+                  error={!!errors.description}
+                  helperText={errors.description?.message}
+                  inputProps={{
+                    maxLength: { charLimit },
+                  }}
+                />
+              )}
             />
             <Typography
               variant="body2"
@@ -209,20 +276,20 @@ export const GeneralCard = (props: GeneralCardProps) => {
             p: 2,
           }}
         >
-          <Button
-            size="small"
-            variant="outlined"
-          >
-            Cancel
-          </Button>
-          <Button
-            size="small"
-            variant="contained"
-          >
-            Save
-          </Button>
+          {isMe ? (
+            <Button
+              size="small"
+              variant="contained"
+              type="submit"
+              disabled={!isValid || !isDirty}
+            >
+              Save
+            </Button>
+          ) : (
+            <></>
+          )}
         </CardActions>
       </Card>
-    </Container>
+    </Box>
   );
 };

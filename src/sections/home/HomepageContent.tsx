@@ -1,42 +1,37 @@
 import React from 'react';
-import { useState, useEffect } from 'react';
 import HomepageList from './HomepageList';
 import Box from '@mui/material/Box';
-import useRequest from '@/hooks/use-request';
+import { useQuery } from '@apollo/client';
+import { GRAPHQL_ATTRACTION_QUERY } from '@/gqls/queries/getAllAttractions.gql';
+import { GRAPHQL_RESTAURANT_QUERY } from '@/gqls/queries/getAllRestaurants.gql';
 
 const HomepageContent: React.FC = () => {
-  type ImageCardProps = {
-    _id: string;
-    name: string;
-    description: string;
-    overAllRating: number;
-    photos: {
-      imageUrl: string;
-      _id: string;
-    }[];
-  };
+  const itemDisplayLimit = 8;
 
-  let firstEightAttractions: ImageCardProps[] = [];
-  let firstEightRestaurants: ImageCardProps[] = [];
-  type DataProps = {
-    total: number;
-    skip: number;
-    limit: number;
-    data: ImageCardProps[];
-  };
-  {
-    const { data, isLoading } = useRequest<DataProps>({
-      url: '/attractions',
-    });
-    firstEightAttractions = data !== undefined ? data.data.slice(0, 8) : [];
-  }
+  const {
+    data: attractionData,
+    error: attractionError,
+    loading: isAttractionLoading,
+  } = useQuery(GRAPHQL_ATTRACTION_QUERY, {
+    variables: { input: { limit: itemDisplayLimit } },
+  });
+  const attractionsDisplay =
+    !attractionData && isAttractionLoading
+      ? Array.from(new Array(itemDisplayLimit))
+      : attractionData?.getAllAttractions.data || [];
 
-  {
-    const { data, isLoading } = useRequest<DataProps>({
-      url: '/restaurants',
-    });
-    firstEightRestaurants = data !== undefined ? data.data.slice(0, 8) : [];
-  }
+  const {
+    data: restaurantData,
+    error: restaurantError,
+    loading: isRestaurantLoading,
+  } = useQuery(GRAPHQL_RESTAURANT_QUERY, {
+    variables: { input: { limit: itemDisplayLimit } },
+  });
+
+  const restaurantsDisplay =
+    !restaurantData && isRestaurantLoading
+      ? Array.from(new Array(itemDisplayLimit))
+      : restaurantData?.getAllRestaurants.data || [];
 
   return (
     <Box
@@ -45,11 +40,13 @@ const HomepageContent: React.FC = () => {
     >
       <HomepageList
         listTitle="Attractions"
-        imageList={firstEightAttractions}
+        listData={attractionsDisplay}
+        error={attractionError}
       />
       <HomepageList
         listTitle="Restaurants"
-        imageList={firstEightRestaurants}
+        listData={restaurantsDisplay}
+        error={restaurantError}
       />
     </Box>
   );

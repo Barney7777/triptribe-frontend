@@ -1,11 +1,10 @@
 import React, { ReactNode } from 'react';
 import { useTheme } from '@mui/material/styles';
 import Container from '@mui/material/Container';
-
 import Header from './Header';
 import Footer from './Footer';
 
-export const Layout: React.FC<{ children: ReactNode }> = ({ children }) => {
+const Layout: React.FC<{ children: ReactNode }> = ({ children }) => {
   const theme = useTheme();
   const sx = {};
   return (
@@ -22,3 +21,4 @@ export const Layout: React.FC<{ children: ReactNode }> = ({ children }) => {
     </React.Fragment>
   );
 };
+export default Layout;

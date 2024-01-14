@@ -1,7 +1,7 @@
 import { NaviTopSearchBar } from '@/layouts/MainLayout/HeaderLayout/navi-top-search-bar';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import NextLink from 'next/link';
 import { Box } from '@mui/material';
 import useRouterQuery from '@/hooks/use-router-query';
@@ -14,6 +14,10 @@ export const HeroBanner: React.FC = () => {
   const toggleMapLoading = () => {
     setMapLoading(true);
   };
+
+  setTimeout(() => {
+    setShown(true);
+  }, 300);
 
   return (
     <Stack
@@ -35,14 +39,14 @@ export const HeroBanner: React.FC = () => {
         height={1}
         left={0}
         top={0}
-        sx={{ opacity: shown ? 1 : 0, transition: '1s', overflow: 'hidden' }}
+        sx={{ opacity: shown ? 1 : 0, transition: '0.5s', overflow: 'hidden' }}
       >
         <img
           aria-label="Banner Image"
-          src="https://drive.google.com/uc?export=view&id=13fBD9P9zs4ZO13Jm5kiusEfkYx8eezry"
+          src="/assets/bridge.png"
           alt="Sydney Opera"
           object-fit="cover"
-          onLoad={() => setShown(true)}
+          // onLoad={() => setShown(true)}
         />
       </Box>
 

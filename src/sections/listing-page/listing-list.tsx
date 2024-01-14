@@ -1,6 +1,6 @@
 import { FC } from 'react';
-import { Box, Card, CardMedia, Link, Rating, Typography } from '@mui/material';
-import Grid from '@mui/material/Unstable_Grid2';
+import { Box, Card, CardMedia, Grid, Link, Rating, Typography } from '@mui/material';
+
 import { RouterLink } from '@/components/router-link';
 import type { ListingInfoBasic, MainType } from '@/types/general';
 import FavoriteToggle from './button/favorite-toggle';
@@ -23,57 +23,89 @@ const ListingList: FC<ListingInfoProps> = ({ listingInfo, type }) => {
         container
         sx={{ display: 'flex', flexDirection: 'row' }}
       >
-        <Grid xs={4}>
+        <Grid
+          item
+          xs={4}
+        >
           <Box sx={{ height: 160, width: '100%' }}>
             <CardMedia
               component={RouterLink}
               href={path}
-              image={photos[0].imageUrl}
+              image={photos[0]?.imageUrl}
               sx={{ height: '100%', width: '100%' }}
             />
           </Box>
         </Grid>
         <Grid
-          container
+          item
           xs={8}
-          sx={{ display: 'flex', flexDirection: 'column', pl: 2 }}
+          sx={{ display: 'flex', flexDirection: 'column', pY: 2, pX: 2 }}
         >
-          <Grid>
-            <Link
-              color="text.primary"
-              component={RouterLink}
-              href={path}
-              underline="none"
-              sx={{ height: 20 }}
-            >
-              {name}
-            </Link>
+          <Grid
+            item
+            sx={{ width: '100%' }}
+          >
+            <Box sx={{ width: '100%' }}>
+              <Link
+                color="text.primary"
+                component={RouterLink}
+                href={path}
+                underline="none"
+                sx={{ height: 20 }}
+              >
+                <Typography
+                  color="text.primary"
+                  fontWeight={500}
+                  sx={{
+                    pY: 1,
+                    pl: 1,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    display: '-webkit-box',
+                    WebkitLineClamp: '1',
+                    WebkitBoxOrient: 'vertical',
+                  }}
+                >
+                  {name}
+                </Typography>
+              </Link>
+            </Box>
           </Grid>
-          <Grid>
-            <Typography
-              color="text.secondary"
-              sx={{
-                display: 'block',
-                height: 100,
-                mt: 0.5,
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-              }}
-            >
-              {description}
-            </Typography>
+          <Grid
+            item
+            sx={{ width: '100%' }}
+          >
+            <Box sx={{ width: '100%' }}>
+              <Typography
+                color="text.secondary"
+                sx={{
+                  height: 100,
+                  pY: 1,
+                  pl: 1,
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  display: '-webkit-box',
+                  WebkitLineClamp: '4',
+                  WebkitBoxOrient: 'vertical',
+                }}
+              >
+                {description}
+              </Typography>
+            </Box>
           </Grid>
-          <Grid>
+          <Grid item>
             <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-              <FavoriteToggle
-                outlineColor={red[300]}
-                checkedColor={red[400]}
-              />
+              <Box sx={{ mt: -1 }}>
+                <FavoriteToggle
+                  outlineColor={red[300]}
+                  checkedColor={red[400]}
+                />
+              </Box>
               <Rating
                 name="read-only"
                 value={overAllRating}
                 readOnly
-                sx={{ ml: 1, mt: 1, mr: 2 }}
+                sx={{ mr: 2 }}
               />
             </Box>
           </Grid>

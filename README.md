@@ -35,10 +35,10 @@ npm install
 
 ### Start the project
 
-- Run the front-end server in development environment
+- Ensure the backend is running firstly, then run the front-end in development environment
 
 ```
-	npm run dev
+npm run dev
 ```
 
 - Run in production environment
