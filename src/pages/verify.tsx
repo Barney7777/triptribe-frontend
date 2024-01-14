@@ -108,8 +108,8 @@ const VerifyEmail = () => {
                   {verificationStatus === 'verified'
                     ? 'Email has been successfully verified.'
                     : verificationStatus === 'illegal code'
-                    ? 'illegal code'
-                    : 'An error occurred during email verification. Please try again later.'}
+                      ? 'illegal code'
+                      : 'An error occurred during email verification. Please try again later.'}
                   <br />
                 </Typography>
               }
