@@ -30,15 +30,15 @@ pipeline {
 
         stage('Install Dependencies') {
             
-          timeout(time: 10, unit: 'MINUTES') {
             steps {
+              timeout(time: 10, unit: 'MINUTES') {
                 script {
                     sh 'npm ci'
                     // sh 'npm run lint'
                        sh 'npm run format'
                 }
+              }
             }
-          }
         }
 
         // stage ('Test Source Code') {
