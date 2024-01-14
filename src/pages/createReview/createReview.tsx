@@ -51,7 +51,7 @@ const CreateReview: React.FC<CreateReviewProps> = () => {
   const router = useRouter();
   const { isAuthenticated } = useContext(UserContext);
 
-  const { place, placeType } = router.query as { place: string; placeType: string };
+  const { placeId, placeType } = router.query as { placeId: string; placeType: string };
 
   const basicUrl: string = process.env.NEXT_PUBLIC_REST_API_URL || '';
 
@@ -60,7 +60,11 @@ const CreateReview: React.FC<CreateReviewProps> = () => {
     data: placeInfo,
     error,
     isValidating,
-  } = useSWR<PlaceInfo>(placeType && place ? `${basicUrl}/${placeType}s/${place}` : null, fetcher);
+  } = useSWR<PlaceInfo>(
+    placeType && placeId ? `${basicUrl}/${placeType}s/${placeId}` : null,
+    fetcher
+  );
+
   if (!router.isReady) return <CircularLoading size={80} />;
   // Determine loading status based on placeInfo, error, and isValidating
   const isLoading: boolean = (!placeInfo && !error) || isValidating;
@@ -78,7 +82,7 @@ const CreateReview: React.FC<CreateReviewProps> = () => {
   };
 
   const navigateToPlaceDetail = () => {
-    router.push(`${placeType.toLowerCase()}s/${place}`);
+    router.push(`${placeType.toLowerCase()}s/${placeId}`);
   };
 
   return (
@@ -152,7 +156,7 @@ const CreateReview: React.FC<CreateReviewProps> = () => {
               sx={{ borderLeft: isMediumScreen ? '1px solid gray' : 'none' }}
             >
               <ReviewForm
-                placeId={place}
+                placeId={placeId}
                 placeType={placeType}
               />
             </Grid>
