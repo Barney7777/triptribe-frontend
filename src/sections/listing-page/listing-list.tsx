@@ -96,10 +96,10 @@ const ListingList: FC<ListingInfoProps> = ({ listingInfo, type }) => {
           <Grid item>
             <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
               <Box sx={{ mt: -1 }}>
-                <FavoriteToggle
+                {/* <FavoriteToggle
                   outlineColor={red[300]}
                   checkedColor={red[400]}
-                />
+                /> */}
               </Box>
               <Rating
                 name="read-only"

@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { Box, Card, CardMedia, Pagination, Skeleton, Typography } from '@mui/material';
+import { Box, Card, CircularProgress, Pagination, Typography } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import SideDrawer from '@/sections/listing-page/side-drawer';
 import {
@@ -23,11 +23,12 @@ import FilterMatchInfo from './filter-match-info';
 import SortSelect from './button/sort-select';
 import Filter from './filter';
 import { MapWithSideBarModal } from '@/components/map/map-with-sidebar';
-import SkeletonCard from '@/components/SkeletonCard';
 import PlaceCard from '@/components/PlaceCard';
 import { DEFAULT_LISTING_PAGE_SIZE } from '@/constants/pagination';
 import { convertQueryObject, convertSort } from '@/utils/listing-page-request-converter';
 import ListingList from './listing-list';
+import theme from '@/styles/theme';
+
 interface MainPageProps {
   type: MainType;
 }
@@ -71,7 +72,6 @@ const MainPage: FC<MainPageProps> = ({ type }) => {
     sort: sortValue,
     filters,
   };
-  console.log({ requestBody });
   const { queryPath } = useRouterQuery();
   const resourceType = type === MainType.Restaurant ? 'restaurants' : 'attractions';
   const listingDataRequest = {
@@ -82,7 +82,7 @@ const MainPage: FC<MainPageProps> = ({ type }) => {
   const { data: respondData, isLoading } = useRequest<PageDataResponse<ListingInfoBasic[]>>(
     queryPath ? listingDataRequest : null
   );
-  const { data = [], limit = DEFAULT_LISTING_PAGE_SIZE, total = 0 } = respondData || {};
+  const { data = [], total = 0 } = respondData || {};
 
   // get chipData: parsed from queryParams ->show chips
   const chipData: FilterChipData[] = [];
@@ -203,16 +203,48 @@ const MainPage: FC<MainPageProps> = ({ type }) => {
         setQueryParams={setQueryParams}
       />
 
-      <Card
-        elevation={2}
-        sx={{ borderRadius: 1, height: 300, mt: 2 }}
+      <Box
+        sx={{
+          display: 'flex',
+          position: 'relative',
+          borderRadius: 1,
+          height: 300,
+          mt: 2,
+          backgroundImage: `url(/assets/${
+            type === MainType.Restaurant ? 'restaurant' : 'attraction'
+          }-banner.png)`,
+          // backgroundImage: 'url(/assets/restaurant-banner.png)',
+          backgroundSize: 'cover',
+        }}
       >
-        <CardMedia
-          image="/assets/bridge.png"
-          sx={{ height: '100%' }}
-        />
-      </Card>
-
+        <Box
+          aria-label={'mask'}
+          sx={{
+            width: '100%',
+            height: '100%',
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            bgcolor: 'white',
+            opacity: '40%',
+          }}
+        ></Box>
+        <Typography
+          color={theme.palette.primary.main}
+          fontSize="60px"
+          fontWeight="600"
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+          }}
+          zIndex={999}
+        >
+          {type === MainType.Restaurant ? 'Restaurant' : 'Attraction'}
+        </Typography>
+      </Box>
       <Grid
         xs={12}
         container
@@ -356,21 +388,13 @@ const MainPage: FC<MainPageProps> = ({ type }) => {
           <Grid
             container
             spacing={3}
+            sx={{ display: 'flex', justifyContent: 'center' }}
           >
-            {isLoading &&
-              Array.from(new Array(12)).map((_, index) =>
-                cardView ? (
-                  <SkeletonCard
-                    isCardView={cardView}
-                    key={index}
-                  />
-                ) : (
-                  <SkeletonCard
-                    isCardView={!cardView}
-                    key={index}
-                  />
-                )
-              )}
+            {isLoading && (
+              <Box sx={{ width: '100%' }}>
+                <CircularProgress size={80} />
+              </Box>
+            )}
             {data &&
               data.length > 0 &&
               data.map((item: ListingInfoBasic, index: number) =>
