@@ -99,8 +99,8 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
           },
         });
       } catch (err) {
-        console.error('sign in failed', err);
-        // throw err;
+        // console.error('sign in failed', err);
+        throw err;
       }
     },
     [dispatch]
