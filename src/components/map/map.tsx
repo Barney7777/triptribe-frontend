@@ -58,7 +58,7 @@ export const Map: React.FC<MapProps> = ({
   }
   const initialZoom = 11;
   const requestOptions = {
-    url: 'http://localhost:8080/api/v1/search/globalSearch',
+    url: '/search/globalSearch',
     method: 'post',
     headers: { 'Content-Type': 'application/json' },
     data: {
