@@ -39,8 +39,8 @@ export const getServerSideProps: GetServerSideProps = (async (context) => {
     description:
       'Discover culinary delights with TripTribe Restaurants. Explore a curated list of eateries, backed by transparent ratings and authentic reviews to enhance your dining experience.',
     url: 'https://www.trip-tribe.com/restaurants',
-    type: 'webapp',
-    name: 'TripTribe',
+    type: 'website',
+    name: '',
     img: '/assets/bridge.png',
   };
   return {
