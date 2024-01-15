@@ -61,9 +61,8 @@ export const MapWithSideBar = () => {
     handleScroll(popupInfo);
   }, [handleScroll, popupInfo]);
 
-  const responsiveStyle = isDesktop
+  const responsiveListStyle = isDesktop
     ? {
-        left: -10,
         bottom: 'auto',
         top: 0,
         overflowX: 'visible',
@@ -72,7 +71,6 @@ export const MapWithSideBar = () => {
         width: 'auto',
       }
     : {
-        left: 0,
         bottom: 0,
         top: 'auto',
         overflowX: 'scroll',
@@ -94,13 +92,11 @@ export const MapWithSideBar = () => {
               key={item.type + item._id}
               id={'list' + item.type + item._id}
             >
-              <ListItem>
+              <ListItem disablePadding>
                 <Paper
+                  // sx={{  }}
                   elevation={1}
-                  sx={{
-                    marginY: 1,
-                    width: 360,
-                  }}
+                  sx={{ marginY: 0.375, marginX: 0.375, width: 360 }}
                   onMouseEnter={() => handleOnHover(`${item.type}-${item._id}`)}
                   onMouseLeave={() => handleOffHover(`${item.type}-${item._id}`)}
                   onClick={() => handleSideBarClick(item.address.location)}
@@ -127,16 +123,20 @@ export const MapWithSideBar = () => {
         <Box
           position={'absolute'}
           sx={{
-            ...responsiveStyle,
+            ...responsiveListStyle,
             zIndex: 99999,
-            backgroundImage: 'url(/assets/map-sidebar-bkg2.jpg)',
+            bgcolor: 'white',
+            // backgroundImage: 'url(/assets/map-sidebar-bkg2.jpg)',
             backgroundAttachment: 'fixed',
             backgroundSize: 'cover',
             backgroundRepeat: 'no-repeat',
           }}
           ref={listRef}
         >
-          <List sx={isDesktop ? { display: 'block' } : { display: 'flex', flexWrap: 'nowrap' }}>
+          <List
+            disablePadding
+            sx={isDesktop ? { display: 'block' } : { display: 'flex', flexWrap: 'nowrap' }}
+          >
             {pinInfo.length ? SideBarListItem : <></>}
           </List>
         </Box>
