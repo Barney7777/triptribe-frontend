@@ -64,7 +64,6 @@ const CreateReview: React.FC<CreateReviewProps> = () => {
     placeType && placeId ? `${basicUrl}/${placeType}s/${placeId}` : null,
     fetcher
   );
-
   if (!router.isReady) return <CircularLoading size={80} />;
   // Determine loading status based on placeInfo, error, and isValidating
   const isLoading: boolean = (!placeInfo && !error) || isValidating;
