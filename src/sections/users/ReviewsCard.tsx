@@ -80,7 +80,9 @@ const ReviewsCard = () => {
             key={review._id}
             onDelete={() => handleDeleteReview(review._id)}
             onEdit={() => {
-              const editPath = `/write-review?placeType=${review.placeType}&placeId=${review.placeId}&reviewId=${review._id}`;
+              const editPath = `/createReview?placeType=${review.placeType.toLowerCase()}&placeId=${
+                review.placeId._id
+              }&reviewId=${review._id}`;
               router.push(editPath);
             }}
             isAuthenticated={isAuthenticated}

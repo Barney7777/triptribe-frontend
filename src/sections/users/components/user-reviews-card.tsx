@@ -128,9 +128,7 @@ const UserReviewCard: FC<UserReviewCardProps> = ({
                 </Typography>
               </Box>
               <Box sx={{ ml: 2 }}>
-                <Typography color="text.secondary">
-                  {dayjs(reviewDate).format('DD/MM/YYYY')}
-                </Typography>
+                <Typography color="text.secondary">{reviewDate}</Typography>
               </Box>
             </Grid>
             <Grid
