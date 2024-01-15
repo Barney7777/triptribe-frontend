@@ -20,6 +20,8 @@ import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import { SignInInputs, UserContext } from '@/contexts/user-context/user-context';
 import Seo from '@/components/seo/Seo';
+import { SeoProps } from '@/types/seo';
+import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 
 export type SignInFormInputs = SignInInputs;
 
@@ -31,7 +33,7 @@ const validationSchema = yup.object().shape({
     .min(8, 'Password must be at least 8 characters long'),
 });
 
-const SignInPage = () => {
+const SignInPage = ({ seoValue }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const {
     control,
     handleSubmit,
@@ -76,10 +78,12 @@ const SignInPage = () => {
   return (
     <AuthPageContainer maxWidth="xs">
       <Seo
-        title="TripTribe - Login"
-        description="Log in to TripTribe to explore attractions and restaurants. Join our platform for transparent ratings and authentic reviews."
-        type="webapp"
-        img=""
+        title={seoValue.title}
+        description={seoValue.description}
+        url={seoValue.url}
+        type={seoValue.type}
+        name={seoValue.name}
+        img={seoValue.img}
       />
       <Box
         component="form"
@@ -214,5 +218,23 @@ const SignInPage = () => {
     </AuthPageContainer>
   );
 };
+export const getServerSideProps: GetServerSideProps = (async (context) => {
+  const seoValue: SeoProps = {
+    title: 'TripTribe - Login',
+    description:
+      'Log in to TripTribe to explore attractions and restaurants. Join our platform for transparent ratings and authentic reviews.',
+    url: 'https://www.trip-tribe.com/signin',
+    type: 'webapp',
+    name: 'TripTribe',
+    img: '/assets/bridge.png',
+  };
+  return {
+    props: {
+      seoValue,
+    },
+  };
+}) satisfies GetServerSideProps<{
+  seoValue: SeoProps;
+}>;
 
 export default SignInPage;

@@ -4,14 +4,14 @@ import { Helmet } from 'react-helmet-async';
 type SeoProps = {
   title: string;
   description: string;
-  url?: string;
+  url: string;
   type: string;
-  name?: string;
+  name: string;
   img: string;
 };
 
-const Seo: FC<SeoProps> = ({ title, description, url, type, name = 'TripTribe', img }) => {
-  const defaultUrl = typeof window !== 'undefined' ? window.location.href : '';
+const Seo: FC<SeoProps> = ({ title, description, url, type, name, img }) => {
+  // const defaultUrl = typeof window !== 'undefined' ? window.location.href : '';
   return (
     <Helmet>
       <title>{title}</title>
@@ -21,7 +21,7 @@ const Seo: FC<SeoProps> = ({ title, description, url, type, name = 'TripTribe', 
       />
       <meta
         property="og:url"
-        content={url || defaultUrl}
+        content={url}
       />
       <meta
         property="og:type"

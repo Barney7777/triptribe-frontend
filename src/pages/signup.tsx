@@ -20,6 +20,8 @@ import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import { SignUpInputs, UserContext } from '@/contexts/user-context/user-context';
 import Seo from '@/components/seo/Seo';
+import { SeoProps } from '@/types/seo';
+import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 
 export type SignUpFormInputs = {
   passwordConfirm: string;
@@ -50,7 +52,7 @@ const schema = yup.object().shape({
   terms: yup.boolean().default(false).oneOf([true], 'You must agree to the Terms and Conditions'),
 });
 
-const SignUpPage = () => {
+const SignUpPage = ({ seoValue }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const {
     control,
     handleSubmit,
@@ -94,10 +96,12 @@ const SignUpPage = () => {
   return (
     <AuthPageContainer maxWidth="xs">
       <Seo
-        title="TripTribe - Register"
-        description="Join TripTribe to reshape your digital tourism experience. Register for transparent ratings and authentic reviews of attractions and restaurants."
-        type="webapp"
-        img=""
+        title={seoValue.title}
+        description={seoValue.description}
+        url={seoValue.url}
+        type={seoValue.type}
+        name={seoValue.name}
+        img={seoValue.img}
       />
       <Box
         component="form"
@@ -306,5 +310,23 @@ const SignUpPage = () => {
     </AuthPageContainer>
   );
 };
+export const getServerSideProps: GetServerSideProps = (async (context) => {
+  const seoValue: SeoProps = {
+    title: 'TripTribe - Register',
+    description:
+      'Join TripTribe to reshape your digital tourism experience. Register for transparent ratings and authentic reviews of attractions and restaurants.',
+    url: 'https://www.trip-tribe.com/signup',
+    type: 'webapp',
+    name: 'TripTribe',
+    img: '/assets/bridge.png',
+  };
+  return {
+    props: {
+      seoValue,
+    },
+  };
+}) satisfies GetServerSideProps<{
+  seoValue: SeoProps;
+}>;
 
 export default SignUpPage;
