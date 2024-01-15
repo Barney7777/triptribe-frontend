@@ -159,6 +159,13 @@ const MainPage: FC<MainPageProps> = ({ type }) => {
     reset(defaultValues);
   };
 
+  // two pages use same form context, reset form when the pages changes
+  useEffect(() => {
+    return () => {
+      clearAllFilter();
+    };
+  }, []);
+
   //drawer open and close function
   const [openSideDrawer, setOpenSideDrawer] = useState<boolean>(false);
   const handleFiltersToggle = () => {
