@@ -1,4 +1,4 @@
-export const DEFAULT_LISTING_PAGE_SIZE = 15;
+export const DEFAULT_LISTING_PAGE_SIZE = 30;
 
 export const DEFAULT_REVIEW_PAGE_SIZE = 10;
 

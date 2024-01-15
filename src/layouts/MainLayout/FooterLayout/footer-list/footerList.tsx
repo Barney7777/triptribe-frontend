@@ -30,12 +30,12 @@ const FooterList: React.FC = () => {
       items: ['/', '/restaurants', '/attractions'],
     },
     explore2: {
-      name: ['Sign in', 'Sign up', 'Write a review'],
-      items: ['/signin', '/signup', '/review'],
+      name: ['Sign in', 'Sign up', 'User profile'],
+      items: ['/signin', '/signup', '/users/me'],
     },
     company: {
       name: ['Terms of Use', 'Privacy and Cookies Statement', 'Contact Us'],
-      items: ['/signin', '/signup', '/review'],
+      items: ['/terms', '/policy', '/contact-us'],
     },
   };
 
