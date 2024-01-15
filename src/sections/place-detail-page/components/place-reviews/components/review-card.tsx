@@ -3,6 +3,7 @@ import React, { FC, useMemo } from 'react';
 import { Review } from '@/types/review';
 import Gallery from './gallery';
 import dayjs from 'dayjs';
+import InnerHTML from 'dangerously-set-html-content';
 
 interface ReviewListProps {
   review: Review;
@@ -110,14 +111,14 @@ const ReviewCard: FC<ReviewListProps> = ({ review }) => {
               fontSize="14px"
               color={'text.secondary'}
               sx={{
-                overflow: 'hidden',
+                overflow: 'auto',
                 textOverflow: 'ellipsis',
                 display: '-webkit-box',
                 WebkitLineClamp: '2',
                 WebkitBoxOrient: 'vertical',
               }}
             >
-              {description}
+              <InnerHTML html={description} />
             </Typography>
           </Grid>
           <Grid
