@@ -36,6 +36,8 @@ pipeline {
                     sh 'npm -v'
                     sh 'node -v'
                     sh 'npm ci'
+                    sh 'rm -rf .env'
+                    sh 'cp .env.development .env'
                     // sh 'npm run lint'
                     // sh './node_modules/.bin/eslint --fix --debug .'
                     // sh 'npm run prettier'
