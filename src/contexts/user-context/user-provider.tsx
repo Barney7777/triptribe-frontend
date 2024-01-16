@@ -84,20 +84,26 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     async ({ email, password }: SignInInputs): Promise<void> => {
       try {
         const res = await authSignIn(email, password);
+        if (res.data.message === 'login success') {
+          const { accessToken, refreshToken, message } = res.data;
 
-        const { accessToken, refreshToken } = res.data;
-        localStorage.setItem('accessToken', accessToken);
-        localStorage.setItem('refreshToken', refreshToken);
+          localStorage.setItem('accessToken', accessToken);
+          localStorage.setItem('refreshToken', refreshToken);
+          localStorage.setItem('loginMessage', message);
 
-        const resMe = await authMe();
-        if (!resMe) return;
-        const userData = resMe.data;
-        dispatch({
-          type: ActionType.SIGN_IN,
-          payload: {
-            userData,
-          },
-        });
+          const resMe = await authMe();
+          if (!resMe) return;
+          const userData = resMe.data;
+          dispatch({
+            type: ActionType.SIGN_IN,
+            payload: {
+              userData,
+            },
+          });
+        } else {
+          const { message } = res.data;
+          localStorage.setItem('loginMessage', message);
+        }
       } catch (err) {
         // console.error('sign in failed', err);
         throw err;
