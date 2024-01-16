@@ -58,6 +58,17 @@ const SignInPage = ({ seoValue }: InferGetServerSidePropsType<typeof getServerSi
   const onSubmit = async (data: SignInFormInputs) => {
     try {
       await signIn(data);
+      // console.log(localStorage.getItem("loginMessage"))
+      if (localStorage.getItem('loginMessage') === 'Unverified') {
+        enqueueSnackbar('Email need to be verify !', {
+          variant: 'error',
+          autoHideDuration: 1500,
+          disableWindowBlurListener: true,
+          anchorOrigin: { vertical: 'top', horizontal: 'right' },
+        });
+        localStorage.removeItem('loginMessage');
+        return;
+      }
       enqueueSnackbar('Login Successful!', {
         variant: 'success',
         autoHideDuration: 1500,
