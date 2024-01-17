@@ -16,18 +16,17 @@ enum msgType {
   IllegalToken = 'illegal token',
   ExpiredToken = 'expired token',
   Error = 'error',
+  EmailValided = 'Email token not found',
 }
 const VerifyEmail = () => {
   const { enqueueSnackbar } = useSnackbar();
 
   const router = useRouter();
   const { token } = router.query;
-  const [verificationStatus, setVerificationStatus] = useState('pending'); // 初始状态为待定
+  const [verificationStatus, setVerificationStatus] = useState('pending');
   const [loading, setLoading] = useState(false);
-
   const apiUrl = 'auth/verify';
-  //实现页面进入自动访问后端http://localhost:8080/api/v1/auth/email接口
-  //等待用户点击email的link确认之后 ，自动跳转到home页面
+
   useEffect(() => {
     const checkEmailVerification = async () => {
       try {
@@ -37,16 +36,22 @@ const VerifyEmail = () => {
           url: apiUrl,
           data: { token },
         });
-        console.log(response.data);
-        if (response.data.message === msgType.Validated) {
+
+        if (
+          response.data.message === msgType.Validated ||
+          response.data.message === msgType.EmailValided
+        ) {
           setVerificationStatus('verified');
           setTimeout(() => {
             router.push('/signin');
-          }, 2000);
-        } else if (response.data.message === msgType.IllegalToken) {
+          }, 1000);
+        } else if (
+          response.data.message === msgType.IllegalToken ||
+          response.data.message === msgType.ExpiredToken
+        ) {
           setVerificationStatus('illegal code');
-        } else if (response.data.message === msgType.ExpiredToken) {
-          setVerificationStatus('expired error');
+        } else {
+          setVerificationStatus('error');
         }
       } catch (error) {
         setVerificationStatus('error');
@@ -54,13 +59,15 @@ const VerifyEmail = () => {
         setLoading(false);
       }
     };
-    checkEmailVerification();
-  }, [apiUrl]);
+    if (token) {
+      checkEmailVerification();
+    }
+  }, [token, router]);
 
   const handleResendEmail = async () => {
-    const refreshUrl = 'auth/resend-email'; //call
+    const refreshUrl = 'auth/resend-email';
     try {
-      const response = await axiosInstance.request({
+      await axiosInstance.request({
         method: 'post',
         url: refreshUrl,
         data: { token },
@@ -83,7 +90,10 @@ const VerifyEmail = () => {
   };
 
   return (
-    <AuthPageContainer maxWidth="xs">
+    <AuthPageContainer
+      maxWidth="xs"
+      isVerifyPage
+    >
       <Box>
         <Grid
           container
@@ -104,15 +114,14 @@ const VerifyEmail = () => {
                 <Typography
                   color="text.secondary"
                   variant="body2"
+                  sx={{ pt: 2 }}
                 >
                   {(() => {
                     switch (verificationStatus) {
                       case 'verified':
-                        return 'Email has been successfully verified.';
-
+                        return 'Your Email has been verified. Please login directly';
                       case 'illegal code':
-                        return 'Illegal code';
-
+                        return 'The verify token is illegal. Please resend an email to refresh it';
                       default:
                         return 'An error occurred during email verification. Please try again later.';
                     }
@@ -124,88 +133,39 @@ const VerifyEmail = () => {
             />
           </Grid>
 
-          {loading && verificationStatus === 'verified' && (
-            <Grid
-              item
-              xs={12}
+          <Grid
+            item
+            xs={12}
+          >
+            {loading && (
+              <CircularProgress
+                size={20}
+                style={{ marginRight: '10px' }}
+              />
+            )}
+
+            {verificationStatus === 'verified' && (
+              <CheckCircleOutlineOutlinedIcon style={{ fontSize: 20 }} />
+            )}
+
+            <Button
+              fullWidth
+              variant="contained"
+              color="primary"
+              type="submit"
+              style={{ textTransform: 'none' }}
+              disabled={loading}
+              onClick={() => {
+                if (verificationStatus === 'verified') {
+                  router.push('/signin');
+                } else {
+                  handleResendEmail();
+                }
+              }}
             >
-              <Button
-                fullWidth
-                variant="contained"
-                color="primary"
-                type="submit"
-                style={{ textTransform: 'none' }}
-                disabled={true}
-              >
-                {verificationStatus === 'verified' ? (
-                  <CheckCircleOutlineOutlinedIcon style={{ fontSize: 20 }} />
-                ) : (
-                  <CircularProgress
-                    size={20}
-                    style={{ marginRight: '10px' }}
-                  />
-                )}
-                {verificationStatus !== 'verified' ? 'Verifying Email...' : 'Verified'}
-              </Button>
-            </Grid>
-          )}
-          {loading && verificationStatus === 'illegal code' && (
-            <Grid
-              item
-              xs={12}
-            >
-              <Button
-                fullWidth
-                variant="contained"
-                color="primary"
-                type="submit"
-                style={{ textTransform: 'none' }}
-                disabled={loading}
-                onClick={() => {
-                  router.push('/signup');
-                }}
-              >
-                Register again
-              </Button>
-            </Grid>
-          )}
-          {loading && verificationStatus === 'expired error' && (
-            <Grid
-              item
-              xs={12}
-            >
-              <Button
-                fullWidth
-                variant="contained"
-                color="primary"
-                type="submit"
-                style={{ textTransform: 'none' }}
-                onClick={handleResendEmail}
-                disabled={loading}
-              >
-                Resend Email
-              </Button>
-            </Grid>
-          )}
-          {verificationStatus !== 'illegal code' && (
-            <Grid
-              item
-              xs={12}
-            >
-              <Button
-                fullWidth
-                variant="contained"
-                color="primary"
-                type="submit"
-                style={{ textTransform: 'none' }}
-                onClick={() => {
-                  router.push('/signup');
-                }}
-              >
-                Register again
-              </Button>
-            </Grid>
-          )}
+              {verificationStatus === 'verified' ? 'Sign In Now' : 'Resend Email'}
+            </Button>
+          </Grid>
         </Grid>
       </Box>
     </AuthPageContainer>

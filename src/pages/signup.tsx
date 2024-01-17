@@ -22,6 +22,7 @@ import { SignUpInputs, UserContext } from '@/contexts/user-context/user-context'
 import Seo from '@/components/seo/Seo';
 import { SeoProps } from '@/types/seo';
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
+import { isAxiosError } from 'axios';
 
 export type SignUpFormInputs = {
   passwordConfirm: string;
@@ -83,12 +84,22 @@ const SignUpPage = ({ seoValue }: InferGetServerSidePropsType<typeof getServerSi
       });
       router.back();
     } catch (err) {
-      enqueueSnackbar('Register Failed', {
-        variant: 'error',
-        autoHideDuration: 1500,
-        disableWindowBlurListener: true,
-        anchorOrigin: { vertical: 'top', horizontal: 'right' },
-      });
+      if (isAxiosError(err) && err.response) {
+        const { data: responseData } = err.response;
+        enqueueSnackbar(responseData.exceptionMessage, {
+          variant: 'error',
+          autoHideDuration: 1500,
+          disableWindowBlurListener: true,
+          anchorOrigin: { vertical: 'top', horizontal: 'right' },
+        });
+      } else {
+        enqueueSnackbar('Register Failed', {
+          variant: 'error',
+          autoHideDuration: 1500,
+          disableWindowBlurListener: true,
+          anchorOrigin: { vertical: 'top', horizontal: 'right' },
+        });
+      }
       console.log(err);
     }
   };
