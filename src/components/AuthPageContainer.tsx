@@ -5,9 +5,14 @@ import BackLink from './BackLink';
 type AuthPageContainerProps = {
   maxWidth: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   children: React.ReactNode;
+  isVerifyPage?: boolean;
 };
 
-const AuthPageContainer = ({ maxWidth, children }: AuthPageContainerProps) => {
+const AuthPageContainer = ({
+  maxWidth,
+  children,
+  isVerifyPage = false,
+}: AuthPageContainerProps) => {
   const containerStyle = {
     display: 'flex',
     flexDirection: 'column',
@@ -23,7 +28,7 @@ const AuthPageContainer = ({ maxWidth, children }: AuthPageContainerProps) => {
         ...containerStyle,
       }}
     >
-      <BackLink />
+      {!isVerifyPage && <BackLink />}
       <Paper
         elevation={16}
         sx={{ width: '420px', borderRadius: 5 }}

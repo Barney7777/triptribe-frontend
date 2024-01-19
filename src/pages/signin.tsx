@@ -34,6 +34,12 @@ const validationSchema = yup.object().shape({
 });
 
 const SignInPage = ({ seoValue }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+  const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
+  const { signIn, isAuthenticated } = useContext(UserContext);
+  if (isAuthenticated) {
+    router.push('/users/me');
+  }
   const {
     control,
     handleSubmit,
@@ -47,9 +53,6 @@ const SignInPage = ({ seoValue }: InferGetServerSidePropsType<typeof getServerSi
     },
   });
 
-  const [showPassword, setShowPassword] = useState(false);
-  const router = useRouter();
-  const { userData, signIn } = useContext(UserContext);
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
@@ -58,9 +61,8 @@ const SignInPage = ({ seoValue }: InferGetServerSidePropsType<typeof getServerSi
   const onSubmit = async (data: SignInFormInputs) => {
     try {
       await signIn(data);
-      // console.log(localStorage.getItem("loginMessage"))
       if (localStorage.getItem('loginMessage') === 'Unverified') {
-        enqueueSnackbar('Email need to be verify !', {
+        enqueueSnackbar('Email need to be verified!', {
           variant: 'error',
           autoHideDuration: 1500,
           disableWindowBlurListener: true,
@@ -69,7 +71,7 @@ const SignInPage = ({ seoValue }: InferGetServerSidePropsType<typeof getServerSi
         localStorage.removeItem('loginMessage');
         return;
       }
-      enqueueSnackbar('Login Successful!', {
+      enqueueSnackbar('Login Successfully!', {
         variant: 'success',
         autoHideDuration: 1500,
         disableWindowBlurListener: true,
