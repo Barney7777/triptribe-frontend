@@ -10,24 +10,10 @@ interface ReviewListProps {
 }
 
 const ReviewCard: FC<ReviewListProps> = ({ review }) => {
-  const { title, description, creator, updatedAt, photos } = review;
-  const avatarURL = creator?.userAvatar ? creator.userAvatar.imageUrl : undefined;
-  const images = useMemo(() => {
-    let imageArr = [];
-    for (const photo of photos) {
-      for (const property in photo) {
-        const key = property;
-        const value = photo.imageUrl;
-        if (key === 'imageUrl') {
-          imageArr.push({
-            thumbnailURL: value,
-            originalURL: value,
-          });
-        }
-      }
-    }
-    return imageArr;
-  }, [photos.length]);
+  const { title = '', description = '', creator, updatedAt, photos = [] } = review;
+  const avatarURL = creator?.userAvatar?.imageUrl || undefined;
+  const avatarLetter = avatarURL === undefined && creator?.nickname ? creator?.nickname[0] : 'U';
+  const date = updatedAt && dayjs(updatedAt).isValid() ? dayjs(updatedAt).format('DD/MM/YYYY') : '';
 
   return (
     <Grid
@@ -43,7 +29,7 @@ const ReviewCard: FC<ReviewListProps> = ({ review }) => {
           src={avatarURL}
           sx={{ height: '40px' }}
         >
-          {avatarURL === undefined && creator?.nickname[0]}
+          {avatarLetter}
         </Avatar>
       </Grid>
       <Grid
@@ -87,7 +73,7 @@ const ReviewCard: FC<ReviewListProps> = ({ review }) => {
                 fontSize="14px"
                 color="text.secondary"
               >
-                {dayjs(updatedAt).format('DD/MM/YYYY')}
+                {date}
               </Typography>
             </Grid>
           </Grid>
@@ -108,6 +94,7 @@ const ReviewCard: FC<ReviewListProps> = ({ review }) => {
             xs={12}
           >
             <Typography
+              component="div"
               fontSize="14px"
               color={'text.secondary'}
               sx={{
@@ -121,19 +108,17 @@ const ReviewCard: FC<ReviewListProps> = ({ review }) => {
               <InnerHTML html={description} />
             </Typography>
           </Grid>
-          <Grid
-            item
-            xs={12}
-          >
-            {images.length ? (
+          {photos.length > 0 && (
+            <Grid
+              item
+              xs={12}
+            >
               <Gallery
                 galleryID="gallery--open-in-original-size"
-                images={images}
+                images={photos}
               />
-            ) : (
-              <></>
-            )}
-          </Grid>
+            </Grid>
+          )}
         </Box>
       </Grid>
     </Grid>

@@ -2,22 +2,20 @@ import React, { FC, useEffect } from 'react';
 import PhotoSwipeLightbox from 'photoswipe/lightbox';
 import { Box, Card, CardMedia, Link, Typography } from '@mui/material';
 import { grey } from '@mui/material/colors';
+import { ReviewPhoto } from '@/types/review';
 
 const DEFAULT_THUMBNAIL_LIMIT = 5;
 const IMAGE_MAX_HEIGHT = '960px';
 const IMAGE_MAX_WIDTH = '1280px';
 interface GalleryProps {
   galleryID: string;
-  images: { thumbnailURL: string; originalURL: string }[];
+  images: ReviewPhoto[];
 }
 
 const Gallery: FC<GalleryProps> = ({ galleryID, images }) => {
+  // if imageCount >= DEFAULT_THUMBNAIL_LIMIT, it will show (thumbnailLimit-1) thumbnail plus one button that shows how many images are hidden
+  // otherwise it will show imageCount of thumbnails
   const imageCount = images.length;
-
-  // if imageCount > thumbnailLimitDefault, thumbnailLimit means it will show (thumbnailLimit-1) thumbnail plus one button that shows how many images left
-
-  const thumbnailLimit =
-    imageCount > DEFAULT_THUMBNAIL_LIMIT ? DEFAULT_THUMBNAIL_LIMIT : imageCount;
 
   // photoswipe
   useEffect(() => {
@@ -41,10 +39,13 @@ const Gallery: FC<GalleryProps> = ({ galleryID, images }) => {
       sx={{ display: 'flex', justifyContent: 'flex-start' }}
       data-testid="gallery-box"
     >
-      {/* show (thumbnailLimit-1) of thumbnails */}
-      {images.slice(0, thumbnailLimit - 1).map((image, index) => (
+      {/* if imageCount < DEFAULT_THUMBNAIL_LIMIT, show all the thumbnails, else show (DEFAULT_THUMBNAIL_LIMIT-1) of thumbnails */}
+      {(imageCount < DEFAULT_THUMBNAIL_LIMIT
+        ? images
+        : images.slice(0, DEFAULT_THUMBNAIL_LIMIT - 1)
+      ).map((image, index) => (
         <Link
-          href={image.originalURL}
+          href={image.imageUrl}
           key={galleryID + '-' + index}
           target="_blank"
           rel="noreferrer"
@@ -61,53 +62,55 @@ const Gallery: FC<GalleryProps> = ({ galleryID, images }) => {
             }}
           >
             <CardMedia
-              image={image.thumbnailURL}
+              image={image.imageUrl}
               sx={{ height: '100%' }}
             />
           </Card>
         </Link>
       ))}
 
-      {/* the last thumbnail shows the text of how many images left */}
-      <Link
-        href={images[thumbnailLimit - 1].originalURL}
-        key={galleryID + '-' + (thumbnailLimit - 1)}
-        target="_blank"
-        rel="noreferrer"
-        data-pswp-width={IMAGE_MAX_WIDTH}
-        data-pswp-height={IMAGE_MAX_HEIGHT}
-      >
-        <Card
-          key={thumbnailLimit - 1}
-          elevation={0}
-          sx={{
-            position: 'relative',
-            height: '40px',
-            width: '40px',
-            mr: 0.5,
-            bgcolor: grey[200],
-          }}
+      {/* if imageCount >= DEFAULT_THUMBNAIL_LIMIT, the last thumbnail shows how many hidden images at the end */}
+      {imageCount >= DEFAULT_THUMBNAIL_LIMIT && (
+        <Link
+          href={images[DEFAULT_THUMBNAIL_LIMIT - 1].imageUrl}
+          key={galleryID + '-' + (DEFAULT_THUMBNAIL_LIMIT - 1)}
+          target="_blank"
+          rel="noreferrer"
+          data-pswp-width={IMAGE_MAX_WIDTH}
+          data-pswp-height={IMAGE_MAX_HEIGHT}
         >
-          <Typography
+          <Card
+            key={DEFAULT_THUMBNAIL_LIMIT - 1}
+            elevation={0}
             sx={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
+              position: 'relative',
+              height: '40px',
+              width: '40px',
+              mr: 0.5,
+              bgcolor: grey[200],
             }}
-            color="text.secondary"
-            fontSize="12px"
           >
-            + {imageCount - thumbnailLimit + 1}
-          </Typography>
-        </Card>
-      </Link>
+            <Typography
+              sx={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+              }}
+              color="text.secondary"
+              fontSize="12px"
+            >
+              + {imageCount - DEFAULT_THUMBNAIL_LIMIT + 1}
+            </Typography>
+          </Card>
+        </Link>
+      )}
 
-      {/* imageCount > thumbnailLimit, map the rest of images without thumbnails */}
-      {imageCount > thumbnailLimit &&
-        images.slice(thumbnailLimit, imageCount).map((image, index) => (
+      {/* imageCount > DEFAULT_THUMBNAIL_LIMIT, map the hidden images without thumbnails */}
+      {imageCount > DEFAULT_THUMBNAIL_LIMIT &&
+        images.slice(DEFAULT_THUMBNAIL_LIMIT, imageCount).map((image, index) => (
           <Link
-            href={image.originalURL}
+            href={image.imageUrl}
             key={galleryID + '-' + index}
             target="_blank"
             rel="noreferrer"
