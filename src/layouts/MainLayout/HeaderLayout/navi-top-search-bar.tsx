@@ -24,6 +24,7 @@ type SearchBarProps = {
   className?: string;
 };
 
+// top search bar for searching restaurants or attractions
 export const NaviTopSearchBar: FC<SearchBarProps> = (props) => {
   const [inputValue, setInputValue] = useState('');
   const [open, setOpen] = useState(false);
@@ -84,6 +85,7 @@ export const NaviTopSearchBar: FC<SearchBarProps> = (props) => {
     <Box {...otherProps}>
       <Autocomplete
         fullWidth
+        size="small"
         forcePopupIcon={false}
         disableClearable
         noOptionsText={inputValue ? 'No Result' : 'Search'}
@@ -114,6 +116,11 @@ export const NaviTopSearchBar: FC<SearchBarProps> = (props) => {
               {...params}
               placeholder={text}
               onChange={handleTextInput}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '50px',
+                },
+              }}
               // input base
               InputProps={{
                 ...params.InputProps,

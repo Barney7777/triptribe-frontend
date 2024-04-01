@@ -33,6 +33,7 @@ interface MainPageProps {
   type: MainType;
 }
 
+// reusable page component for listing restaurant and attraction (not including the app header)
 const MainPage: FC<MainPageProps> = ({ type }) => {
   //url query params state
   const [queryParams, setQueryParams] = useState<QueryParamsType>({
