@@ -26,12 +26,23 @@ npm install
 
 ## Usage Instructions
 
-### Environment variables
+### Update environment variables
 
-1. Duplicate the **.env.example** file.
-2. Rename the **.env.example** file into :
-   - development environment (recommend): **.env.development**
-   - production evvironment: **.env.local**
+1. Duplicate the .env.example file as follows:
+
+   For the development environment (recommended):
+
+   ```
+   $ cp .env.example .env.development
+   ```
+
+   For the production environment:
+
+   ```
+   $ cp .env.example .env.local
+   ```
+
+2. Reach out to the group leader for comprehensive environment variables and update the environment files like .env.development/.env.local accordingly.
 
 ### Start the project
 
