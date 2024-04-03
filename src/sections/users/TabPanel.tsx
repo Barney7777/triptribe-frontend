@@ -3,10 +3,12 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 import { GeneralCard } from '@/sections/users/GeneralCard';
-import { SecurityCard } from './SecurityCard';
-import { FavoritesCard } from './FavoritesCard';
-import ReviewsCard from './ReviewsCard';
+import { SecurityCard } from '@/sections/users/SecurityCard';
+import { FavoritesCard } from '@/sections/users/FavoritesCard';
+import { ReviewsCard } from '@/sections/users/ReviewsCard';
 import { User } from '@/types/user';
+import { useRouter } from 'next/router';
+import { UserTab } from '@/constants/userProfilePage';
 
 type TabPanelProps = {
   children?: React.ReactNode;
@@ -45,36 +47,39 @@ type TabProps = {
   user: User;
   isMe: boolean;
   userId: string | string[] | undefined;
+  currentTab: UserTab;
 };
 
-const TabPanel: React.FC<TabProps> = ({ user, isMe, userId }) => {
-  const [value, setValue] = React.useState(0);
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue);
-  };
-
+const TabPanel: React.FC<TabProps> = ({ user, isMe, userId, currentTab }) => {
   let tabs = [
     {
-      label: 'General',
+      label: UserTab.General,
       component: GeneralCard,
       privacyTab: false,
     },
     {
-      label: 'Favorites',
+      label: UserTab.Favorites,
       component: FavoritesCard,
       privacyTab: false,
     },
     {
-      label: 'Reviews',
+      label: UserTab.Reviews,
       component: ReviewsCard,
       privacyTab: false,
     },
     {
-      label: 'Security',
+      label: UserTab.Security,
       component: SecurityCard,
       privacyTab: true,
     },
   ];
+  const router = useRouter();
+  const currentTabIndex = tabs.findIndex((tab) => tab.label === currentTab);
+
+  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+    const targetPath = `/users/${userId}/${tabs[newValue].label}`;
+    router.push(targetPath);
+  };
 
   if (!isMe) {
     tabs = tabs.filter((tab) => !tab.privacyTab);
@@ -84,7 +89,7 @@ const TabPanel: React.FC<TabProps> = ({ user, isMe, userId }) => {
     <Box sx={{ width: '100%' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs
-          value={value}
+          value={currentTabIndex}
           onChange={handleChange}
           aria-label="basic tabs example"
         >
@@ -104,7 +109,7 @@ const TabPanel: React.FC<TabProps> = ({ user, isMe, userId }) => {
         tabs.map((tab, index) => {
           return (
             <CustomTabPanel
-              value={value}
+              value={currentTabIndex}
               key={index}
               index={index}
             >

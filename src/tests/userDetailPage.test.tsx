@@ -1,5 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react';
-import UserDetailPage from '../pages/users/[userId]';
+import UserDetailPage from '../pages/users/[userId]/[tab]';
 import * as nextRouter from 'next/router';
 import '@testing-library/jest-dom';
 import useSWR from 'swr';
@@ -24,7 +24,7 @@ jest.mock('@/sections/users/TabPanel', () => {
 describe('UserDetailPage', () => {
   const mockUseRouter = jest.spyOn(nextRouter, 'useRouter');
 
-  it('displays loading state', () => {
+  it('displays loading state', async () => {
     const mockUserId = '123';
     mockUseRouter.mockReturnValue({
       query: { userId: mockUserId },
@@ -37,7 +37,9 @@ describe('UserDetailPage', () => {
     });
 
     render(<UserDetailPage />);
-    expect(screen.getByText('Loading...')).toBeInTheDocument();
+
+    const loadingElement = await screen.findByRole('progressbar');
+    expect(loadingElement).toBeInTheDocument();
   });
 
   it('displays error state', () => {
