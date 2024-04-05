@@ -10,6 +10,12 @@ export const convertQueryObject = (queryObj: QueryParamsType) => {
       case key === 'rating' && typeof value === 'string' && rating.includes(value):
         queryArr.push([key, Number(value)]);
         break;
+      case key === 'type':
+        queryArr.push(['types', value]);
+        break;
+      case key === 'duration':
+        queryArr.push(['durations', value]);
+        break;
       case Array.isArray(value) && value.length !== 0:
         queryArr.push([key, value]);
         break;

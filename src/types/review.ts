@@ -8,18 +8,20 @@ export interface Creator {
     imageUrl: string;
   };
 }
+
+export interface ReviewPhoto {
+  imageAlt: string;
+  imageUrl: string;
+  imageType: string;
+  uploadUserId: string;
+  _id: string;
+}
 export interface Review {
   _id: string;
   title: string;
   description: string;
   rating: number;
-  photos: {
-    imageAlt: string;
-    imageUrl: string;
-    imageType: string;
-    uploadUserId: string;
-    _id: string;
-  }[];
+  photos: ReviewPhoto[];
   updatedAt: string;
   placeType: string;
   creator: Creator;

@@ -14,12 +14,15 @@ import {
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import { Creator, UserReview } from '@/types/review';
 import { FC, useMemo, useState } from 'react';
 import dayjs from 'dayjs';
+import InnerHTML from 'dangerously-set-html-content';
+
 import { RouterLink } from '@/components/router-link';
 import { MainType } from '@/types/general';
 import Gallery from '@/sections/place-detail-page/components/place-reviews/components/gallery';
+import { Creator, UserReview } from '@/types/review';
+import { PlaceProps } from '@/types/attractions-restaurants';
 
 type UserReviewCardProps = {
   creator: Creator;
@@ -30,6 +33,8 @@ type UserReviewCardProps = {
   isAuthorized: boolean;
 };
 
+const DEFAULT_USER_NAME = 'User';
+
 const UserReviewCard: FC<UserReviewCardProps> = ({
   creator,
   review,
@@ -38,27 +43,29 @@ const UserReviewCard: FC<UserReviewCardProps> = ({
   isAuthenticated,
   isAuthorized,
 }) => {
-  const reviewDate = dayjs(review.updatedAt).format('DD/MM/YYYY');
-  const placeType = review.placeType === 'Attraction' ? MainType.Attraction : MainType.Restaurant;
-  const placeDetailPagePath = `/${placeType}s/${review.placeId._id}`;
+  const { nickname = DEFAULT_USER_NAME, userAvatar } = creator;
+  const {
+    photos: reviewPhotos = [],
+    rating: reviewRating = 0,
+    title: reviewTitle = ' ',
+    description: reviewDescription,
+    placeId: placeData = {} as PlaceProps,
+    updatedAt: reviewUpdatedAt,
+  } = review;
 
-  // generate images array for <Gallery /> component
-  const images = useMemo(() => {
-    let imageArr = [];
-    for (const photo of review.placeId.photos) {
-      for (const property in photo) {
-        const key = property;
-        const value = photo.imageUrl;
-        if (key === 'imageUrl') {
-          imageArr.push({
-            thumbnailURL: value,
-            originalURL: value,
-          });
-        }
-      }
-    }
-    return imageArr;
-  }, [review.placeId.photos]);
+  const {
+    name: placeName = ' ',
+    overAllRating: placeOverallRating = 0,
+    photos: placePhoto = [],
+    description: placeDescription = ' ',
+  } = placeData;
+
+  const reviewDate =
+    reviewUpdatedAt && dayjs(reviewUpdatedAt).isValid()
+      ? dayjs(reviewUpdatedAt).format('DD/MM/YYYY')
+      : ' ';
+  const placeType = review.placeType === 'Attraction' ? MainType.Attraction : MainType.Restaurant;
+  const placeDetailPagePath = `/${placeType}s/${placeData._id}`;
 
   // confirm-delete dialog
   const [openDialog, setOpenDialog] = useState(false);
@@ -72,6 +79,10 @@ const UserReviewCard: FC<UserReviewCardProps> = ({
     await onDelete();
     setOpenDialog(false);
   };
+
+  // user avatar scr
+  const avatarUrl = userAvatar?.imageUrl ? userAvatar.imageUrl : undefined;
+  const avatarLetter = nickname ? nickname[0].toUpperCase() : 'U';
 
   return (
     <Box sx={{ mb: 6 }}>
@@ -96,9 +107,11 @@ const UserReviewCard: FC<UserReviewCardProps> = ({
             >
               <Avatar
                 alt="User Avatar"
-                src={creator.userAvatar.imageUrl}
+                src={avatarUrl}
                 sx={{ height: '100%', width: '100%' }}
-              ></Avatar>
+              >
+                {avatarUrl === undefined && avatarLetter}
+              </Avatar>
             </Box>
           </Grid>
           <Grid
@@ -124,7 +137,7 @@ const UserReviewCard: FC<UserReviewCardProps> = ({
                     WebkitBoxOrient: 'vertical',
                   }}
                 >
-                  {creator.nickname}
+                  {nickname}
                 </Typography>
               </Box>
               <Box sx={{ ml: 2 }}>
@@ -138,7 +151,7 @@ const UserReviewCard: FC<UserReviewCardProps> = ({
               <Box>
                 <Rating
                   name="read-only"
-                  value={review.rating}
+                  value={reviewRating}
                   size="small"
                   readOnly
                   sx={{ mt: 1 }}
@@ -161,7 +174,7 @@ const UserReviewCard: FC<UserReviewCardProps> = ({
                     WebkitBoxOrient: 'vertical',
                   }}
                 >
-                  {review.title}
+                  {reviewTitle}
                 </Typography>
               </Box>
             </Grid>
@@ -171,30 +184,27 @@ const UserReviewCard: FC<UserReviewCardProps> = ({
             >
               <Box>
                 <Typography
+                  component="div"
                   color="text.primary"
-                  sx={{
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    display: '-webkit-box',
-                    WebkitLineClamp: '3',
-                    WebkitBoxOrient: 'vertical',
-                  }}
                 >
-                  {review.description}
+                  {reviewDescription ? <InnerHTML html={reviewDescription} /> : ' '}
                 </Typography>
               </Box>
             </Grid>
-            <Grid
-              item
-              xs={12}
-            >
-              <Box sx={{ mt: 1 }}>
-                <Gallery
-                  galleryID="user-review-gallery"
-                  images={images}
-                />
-              </Box>
-            </Grid>
+
+            {reviewPhotos.length > 0 && (
+              <Grid
+                item
+                xs={12}
+              >
+                <Box sx={{ mt: 1 }}>
+                  <Gallery
+                    galleryID="user-review-gallery"
+                    images={reviewPhotos}
+                  />
+                </Box>
+              </Grid>
+            )}
           </Grid>
           {isAuthorized && isAuthenticated && (
             <Grid
@@ -253,94 +263,98 @@ const UserReviewCard: FC<UserReviewCardProps> = ({
             </Grid>
           )}
         </Grid>
-        <Grid
-          item
-          xs={12}
-        >
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'flex-start',
-              alignItems: 'center',
-              backgroundColor: '#F8F9FA',
-              borderRadius: 1,
-              p: 1,
-            }}
+        {placeData && (
+          <Grid
+            item
+            xs={12}
           >
-            <CardActionArea
-              component={RouterLink}
-              href={placeDetailPagePath}
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'flex-start',
+                alignItems: 'center',
+                backgroundColor: '#F8F9FA',
+                borderRadius: 1,
+                p: 1,
+              }}
             >
-              <Grid container>
-                <Grid
-                  item
-                  xs={2}
-                  md={1}
-                  sx={{ height: '100%', width: '100%' }}
-                >
-                  <Box sx={{ height: '100%', width: '100%', pt: 0.5 }}>
-                    <CardMedia
-                      component="img"
-                      sx={{ height: '60px' }}
-                      image={review.placeId.photos[9].imageUrl}
-                    />
-                  </Box>
-                </Grid>
-                <Grid
-                  item
-                  xs={10}
-                  md={11}
-                  sx={{ pl: 1 }}
-                >
+              <CardActionArea
+                component={RouterLink}
+                href={placeDetailPagePath}
+              >
+                <Grid container>
                   <Grid
                     item
-                    xs={12}
-                    sx={{ display: 'flex' }}
+                    xs={2}
+                    md={1}
+                    sx={{ height: '100%', width: '100%' }}
                   >
-                    <Box sx={{ mr: 2 }}>
-                      <Typography
-                        color="text.Primary"
-                        fontSize="14px"
-                      >
-                        {review.placeId.name}
-                      </Typography>
-                    </Box>
-                    <Box>
-                      <Typography
-                        color="text.Primary"
-                        fontSize="14px"
-                      >
-                        {review.placeId.overAllRating} / 5
-                      </Typography>
-                    </Box>
+                    {placePhoto.length > 0 && placePhoto[0].imageUrl && (
+                      <Box sx={{ height: '100%', width: '100%', pt: 0.5 }}>
+                        <CardMedia
+                          component="img"
+                          sx={{ height: '60px' }}
+                          image={placePhoto[0].imageUrl}
+                        />
+                      </Box>
+                    )}
                   </Grid>
                   <Grid
                     item
-                    xs={12}
-                  ></Grid>
-                  <Grid
-                    item
-                    xs={12}
+                    xs={10}
+                    md={11}
+                    sx={{ pl: 1 }}
                   >
-                    <Typography
-                      fontSize="14px"
-                      color={'text.secondary'}
-                      sx={{
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        display: '-webkit-box',
-                        WebkitLineClamp: '2',
-                        WebkitBoxOrient: 'vertical',
-                      }}
+                    <Grid
+                      item
+                      xs={12}
+                      sx={{ display: 'flex' }}
                     >
-                      {review.placeId.description}
-                    </Typography>
+                      <Box sx={{ mr: 2 }}>
+                        <Typography
+                          color="text.Primary"
+                          fontSize="14px"
+                        >
+                          {placeName}
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Typography
+                          color="text.Primary"
+                          fontSize="14px"
+                        >
+                          {placeOverallRating} / 5
+                        </Typography>
+                      </Box>
+                    </Grid>
+                    <Grid
+                      item
+                      xs={12}
+                    ></Grid>
+                    <Grid
+                      item
+                      xs={12}
+                    >
+                      <Typography
+                        fontSize="14px"
+                        color={'text.secondary'}
+                        sx={{
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          display: '-webkit-box',
+                          WebkitLineClamp: '2',
+                          WebkitBoxOrient: 'vertical',
+                        }}
+                      >
+                        {placeDescription}
+                      </Typography>
+                    </Grid>
                   </Grid>
                 </Grid>
-              </Grid>
-            </CardActionArea>
-          </Box>
-        </Grid>
+              </CardActionArea>
+            </Box>
+          </Grid>
+        )}
       </Grid>
       <Divider
         light

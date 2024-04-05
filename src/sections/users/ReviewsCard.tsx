@@ -69,7 +69,6 @@ const ReviewsCard = () => {
       <Box sx={{ mb: 2 }}>
         <Typography>Reviews ({total})</Typography>
       </Box>
-      {/* TODO: pagination of reviews for both frontend and backend */}
       {creator &&
         reviews &&
         reviews?.length > 0 &&
