@@ -40,8 +40,8 @@ export const getServerSideProps: GetServerSideProps = (async (context) => {
     description:
       'Browse and explore exciting attractions with TripTribe. Find detailed information, transparent ratings, and authentic reviews to plan your next adventure.',
     url: 'https://www.trip-tribe.com/attractions',
-    type: 'webapp',
-    name: 'TripTribe',
+    type: 'website',
+    name: '',
     img: '/assets/bridge.png',
   };
   return {

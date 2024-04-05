@@ -327,8 +327,8 @@ export const getServerSideProps: GetServerSideProps = (async (context) => {
     description:
       'Join TripTribe to reshape your digital tourism experience. Register for transparent ratings and authentic reviews of attractions and restaurants.',
     url: 'https://www.trip-tribe.com/signup',
-    type: 'webapp',
-    name: 'TripTribe',
+    type: 'website',
+    name: '',
     img: '/assets/bridge.png',
   };
   return {

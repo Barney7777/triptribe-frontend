@@ -28,18 +28,21 @@ const Seo: FC<SeoProps> = ({ title, description, url, type, name, img }) => {
         content={type}
       />
       <meta
+        name="title"
         property="og:title"
         content={title}
       />
       <meta
+        name="description"
         property="og:description"
         content={description}
       />
       <meta
+        name="image"
         property="og:image"
         content={img}
       />
-      <meta
+      {/* <meta
         name="twitter:creator"
         content={name}
       />
@@ -54,7 +57,7 @@ const Seo: FC<SeoProps> = ({ title, description, url, type, name, img }) => {
       <meta
         name="twitter:description"
         content={description}
-      />
+      /> */}
     </Helmet>
   );
 };
