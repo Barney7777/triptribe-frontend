@@ -38,7 +38,7 @@ const SignInPage = ({ seoValue }: InferGetServerSidePropsType<typeof getServerSi
   const router = useRouter();
   const { signIn, isAuthenticated } = useContext(UserContext);
   if (isAuthenticated) {
-    router.push('/users/me');
+    router.push('/');
   }
   const {
     control,

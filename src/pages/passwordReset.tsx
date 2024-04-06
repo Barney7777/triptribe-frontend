@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Box, Grid, Typography, TextField, Button } from '@mui/material';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import AuthPageContainer from '@/components/AuthPageContainer';
+import { useRouter } from 'next/router';
+import { UserContext } from '@/contexts/user-context/user-context';
 
 export type PasswordResetInputs = {
   email: string;
@@ -13,6 +15,12 @@ const schema = yup.object().shape({
   email: yup.string().email('Invalid email format').required('Email is required'),
 });
 export default function PasswordReset() {
+  const router = useRouter();
+  const { signIn, isAuthenticated } = useContext(UserContext);
+  if (isAuthenticated) {
+    router.push('/');
+  }
+
   const {
     handleSubmit,
     control,

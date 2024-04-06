@@ -70,7 +70,7 @@ const PlaceReviews: FC<PlaceReviewsProps> = ({
                 lineHeight={1.5}
                 fontWeight={600}
               >
-                Reviews ({reviewsData?.length && `${total}`})
+                Reviews{reviewsData?.length && `(${total})`}
               </Typography>
             </Grid>
             <Grid item>
@@ -99,7 +99,7 @@ const PlaceReviews: FC<PlaceReviewsProps> = ({
                   />
                 ))
               ) : (
-                <p>Please left your review and be the lucky first. Thank you.</p>
+                <>Please left your review and be the lucky first. Thank you.</>
               )}
             </Box>
           </Grid>
