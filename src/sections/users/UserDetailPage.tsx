@@ -8,10 +8,12 @@ import useSWR from 'swr';
 import Layout from '@/layouts/MainLayout';
 import { useUserContext } from '@/contexts/user-context/user-context';
 import { CircularLoading } from '@/components/CircularLoading';
+import { UserTab } from '@/constants/userProfilePage';
 
 const UserDetailPage = () => {
   const router = useRouter();
-  const { userId } = router.query;
+
+  const { userId, tab } = router.query;
   const { isAuthenticated, userData = null } = useUserContext();
 
   const isMe = userId === 'me';
@@ -74,6 +76,7 @@ const UserDetailPage = () => {
             user={data as User}
             isMe={isMe}
             userId={userId}
+            currentTab={tab as UserTab}
           />
         )}
       </Container>

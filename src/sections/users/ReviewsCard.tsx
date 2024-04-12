@@ -5,11 +5,11 @@ import useRequest from '@/hooks/use-request';
 import { UserReviewResponse } from '@/types/review';
 import axiosInstance from '@/utils/request';
 import { Box, CircularProgress, Divider, Pagination, Typography } from '@mui/material';
-import { useState } from 'react';
+import { FC, useState } from 'react';
 import { PageDataResponse } from '@/types/general';
 import { DEFAULT_PAGE_NUMBER, DEFAULT_REVIEW_PAGE_SIZE } from '@/constants/pagination';
 
-const ReviewsCard = () => {
+export const ReviewsCard: FC = () => {
   const router = useRouter();
   const { userId } = router.query;
   const { isAuthenticated, userData = null } = useUserContext();
@@ -99,5 +99,3 @@ const ReviewsCard = () => {
     </Box>
   );
 };
-
-export default ReviewsCard;

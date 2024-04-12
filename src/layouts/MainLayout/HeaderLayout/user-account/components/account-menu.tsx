@@ -17,6 +17,7 @@ import { useRouter } from 'next/router';
 import { useSnackbar } from 'notistack';
 import RateReviewIcon from '@mui/icons-material/RateReview';
 import FavoriteIcon from '@mui/icons-material/Favorite';
+import { UserTab } from '@/constants/userProfilePage';
 type AccountMenuProps = {
   anchorOffset: number;
 };
@@ -111,14 +112,14 @@ export const AccountMenu: React.FC<AccountMenuProps> = ({ anchorOffset }) => {
       >
         <MenuItem
           component={NextLink}
-          href={'/users/me'}
+          href={`/users/me/${UserTab.General}`}
         >
           <Avatar /> My account
         </MenuItem>
         <Divider />
         <MenuItem
           component={NextLink}
-          href={'/users/me'}
+          href={`/users/me/${UserTab.Favorites}`}
         >
           <ListItemIcon>
             <FavoriteIcon fontSize="small" />
@@ -128,7 +129,7 @@ export const AccountMenu: React.FC<AccountMenuProps> = ({ anchorOffset }) => {
 
         <MenuItem
           component={NextLink}
-          href={'/users/me'}
+          href={`/users/me/${UserTab.Reviews}`}
         >
           <ListItemIcon>
             <RateReviewIcon fontSize="small" />
@@ -137,7 +138,7 @@ export const AccountMenu: React.FC<AccountMenuProps> = ({ anchorOffset }) => {
         </MenuItem>
         <MenuItem
           component={NextLink}
-          href={'/users/me'}
+          href={`/users/me/${UserTab.Security}`}
         >
           <ListItemIcon>
             <Settings fontSize="small" />
