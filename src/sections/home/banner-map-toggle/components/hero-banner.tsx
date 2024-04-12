@@ -55,25 +55,19 @@ export const HeroBanner: React.FC = () => {
         sx={{
           width: '70%',
           bgcolor: 'white',
-          borderRadius: 1,
+          borderRadius: '50px',
           zIndex: '2',
           overflow: 'hidden',
         }}
         text={'Search'}
       />
-      <Box
-        bgcolor={'white'}
-        borderRadius={1.5}
-        position={'relative'}
-      >
+      <Box position={'relative'}>
         <Button
           color="secondary"
           variant="contained"
           sx={{
             width: 169,
             height: 55,
-            borderRadius: 1.5,
-            // ':hover': { color: 'secondary.dark' },
           }}
           LinkComponent={NextLink}
           // href="?map=shown"

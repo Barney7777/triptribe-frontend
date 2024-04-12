@@ -17,6 +17,16 @@ const theme = createTheme({
       500: '#6C737F',
     },
   },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          // Default styles for the Button component
+          borderRadius: '24px',
+        },
+      },
+    },
+  },
 });
 
 export default theme;
