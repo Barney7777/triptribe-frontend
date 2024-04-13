@@ -54,6 +54,12 @@ const schema = yup.object().shape({
 });
 
 const SignUpPage = ({ seoValue }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+  const router = useRouter();
+  const { signIn, isAuthenticated } = useContext(UserContext);
+  if (isAuthenticated) {
+    router.push('/');
+  }
+
   const {
     control,
     handleSubmit,
@@ -72,7 +78,6 @@ const SignUpPage = ({ seoValue }: InferGetServerSidePropsType<typeof getServerSi
 
   const { signUp } = useContext(UserContext);
   const { enqueueSnackbar } = useSnackbar();
-  const router = useRouter();
   const onSubmit: SubmitHandler<SignUpFormInputs> = async (data) => {
     try {
       await signUp(data);

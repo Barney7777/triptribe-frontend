@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import AuthPageContainer from '@/components/AuthPageContainer';
 import { Box, Button, CardHeader, Grid, Link, Typography } from '@mui/material';
@@ -7,6 +7,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
 import axiosInstance from '@/utils/request';
 import { useSnackbar } from 'notistack';
+import { UserContext } from '@/contexts/user-context/user-context';
 
 type ResponseData = {
   data: { message: string };
@@ -26,6 +27,11 @@ const VerifyEmail = () => {
   const [verificationStatus, setVerificationStatus] = useState('pending');
   const [loading, setLoading] = useState(false);
   const apiUrl = 'auth/verify';
+
+  const { signIn, isAuthenticated } = useContext(UserContext);
+  if (isAuthenticated) {
+    router.push('/');
+  }
 
   useEffect(() => {
     const checkEmailVerification = async () => {
