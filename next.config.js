@@ -29,7 +29,7 @@ const sentryWebpackPluginOptions = {
   // recommended:
   //   release, url, configFile, stripPrefix, urlPrefix, include, ignore
 
-  org: 'fangda-zhang',
+  org: 'triptribe',
   project: 'frontend-triptribe',
 
   // An auth token is required for uploading source maps.
