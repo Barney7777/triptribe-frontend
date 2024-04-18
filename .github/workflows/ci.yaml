@@ -20,9 +20,9 @@ jobs:
           # npm run lint
           # npm run prettier
       - name: Build Project
-        run: |
-          mv -f next.config_s3.js next.config.js
-          ls -l src/pages/
-          mv -f src/pages/index_s3.tsx src/pages/index.tsx
-          npm run build
+        run: 
+          npm run build -- --config next.config_s3.js
+
+
+
 
