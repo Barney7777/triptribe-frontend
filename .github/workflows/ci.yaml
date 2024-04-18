@@ -21,7 +21,12 @@ jobs:
           # npm run prettier
       - name: Build Project
         run: 
-          NODE_ENV=production NEXT_CONFIG=next.config_s3.js npm run build
+          npm run build
+      - name: Archive build
+        uses: actions/upload-artifact@v3
+        with:
+          name: out
+          path: out/triptribe
 
 
 
