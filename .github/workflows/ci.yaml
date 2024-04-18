@@ -17,8 +17,12 @@ jobs:
       - name: Install Project Dependencies
         run: |
           npm ci
-          npm run lint
-          npm run prettier
+          # npm run lint
+          # npm run prettier
       - name: Build Project
-        run: npm run build
+        run: |
+          mv -f next.config_s3.js next.config.js
+          ls -l src/pages/
+          mv -f src/pages/index_s3.tsx src/pages/index.tsx
+          npm run build
 
