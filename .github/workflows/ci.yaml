@@ -21,7 +21,7 @@ jobs:
           # npm run prettier
       - name: Build Project
         run: 
-          npm run build -- -c next.config_s3.js
+          NEXT_CONFIG=next.config_s3.js npm run build
 
 
 
