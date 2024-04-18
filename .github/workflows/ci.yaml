@@ -1,0 +1,25 @@
+name : TripTribe Frontend CI 
+on:
+  push:
+    branches: ['main']
+  pull_request:
+    branches: ['main']
+
+jobs:
+  build-test-analyze-scan:
+    runs-on: [frontend]
+
+    steps: 
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
+      - name: Install Project Dependencies
+        run: |
+          npm ci
+          npm run lint
+          npm run prettier
+          npm test
+      - name: Build Project
+        run: npm run build
+
