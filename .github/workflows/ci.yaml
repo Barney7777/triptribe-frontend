@@ -53,10 +53,49 @@ jobs:
       uses: ArtiomTr/jest-coverage-report-action@v2
     - name: Upload coverage report
       if: always()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: coverage-report
         path: coverage
+  
+  vulnerability-scan:
+    needs: cache-dependencies
+    runs-on: ubuntu-latest
+    # defaults:
+    #   run:
+    #     working-directory: ./
+    strategy:
+      matrix:
+        node-version: [20.x]
+        architecture: [x64]
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Install project dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci --legacy-peer-deps
+      
+      - name: Setup SonarQube
+        uses: warchant/setup-sonar-scanner@v8
+      - name: SAST with SonarCloud
+        uses: sonarsource/sonarcloud-github-action@master
+        env:
+          _GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+        # projectBaseDir: .
+        args: >
+          -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
+          -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
+          -Dsonar.host.url=${{ secrets.SONAR_URL }}
+          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+          -Dsonar.sources=.
+          -Dsonar.verbose=true
+
 
 
 
