@@ -1,0 +1,43 @@
+name : TripTribe Frontend CI 
+on:
+  push:
+    branches: ['main']
+  pull_request:
+    branches: ['main']
+
+jobs:
+  build-analyze-scan:
+    runs-on: ubuntu-latest
+    strategy: 
+      matrix:
+        node-version: [20.11.x]
+        architecture: [x64]
+
+    steps: 
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
+      - name: Use Node.js ${{ matrix.node-version }} - ${{ matrix.architecture }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          architecture: ${{ matrix.architecture }}
+      - name: Install Project Dependencies
+        run: |
+          npm ci
+          # npm run lint
+          # npm run prettier
+      - name: Build Project
+        run: |
+          npm run build
+      - name: Archive build
+        uses: actions/upload-artifact@v4.3.1
+        with:
+          name: out
+          path: out
+          
+      
+
+
+

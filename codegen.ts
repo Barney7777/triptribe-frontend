@@ -1,7 +1,8 @@
 import { CodegenConfig } from '@graphql-codegen/cli';
 
 const config: CodegenConfig = {
-  schema: 'http://localhost:8080/graphql',
+  // schema: 'http://localhost:8080/graphql',
+  schema: 'https://backend.barneywang.click/graphql',
   documents: ['src/gqls/**/*.ts'],
   generates: {
     './src/__generated__/': {

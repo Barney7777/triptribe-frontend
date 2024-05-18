@@ -1,0 +1,3 @@
+# you installed your dependencies on your host machine (creating node_moudules) and then you transferred the dependencies over to the image with inside your dockerfile
+# This will break because the Sentry CLI binary (which the SDK depends on) will be different based on which architecture you install your dependencies on
+node_modules
