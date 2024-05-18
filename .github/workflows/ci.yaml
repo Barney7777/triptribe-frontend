@@ -45,8 +45,8 @@ jobs:
       run: npm run lint
     - name: Format code
       run: npm run prettier
-    - name: Unit test
-      run: npm run test
+    # - name: Unit test
+    #   run: npm run test
     - name: Test Coverage
       uses: ArtiomTr/jest-coverage-report-action@v2
 
