@@ -1,43 +1,51 @@
-name : TripTribe Frontend CI 
+name: Frontend CI Pipeline
+
 on:
   push:
-    branches: ['main']
+    branches:
+      - main
   pull_request:
-    branches: ['main']
+    branches:
+      - main
 
 jobs:
-  build-analyze-scan:
+  cache-dependencies:
     runs-on: ubuntu-latest
-    strategy: 
+    # defaults:
+      # run:
+      #   working-directory: ./
+    strategy:
       matrix:
-        node-version: [20.11.x]
+        node-version: [20.x]
         architecture: [x64]
-
-    steps: 
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
-      - name: Use Node.js ${{ matrix.node-version }} - ${{ matrix.architecture }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-          architecture: ${{ matrix.architecture }}
-      - name: Install Project Dependencies
-        run: |
-          npm ci
-          # npm run lint
-          # npm run prettier
-      - name: Build Project
-        run: |
-          npm run build
-      - name: Archive build
-        uses: actions/upload-artifact@v4.3.1
-        with:
-          name: out
-          path: out
-          
-      
-
-
-
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Use Node.js ${{ matrix.node-version }} - ${{ matrix.architecture }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        architecture: ${{ matrix.architecture }}
+    
+    - name: Cache Dependencies
+      uses: actions/cache@v4
+      id: cache-node-modules
+      with:
+        path: ./node_modules
+        key: ${{ runner.os }}-node-${{ matrix.node-version }}-${{ hashFiles('**/package-lock.json') }}
+    - name: Install Dependencies
+      if: steps.cache-node-modules.outputs.cache-hit != 'true'
+      run: npm ci --legacy-peer-deps
+    
+    - name: Lint code
+      run: npm run lint
+    - name: Format code
+      run: npm run prettier
+    - name: Unit test
+      run: npm run test
+    - name: Test Coverage
+      uses: ArtiomTr/jest-coverage-report-action@v2
