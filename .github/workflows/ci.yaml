@@ -70,32 +70,109 @@ jobs:
         architecture: [x64]
     
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
       
-      - name: Install project dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci --legacy-peer-deps
+    - name: Install project dependencies
+      if: steps.cache-node-modules.outputs.cache-hit != 'true'
+      run: npm ci --legacy-peer-deps
       
-      - name: Setup SonarQube
-        uses: warchant/setup-sonar-scanner@v8
-      - name: SAST with SonarCloud
-        uses: sonarsource/sonarcloud-github-action@master
-        env:
-          _GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-        # projectBaseDir: .
-          args: >
-            -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
-            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
-            -Dsonar.host.url=${{ secrets.SONAR_URL }}
-            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
-            -Dsonar.sources=.
-            -Dsonar.verbose=true
+    - name: Setup SonarQube
+      uses: warchant/setup-sonar-scanner@v8
+    - name: SAST with SonarCloud
+      uses: sonarsource/sonarcloud-github-action@master
+      env:
+        _GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      with:
+      # projectBaseDir: .
+        args: >
+          -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
+          -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
+          -Dsonar.host.url=${{ secrets.SONAR_URL }}
+          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+          -Dsonar.sources=.
+          -Dsonar.verbose=true
 
+    - name: File System Scan
+      run: echo "Scaning files"
+    - name: Archive scan reslts
+      run: echo "Archiving scan results"
+
+  build:
+    needs: vulnerability-scan
+    runs-on: ubuntu-latest
+    env: 
+      ECR_REPOSITORY: ${{ secrets.FRONTEND_REPO }}
+      IMAGE_TAG: ${{ github.sha }}
+      AWS_DEFAULT_REGION: ap-southeast-2
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - name: Setup QEMU
+      uses: docker/setup-qemu-action@v3
+    - name: Setup Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    
+    - name: Configure AWS Credentials
+      uese: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_DEFAULT_REGION }}
+    
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
+    
+    - name: Set ECR_REGISTRY env var
+      run: |
+        echo "ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}" >> $GITHUB_ENV
+
+    - name: Build Docker Image
+      id: build-image
+      run: |
+        echo "Building Docker Image"
+        docker build \
+        --build-arg NEXT_PUBLIC_REST_API_URL=${{ secrets.NEXT_PUBLIC_REST_API_URL }} \
+        --build-arg NEXT_PUBLIC_GRAPHQL_API_URL=${{ secrets.NEXT_PUBLIC_GRAPHQL_API_URL }} \
+        --build-arg NEXT_PUBLIC_MAP_API_KEY=${{ secrets.NEXT_PUBLIC_MAP_API_KEY }} \
+        --build-arg NEXT_PUBLIC_SENTRY_AUTH_TOKEN=${{ secrets.NEXT_PUBLIC_SENTRY_AUTH_TOKEN }} \
+        -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+    
+    - name: Image Scan
+      id: scan-image
+      run:
+        echo "Scanning Docker Image"
+    - name: Archive Image Scan Results
+      run:
+        echo "Archiving Image Scan Results"
+    
+    - name: Push Docker Image To Amazon ECR
+      id: push-image
+      run: |
+        echo "Pushing Docker Image"
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+    - name: Set IMAGE env var
+      run: |
+        echo "IMAGE=${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}" >> $GITHUB_ENV
+    
+    outputs:
+      ECR_REGISTRY: ${{ env.ECR_REGISTRY }}
+      IMAGE: ${{ env.IMAGE }}
+
+  # update_k8s_manifests:
+  #   needs: build
+  #   runs-on: ubuntu-latest
+      
+    
+   
 
 
 
