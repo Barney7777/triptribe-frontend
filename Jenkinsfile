@@ -40,7 +40,7 @@ pipeline {
         stage('Cleanup Artifacts') {
             steps {
                 script {
-                    sh "docker rmi ${AWS_ECR_REPO_NAME}:latest"
+                    sh "docker rmi ${REPOSITORY_URI}${AWS_ECR_REPO_NAME}:latest"
                     sh "docker rmi ${REPOSITORY_URI}${AWS_ECR_REPO_NAME}:${IMAGE_TAG}"
                 }
             }
