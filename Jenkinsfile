@@ -22,11 +22,11 @@ pipeline {
         //     }
         // }
 
-        stage('Checkout from git') {
-            steps {
-                git branch: 'main', url: 'https://github.com/Barney7777/triptribe-frontend.git'
-            }
-        }
+        // stage('Checkout from git') {
+        //     steps {
+        //         git branch: 'main', url: 'https://github.com/Barney7777/triptribe-frontend.git'
+        //     }
+        // }
 
 
         // stage('Install Dependencies') {
