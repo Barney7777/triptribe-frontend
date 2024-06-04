@@ -1,172 +1,90 @@
-def COLOR_MAP = [
-    'SUCCESS': 'good',
-    'FAILURE': 'danger',
-]
-
 pipeline {
     agent any
-
     tools {
-        nodejs 'nodejs-20.11.0'
+        jdk 'jdk-17'
+        nodejs 'node-18'
     }
-
     environment {
-        REPO_URL = 'https://github.com/ExploreXperts/TripTribe-Frontend.git'
-        VERCEL_TOKEN = credentials('vercel-token') // Create a Jenkins secret credential with the Vercel token
-        VERCEL_PROJECT_ID = credentials('VERCEL_PROJECT_ID')
-        VERCEL_ORG_ID = credentials('VERCEL_ORG_ID') // Set your Vercel organization ID
-        AWS_REGION = 'ap-southeast-2'
-        s3_bucket_name = 'www.trip-tribe.com-primary'
-        build_folder = 'out'
+        SCANNER_HOME = tool 'sonar-scanner'
+        AWS_ACCOUNT_ID = "381491877737"
+        AWS_ECR_REPO_NAME = "triptribe-frontend-${env.BRANCH_NAME}"
+        AWS_DEFAULT_REGION = "ap-southeast-2"
+        REPOSITORY_URI = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/"
+        IMAGE_TAG = "${BUILD_NUMBER}"
+        GIT_REPO_NAME = "triptribe-gitops"
+        GIT_USERNAME = "Barney Wang"
+        
     }
-
     stages {
-        stage('Checkout') {
-            steps {
-                // Checkout the repository from GitHub
-                checkout([$class: 'GitSCM', branches: [[name: '*/dev']], userRemoteConfigs: [[url: env.REPO_URL, credentialsId:'devon']]])
-            }
-        }
-
-        stage('Install Dependencies') {
-            
-            steps {
-            
-                script {
-                    sh 'npm -v'
-                    sh 'node -v'
-                    sh 'npm ci'
-                    sh 'rm -rf .env'
-                    sh 'cp .env.development .env'
-                    // sh 'npm run lint'
-                    // sh './node_modules/.bin/eslint --fix --debug .'
-                    // sh 'npm run prettier'
-                }
-              
-            }
-        }
-
-        // stage ('Test Source Code') {
-
+        // stage('clean workspace') {
         //     steps {
-        //         script {
-        //             sh 'npm run test'
-        //             sh 'npm run test:coverage'
+        //         cleanWs()
+        //     }
+        // }
+
+        // stage('Checkout from git') {
+        //     steps {
+        //         git branch: 'main', url: 'https://github.com/Barney7777/triptribe-frontend.git'
+        //     }
+        // }
+
+
+        // stage('Install Dependencies') {
+        //     steps {
+        //         sh "npm install"
+        //     }
+        // }
+
+        // stage('Sonarqube Analysis') {
+        //     steps {
+        //         withSonarQubeEnv('sonar-server') {
+        //             sh '''
+        //             $SCANNER_HOME/bin/sonar-scanner \
+        //             -Dsonar.projectName=triptribe-frontend \
+        //             -Dsonar.projectKey=triptribe-frontend \
+        //             -Dsonar.source=src/ 
+        //             '''
         //         }
         //     }
         // }
 
-        stage('SonarQube Analysis') {
-            environment {
-                scannerHome = tool 'sonarqube'
-            }
+        // stage('Quality-Gate') {
+        //     steps {
+        //         script {
+        //             waitForQualityGate abortPipeline: false, credentialsId: 'sonar-token'
+        //         }
+        //     }
+        // }
+
+        stage('Docker Image Build') {
             steps {
                 script {
-                        withSonarQubeEnv('SonarQube') {
-                        sh """
-                            ${scannerHome}/bin/sonar-scanner \
-                            -Dsonar.projectKey=$JOB_NAME \
-                            -Dsonar.projectName=$JOB_NAME \
-                            -Dsonar.projectVersion=$BUILD_NUMBER \
-                            -Dsonar.sources=src/
-                        """
-                        }
+                    sh "echo ECR Repo Name: ${AWS_ECR_REPO_NAME}"
+                    sh "docker build -t ${AWS_ECR_REPO_NAME}:latest ."
+
                 }
+
             }
         }
 
-        stage('Quality Gate') {
-            steps {
-                timeout(time: 10, unit: 'MINUTES') {
-                    // Just in case something goes wrong, pipeline will be killed after a timeout
-                    script {
-                        def qg = waitForQualityGate()
-                        if (qg.status != 'OK') {
-                            error "Pipeline aborted due to quality gate failure: ${qg.status}"
-                        }
-                    }
-                }
-            }
-        }
-
-        stage('Install Dependencies and Deploy') {
+        stage('ECR Image Pushing') {
             steps {
                 script {
-                    // Install Node.js and npm (assuming Node.js tool is already configured)
-
-                    // Install Vercel CLI
-                    sh 'npm install -g vercel'
-
-                    // Print Vercel token for debugging purposes
-                    echo "Vercel Token: ${VERCEL_TOKEN}"
-
-                    // Pull Vercel environment information
-                    sh 'vercel pull --yes --environment=production --token=$VERCEL_TOKEN'
-
-                    // Build project artifacts (if needed)
-                    // sh 'npm ci'
-                    sh 'vercel build --prod --token=$VERCEL_TOKEN'
-
-                    // input(
-                    // id: 'deployToProduction',
-                    // message: 'Do you want to deploy to production?',
-                    // ok: 'Deploy'
-                    // )
-                    sh 'vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN'
+                    sh "aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${REPOSITORY_URI}"
+                    sh "docker tag ${AWS_ECR_REPO_NAME}:latest ${REPOSITORY_URI}${AWS_ECR_REPO_NAME}:${IMAGE_TAG}"
+                    sh "docker push ${REPOSITORY_URI}${AWS_ECR_REPO_NAME}:${IMAGE_TAG}"
+                    sh "docker push ${AWS_ECR_REPO_NAME}:latest"
                 }
             }
         }
 
-        stage('Replace next.config file and rerun build') {
-            steps {
-                // Build the static files
-                script {
-                    sh 'mv -f next.config_s3.js next.config.js'
-                    sh 'pwd'
-                    sh 'ls -l src/pages/'
-                    sh 'mv -f src/pages/index_s3.tsx src/pages/index.tsx'
-                    sh 'npm run build'
-                }
-            }
-        }
-
-        stage('deploy to s3 bucket') {
-            steps {
-                    withCredentials([aws(accessKeyVariable:'AWS_ACCESS_KEY_ID', credentialsId:'aws-credential', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
-                            sh "aws s3 cp ./${build_folder}/ s3://${S3_BUCKET_NAME}/ --recursive --region ${AWS_REGION}"
-                    }
-            }
-        }
-    }
-
-    post {
-        success {
-                emailext subject: 'Build Successfully',
-                body: 'The Jenkins build succeed. Please check the build logs for more information. $DEFAULT_CONTENT',
-                recipientProviders: [
-                    [$class: 'CulpritsRecipientProvider'],
-                    [$class: 'DevelopersRecipientProvider'],
-                    [$class: 'RequesterRecipientProvider']
-                ],
-                to: 'jlix723@gmail.com'
-        }
-
-        failure {
-                emailext subject: 'Build Failed',
-                body: 'The Jenkins build failed. Please check the build logs for more information. $DEFAULT_CONTENT',
-                recipientProviders: [
-                    [$class: 'CulpritsRecipientProvider'],
-                    [$class: 'DevelopersRecipientProvider'],
-                    [$class: 'RequesterRecipientProvider']
-                ],
-                to: 'jlix723@gmail.com'
-        }
-
-        always {
-            echo 'Slack Notifications.'
-            slackSend channel: '#jenkinscicd',
-                color: COLOR_MAP[currentBuild.currentResult],
-                message: "*${currentBuild.currentResult}:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} \n More info at: ${env.BUILD_URL}"
-        }
+        // stage('Cleanup Artifacts') {
+        //     steps {
+        //         script {
+        //             sh "docker rmi ${AWS_ECR_REPO_NAME}:latest"
+        //             sh "docker rmi ${REPOSITORY_URI}${AWS_ECR_REPO_NAME}:${IMAGE_TAG}"
+        //         }
+        //     }
+        // }
     }
 }
