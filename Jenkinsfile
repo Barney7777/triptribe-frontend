@@ -19,32 +19,32 @@ pipeline {
             steps {
                 script {
                     sh "echo ECR Repo Name: ${AWS_ECR_REPO_NAME}"
-                    // sh "docker build -t ${REPOSITORY_URI}${AWS_ECR_REPO_NAME}:latest ."
+                    sh "docker build -t ${REPOSITORY_URI}${AWS_ECR_REPO_NAME}:latest ."
 
                 }
 
             }
         }
 
-        // stage('ECR Image Pushing') {
-        //     steps {
-        //         script {
-        //             sh "aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${REPOSITORY_URI}"
-        //             sh "docker tag ${REPOSITORY_URI}${AWS_ECR_REPO_NAME}:latest ${REPOSITORY_URI}${AWS_ECR_REPO_NAME}:${IMAGE_TAG}"
-        //             sh "docker push ${REPOSITORY_URI}${AWS_ECR_REPO_NAME}:${IMAGE_TAG}"
-        //             sh "docker push ${REPOSITORY_URI}${AWS_ECR_REPO_NAME}:latest"
-        //         }
-        //     }
-        // }
+        stage('ECR Image Pushing') {
+            steps {
+                script {
+                    sh "aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${REPOSITORY_URI}"
+                    sh "docker tag ${REPOSITORY_URI}${AWS_ECR_REPO_NAME}:latest ${REPOSITORY_URI}${AWS_ECR_REPO_NAME}:${IMAGE_TAG}"
+                    sh "docker push ${REPOSITORY_URI}${AWS_ECR_REPO_NAME}:${IMAGE_TAG}"
+                    sh "docker push ${REPOSITORY_URI}${AWS_ECR_REPO_NAME}:latest"
+                }
+            }
+        }
 
-        // stage('Cleanup Artifacts') {
-        //     steps {
-        //         script {
-        //             sh "docker rmi ${AWS_ECR_REPO_NAME}:latest"
-        //             sh "docker rmi ${REPOSITORY_URI}${AWS_ECR_REPO_NAME}:${IMAGE_TAG}"
-        //         }
-        //     }
-        // }
+        stage('Cleanup Artifacts') {
+            steps {
+                script {
+                    sh "docker rmi ${AWS_ECR_REPO_NAME}:latest"
+                    sh "docker rmi ${REPOSITORY_URI}${AWS_ECR_REPO_NAME}:${IMAGE_TAG}"
+                }
+            }
+        }
 
         stage('Checkout Code from Gitops') {
             steps {
